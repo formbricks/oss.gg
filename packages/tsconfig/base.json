@@ -9,6 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "noImplicitAny": true,
     "inlineSources": false,
     "isolatedModules": true,
     "moduleResolution": "node",
@@ -17,6 +18,7 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictFunctionTypes": true,
     "strictNullChecks": true
   },
   "exclude": ["node_modules"]

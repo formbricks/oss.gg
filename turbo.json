@@ -24,6 +24,12 @@
     "db:setup": {
       "cache": false,
       "outputs": []
+    },
+    "post-install": {
+      "cache": false,
+      "dependsOn": [],
+      "outputs": [],
+      "inputs": ["./schema.prisma"]
     }
   }
 }

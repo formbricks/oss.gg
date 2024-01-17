@@ -11,10 +11,8 @@ generator client {
 }
 
 generator zod {
-  provider      = "zod-prisma"
-  output        = "./zod"
-  imports       = "./zod-utils"
-  relationModel = "default"
+  provider = "zod-prisma-types"
+  output   = "./zod"
 }
 
 generator json {
@@ -27,9 +25,6 @@ model Team {
   updatedAt   DateTime     @updatedAt @map(name: "updated_at")
   name        String
   memberships Membership[]
-  /// @zod.custom(imports.ZTeamBilling)
-  /// [TeamBilling]
-  billing     Json         @default("{\"stripeCustomerId\": null, \"features\": {\"inAppSurvey\": {\"status\": \"inactive\", \"unlimited\": false}, \"linkSurvey\": {\"status\": \"inactive\", \"unlimited\": false}, \"userTargeting\": {\"status\": \"inactive\", \"unlimited\": false}}}")
 }
 
 enum MembershipRole {
