@@ -1,5 +1,5 @@
 {
-  "name": "@ossgg/oss-gg",
+  "name": "@ossgg/web",
   "version": "1.0.0",
   "private": true,
   "scripts": {
