@@ -5,17 +5,21 @@
   },
   "scripts": {
     "build": "turbo build",
+    "db:migrate:dev": "turbo run db:migrate:dev",
+    "db:migrate:deploy": "turbo run db:migrate:deploy",
     "dev": "turbo dev",
     "go": "turbo run go --concurrency 20",
     "lint": "turbo lint",
     "clean": "turbo run clean && rimraf node_modules .turbo out",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "pre-commit": "lint-staged"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
-    "prettier": "^3.2.4",
-    "prettier-plugin-tailwindcss": "^0.5.11",
     "@ossgg/tsconfig": "workspace:*",
+    "eslint": "^8.56.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "rimraf": "^5.0.5",
     "turbo": "latest"
   },
   "lint-staged": {

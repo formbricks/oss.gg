@@ -1,3 +1,4 @@
-declare global {
+/* declare global {
   namespace PrismaJson {}
 }
+ */

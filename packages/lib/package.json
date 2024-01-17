@@ -14,10 +14,14 @@
     "test": "jest -ci --coverage --no-cache"
   },
   "dependencies": {
+    "@ossgg/database": "*",
     "clsx": "^2.1.0",
-    "tailwind-merge": "^2.2.0"
+    "next-auth": "^4.24.5",
+    "tailwind-merge": "^2.2.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@ossgg/tsconfig": "*"
+    "@ossgg/tsconfig": "*",
+    "@ossgg/types": "*"
   }
 }

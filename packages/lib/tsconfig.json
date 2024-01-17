@@ -1,5 +1,5 @@
 {
-  "extends": "@formbricks/tsconfig/js-library.json",
+  "extends": "@ossgg/tsconfig/js-library.json",
   "include": ["."],
-  "exclude": ["dist", "build", "node_modules"]
+  "exclude": ["dist", "build", "node_modules"],
 }

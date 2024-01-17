@@ -1,8 +1,7 @@
+import { cn } from "@ossgg/lib/cn";
 import { LucideIcon } from "lucide-react";
 import Link, { LinkProps } from "next/link";
 import React, { AnchorHTMLAttributes, ButtonHTMLAttributes, forwardRef } from "react";
-
-import { cn } from "@formbricks/lib/cn";
 
 type SVGComponent = React.FunctionComponent<React.SVGProps<SVGSVGElement>> | LucideIcon;
 

@@ -1,8 +1,18 @@
 {
   "extends": "@ossgg/tsconfig/nextjs.json",
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../packages/types/*.d.ts"],
+  "exclude": ["../../.env"],
   "compilerOptions": {
-    "plugins": [{ "name": "next" }]
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@prisma/client/*": ["@formbricks/database/client/*"],
+    },
+    "plugins": [
+      {
+        "name": "next",
+      },
+    ],
+    "strictNullChecks": true,
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
 }

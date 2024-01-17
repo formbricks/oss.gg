@@ -12,7 +12,7 @@ module.exports = {
     "(.*)/__mocks__/(.*)",
     "server-only",
     "<THIRD_PARTY_MODULES>",
-    "^@formbricks/(.*)$",
+    "^@ossgg/(.*)$",
     "^~/(.*)$",
     "^[./]",
   ],
