@@ -20,7 +20,7 @@ export const ZUser = z.object({
   emailVerified: z.date().nullable(),
   imageUrl: z.string().url().nullable(),
   twoFactorEnabled: z.boolean(),
-  identityProvider: z.enum(["email", "google", "github", "azuread"]),
+  identityProvider: z.enum(["github"]),
   createdAt: z.date(),
   updatedAt: z.date(),
   onboardingCompleted: z.boolean(),
@@ -48,7 +48,7 @@ export const ZUserCreateInput = z.object({
   onboardingCompleted: z.boolean().optional(),
   role: ZRole.optional(),
   objective: ZUserObjective.nullish(),
-  identityProvider: z.enum(["email", "google", "github", "azuread"]).optional(),
+  identityProvider: z.enum(["github"]).optional(),
   identityProviderAccountId: z.string().optional(),
 });
 

@@ -16,7 +16,9 @@
   "dependencies": {
     "@ossgg/database": "*",
     "clsx": "^2.1.0",
+    "next": "14.0.4",
     "next-auth": "^4.24.5",
+    "@prisma/client": "^5.8.1",
     "tailwind-merge": "^2.2.0",
     "zod": "^3.22.4"
   },

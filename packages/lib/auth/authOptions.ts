@@ -29,12 +29,12 @@ export const authOptions: NextAuthOptions = {
         profile: existingUser || null,
       };
     },
-    async session({ session, token }) {
+    /*     async session({ session, token }) {
       session.user.id = token?.id;
       session.user = token.profile;
 
       return session;
-    },
+    }, */
     async signIn({ user, account }: any) {
       if (!user.email || !user.name || account.type !== "oauth") {
         return false;
