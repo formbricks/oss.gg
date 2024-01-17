@@ -2,18 +2,12 @@ import Image from "next/image";
 
 export default function Page(): JSX.Element {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-12 bg-gradient-to-r from-slate-800 to-cyan-900">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-gradient-to-r from-slate-800 to-cyan-900 p-12">
       <div className="relative flex place-items-center ">
-        <div className="font-sans w-auto pb-16 pt-[48px] md:pb-24 lg:pb-32 md:pt-16 lg:pt-20 flex justify-between gap-8 items-center flex-col relative z-0">
-          <div className="z-50 flex items-center justify-center w-full">
-            <div className="w-full z-50">
-              <Image
-                alt=""
-                height={630}
-                priority
-                src="placeholder.svg"
-                width={1296}
-              />
+        <div className="relative z-0 flex w-auto flex-col items-center justify-between gap-8 pb-16 pt-[48px] font-sans md:pb-24 md:pt-16 lg:pb-32 lg:pt-20">
+          <div className="z-50 flex w-full items-center justify-center">
+            <div className="z-50 w-full">
+              <Image alt="" height={630} priority src="placeholder.svg" width={1296} />
             </div>
           </div>
         </div>
