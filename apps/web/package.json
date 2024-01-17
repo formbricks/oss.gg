@@ -3,20 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@ossgg/lib": "workspace:*",
+    "@ossgg/ui": "workspace:*",
     "next": "^14.0.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@ossgg/ui": "workspace:*"
+    "react": "^18.2.0", 
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@ossgg/tsconfig": "workspace:*",
     "@next/eslint-plugin-next": "^14.0.4",
+    "@ossgg/tsconfig": "workspace:*",
     "@types/node": "^20.11.5",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
@@ -24,7 +25,6 @@
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.33",
     "tailwind-config": "workspace:*",
-    "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
   }
 }

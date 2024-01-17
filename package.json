@@ -1,8 +1,12 @@
 {
   "private": true,
+  "prisma": {
+    "schema": "packages/database/schema.prisma"
+  },
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "go": "turbo run go --concurrency 20",
     "lint": "turbo lint",
     "clean": "turbo run clean && rimraf node_modules .turbo out",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
@@ -13,6 +17,21 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "@ossgg/tsconfig": "workspace:*",
     "turbo": "latest"
+  },
+  "lint-staged": {
+    "(apps|packages)/**/*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "packages/database/schema.prisma": [
+      "prisma format"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "packageManager": "pnpm@8.6.10"
 }

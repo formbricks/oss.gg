@@ -2,7 +2,11 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "pipeline": {
-    "build": {
+    "@ossgg/database#build": {
+      "cache": false,
+      "dependsOn": ["post-install"]
+    },
+    "build": { 
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
@@ -16,6 +20,10 @@
     },
     "clean": {
       "cache": false
+    },
+    "db:setup": {
+      "cache": false,
+      "outputs": []
     }
   }
 }
