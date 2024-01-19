@@ -1,8 +1,13 @@
 import fs from "fs"
 import path from "path"
+import { createAppAuth } from "@octokit/auth-app"
+import { Octokit } from "@octokit/rest"
 import jwt from "jsonwebtoken"
 
-const privateKeyPath = "../../../../ossgg-test.2024-01-18.private-key.pem"
+const privateKeyPath = "../../../../key.pem"
+
+const resolvedPath = path.resolve(__dirname, privateKeyPath)
+const privateKey = fs.readFileSync(resolvedPath, "utf8")
 
 export const generateJWT = (appId: number): string => {
   // Resolve the path from the current working directory
@@ -31,26 +36,39 @@ export const generateGithubToken = async (
   installationId: number,
   appId: number
 ): Promise<string> => {
-  const jwt = generateJWT(appId)
+  // const jwt = generateJWT(appId)
 
-  const url = `https://api.github.com/app/installations/${installationId}/access_tokens`
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/vnd.github.v3+json",
-        Authorization: `Bearer ${jwt}`,
-      },
-    })
+  const octokit = new Octokit({
+    authStrategy: createAppAuth,
+    auth: {
+      appId,
+      installationId,
+      privateKey,
+    },
+  })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
+  const response = await octokit.rest.apps.createInstallationAccessToken({
+    installation_id: installationId,
+  })
 
-    const data = await response.json()
-    return data.token
-  } catch (error) {
-    throw new Error(`Failed to generate Github token: ${error}`)
-  }
+  // const url = `https://api.github.com/app/installations/${installationId}/access_tokens`
+  // try {
+  //   const response = await fetch(url, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Accept: "application/vnd.github.v3+json",
+  //       Authorization: `Bearer ${jwt}`,
+  //     },
+  //   })
+
+  //   if (!response.ok) {
+  //     throw new Error(`HTTP error! status: ${response.status}`)
+  //   }
+
+  //   const data = await response.json()
+  //   return data.token
+  // } catch (error) {
+  //   throw new Error(`Failed to generate Github token: ${error}`)
+  // }
 }
