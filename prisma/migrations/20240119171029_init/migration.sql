@@ -14,6 +14,10 @@ CREATE TABLE "users" (
     "email" TEXT,
     "avatarUrl" TEXT,
     "address" TEXT,
+    "postalCode" TEXT,
+    "city" TEXT,
+    "state" TEXT,
+    "country" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
