@@ -32,22 +32,55 @@ model Account {
   @@map(name: "accounts")
 }
 
+enum InstallationType {
+  user
+  organisation
+}
+
+model Installation {
+  id       String           @id @default(cuid())
+  githubId Int              @unique
+  type     InstallationType
+
+  memberships  Membership[]
+  repositories Repository[]
+
+  @@map(name: "installations")
+}
+
 model Repository {
-  id     String  @id @default(cuid())
-  name   String  @unique
-  levels Level[]
+  id             String   @id @default(cuid())
+  githubId       Int      @unique
+  name           String
+  description    String?
+  homepage       String?
+  topics         String[]
+  default_branch String
+  installationId String
+
+  levels            Json               @default("[]")
   pointTransactions PointTransaction[]
+  installation      Installation       @relation(fields: [installationId], references: [id])
 
   @@map(name: "repositories")
 }
 
-model Level {
-  id             String     @id @default(cuid())
-  name           String     @unique
-  pointThreshold String
-  repository     Repository @relation(fields: [id], references: [id], onDelete: Cascade)
+enum MembershipRole {
+  owner
+  member
+}
 
-  @@map(name: "levels")
+model Membership {
+  installation   Installation   @relation(fields: [installationId], references: [id], onDelete: Cascade)
+  installationId String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  role           MembershipRole
+
+  @@id([userId, installationId])
+  @@index([userId])
+  @@index([installationId])
+  @@map(name: "memberships")
 }
 
 model Session {
@@ -62,6 +95,7 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
+  githubId      Int?      @unique
   name          String?
   email         String?   @unique
   emailVerified DateTime?
@@ -70,9 +104,10 @@ model User {
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @default(now()) @map(name: "updated_at")
 
-  accounts Account[]
-  sessions Session[]
+  accounts          Account[]
+  sessions          Session[]
   pointTransactions PointTransaction[]
+  memberships       Membership[]
 
   @@map(name: "users")
 }
@@ -87,17 +122,17 @@ model VerificationToken {
 }
 
 model PointTransaction {
-  id           String     @id @default(cuid())
+  id           String   @id @default(cuid())
   points       Int
   description  String
-  url          String?    
-  userId       String     
-  repositoryId String     
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now())
+  url          String?
+  userId       String
+  repositoryId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
 
-  user        User        @relation(fields: [userId], references: [id])
-  repository  Repository  @relation(fields: [repositoryId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+  repository Repository @relation(fields: [repositoryId], references: [id])
 
   @@map(name: "point_transactions")
 }
