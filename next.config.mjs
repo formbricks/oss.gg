@@ -1,4 +1,4 @@
-import "./env.mjs";
+import "./env.mjs"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,6 +10,19 @@ const nextConfig = {
     appDir: true,
     serverComponentsExternalPackages: ["@prisma/client"],
   },
-};
-
-export default nextConfig;
+  async redirects() {
+    return [
+      {
+        source: "/discord",
+        destination: "https://discord.gg/WmH2ymxeuG",
+        permanent: true,
+      },
+      {
+        source: "/github",
+        destination: "https://github.com/formbricks/oss.gg",
+        permanent: true,
+      },
+    ]
+  },
+}
+export default nextConfig
