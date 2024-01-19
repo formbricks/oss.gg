@@ -14,7 +14,8 @@ model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @default(now()) @map(name: "updated_at")
-  githubId  String?  @unique
+  githubId  Int      @unique
+  login     String   @unique
   name      String?
   email     String?  @unique
   avatarUrl String?
@@ -23,7 +24,7 @@ model User {
   postalCode String?
   city       String?
   state      String?
-  country    String
+  country    String?
 
   account           Account?
   pointTransactions PointTransaction[]
@@ -56,12 +57,12 @@ model Account {
 
 enum InstallationType {
   user
-  organisation
+  organization
 }
 
 model Installation {
   id       String           @id @default(cuid())
-  githubId String           @unique
+  githubId Int              @unique
   type     InstallationType
 
   memberships  Membership[]
@@ -72,7 +73,7 @@ model Installation {
 
 model Repository {
   id             String   @id @default(cuid())
-  githubId       String   @unique
+  githubId       Int      @unique
   name           String
   description    String?
   homepage       String?

@@ -9,11 +9,16 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "githubId" TEXT,
-    "name" TEXT,
-    "email" TEXT,
+    "githubId" TEXT NOT NULL,
+    "login" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "avatarUrl" TEXT,
     "address" TEXT,
+    "postalCode" TEXT,
+    "city" TEXT,
+    "state" TEXT,
+    "country" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -94,6 +99,9 @@ CREATE TABLE "point_transactions" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_githubId_key" ON "users"("githubId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_login_key" ON "users"("login");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
