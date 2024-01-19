@@ -9,6 +9,6 @@ export const onInstallationCreated = async (webhooks: Webhooks) => {
     const appId = context.payload.installation.app_id
     const repos = context.payload.repositories
 
-    await sendInstallationDetails(installationId, appId, repos)
+    await sendInstallationDetails(installationId, appId, repos, context.payload.installation)
   })
 }
