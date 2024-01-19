@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { DashboardHeader } from "@/components/header"
 import { DashboardShell } from "@/components/shell"
 
+import ConnectGitHubAppButton from "./client-page"
+
 export const metadata = {
   title: "Dashboard",
 }
@@ -20,7 +22,7 @@ export default async function DashboardPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Posts" text="Create and manage posts.">
-        <Button>Create</Button>
+        <ConnectGitHubAppButton />
       </DashboardHeader>
     </DashboardShell>
   )
