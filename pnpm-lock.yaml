@@ -50,6 +50,9 @@ dependencies:
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
+  jsonwebtoken:
+    specifier: ^9.0.2
+    version: 9.0.2
   lucide-react:
     specifier: ^0.312.0
     version: 0.312.0(react@18.2.0)

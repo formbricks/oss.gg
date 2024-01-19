@@ -10,9 +10,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+  githubId  Int      @unique
+  login     String   @unique
+  name      String?
+  email     String?  @unique
+  avatarUrl String?
+
+  address    String?
+  postalCode String?
+  city       String?
+  state      String?
+  country    String?
+
+  account           Account?
+  pointTransactions PointTransaction[]
+  memberships       Membership[]
+
+  @@map(name: "users")
+}
+
 model Account {
   id                String   @id @default(cuid())
-  userId            String
+  userId            String   @unique
   type              String
   provider          String
   providerAccountId String
@@ -34,7 +57,7 @@ model Account {
 
 enum InstallationType {
   user
-  organisation
+  organization
 }
 
 model Installation {
@@ -81,35 +104,6 @@ model Membership {
   @@index([userId])
   @@index([installationId])
   @@map(name: "memberships")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map(name: "sessions")
-}
-
-model User {
-  id            String    @id @default(cuid())
-  githubId      Int?      @unique
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  address       String?
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
-
-  accounts          Account[]
-  sessions          Session[]
-  pointTransactions PointTransaction[]
-  memberships       Membership[]
-
-  @@map(name: "users")
 }
 
 model VerificationToken {
