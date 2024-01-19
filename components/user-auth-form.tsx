@@ -25,9 +25,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         disabled={isGitHubLoading}
       >
         {isGitHubLoading ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <Loader2 className="mr-2 size-4 animate-spin" />
         ) : (
-          <FaGithub className="mr-2 h-4 w-4" />
+          <FaGithub className="mr-2 size-4" />
         )}
         Github
       </button>

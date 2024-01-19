@@ -16,7 +16,7 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
       ) : (
         <AvatarFallback>
           <span className="sr-only">{user.name}</span>
-          <UserIcon className="h-4 w-4" />
+          <UserIcon className="size-4" />
         </AvatarFallback>
       )}
     </Avatar>

@@ -1,11 +1,11 @@
 // pages/api/repository.js
 import { db } from "@/lib/db"
 
-import { isApiKeyValid } from "../../auth"
+import { validateApiKey } from "../../auth"
 
 export async function GET(request, { params }) {
-  const repositoryId = params.respositoryId
-  const apiKeyData = await isApiKeyValid(request)
+  const repositoryId = params.repositoryId
+  const apiKeyData = await validateApiKey(request)
   if (!apiKeyData || repositoryId === apiKeyData.repositoryId) return
 
   if (!repositoryId) {

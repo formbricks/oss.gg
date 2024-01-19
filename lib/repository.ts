@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 
-import { TRepository, TRepositoryCreateInput } from "./types/repository"
+import { TRepository, TRepositoryCreateInput } from "../types/repository"
 
 export const getRepository = async (
   id: string
@@ -48,7 +48,7 @@ export const deleteRepository = async (
   }
 }
 
-export async function userHasAccessToRepository(
+export async function hasUserAccessToRepository(
   userId: string,
   repositoryId: string
 ): Promise<boolean> {
@@ -71,5 +71,5 @@ export async function userHasAccessToRepository(
     },
   })
 
-  return membership.userId === userId // true if membership exists, false otherwise
+  return membership?.userId === userId // true if membership exists, false otherwise
 }

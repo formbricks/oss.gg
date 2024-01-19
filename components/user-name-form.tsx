@@ -90,7 +90,7 @@ export function UserNameForm({ user, ...props }: UserNameFormProps) {
             className={cn(buttonVariants())}
             disabled={isSaving}
           >
-            {isSaving && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
+            {isSaving && <Loader2Icon className="mr-2 size-4 animate-spin" />}
             <span>Save</span>
           </button>
         </CardFooter>
@@ -122,7 +122,7 @@ export function UserNameForm({ user, ...props }: UserNameFormProps) {
             className={cn(buttonVariants())}
             disabled={isSaving}
           >
-            {isSaving && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
+            {isSaving && <Loader2Icon className="mr-2 size-4 animate-spin" />}
             <span>Generate API key</span>
           </button>
         </CardFooter>

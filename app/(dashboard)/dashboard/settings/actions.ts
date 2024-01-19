@@ -2,10 +2,10 @@
 
 import { getServerSession } from "next-auth"
 
-import { createApiKey } from "@/lib/apikey"
+import { TApiKeyCreateInput } from "@/types/apiKey"
+import { createApiKey } from "@/lib/api-key"
 import { authOptions } from "@/lib/auth"
-import { userHasAccessToRepository } from "@/lib/repository"
-import { TApiKeyCreateInput } from "@/lib/types/apiKey"
+import { hasUserAccessToRepository } from "@/lib/repository"
 
 export async function createApiKeyAction(
   repositoryId: string,
@@ -13,6 +13,12 @@ export async function createApiKeyAction(
 ) {
   const session = await getServerSession(authOptions)
   if (!session) return
-  if (!userHasAccessToRepository) return
+  const hasUserAccess = await hasUserAccessToRepository(
+    session.user.id,
+    repositoryId
+  )
+  if (!hasUserAccess) {
+    throw new Error("You do not have access to this repository")
+  }
   return await createApiKey(repositoryId, apiKeyData)
 }
