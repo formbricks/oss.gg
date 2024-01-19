@@ -1,18 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { createNodeMiddleware, Webhooks } from "@octokit/webhooks"
+import { registerListeners, webhookMiddleware } from "@/github"
 
-const webhooks = new Webhooks({
-  secret: "mysecret",
-})
-
-webhooks.on("issue_comment.created", ({ id, name, payload }) => {
-  console.log(`Received an issue_comment event id=${id}, name=${name}`)
-  console.log("payload: ", payload)
-})
-
-const webhookMiddleware = createNodeMiddleware(webhooks, {
-  path: "/api/github-webhook",
-})
+import "@/github/hooks/issue"
 
 export const config = {
   api: {
@@ -22,6 +11,7 @@ export const config = {
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
+    registerListeners()
     webhookMiddleware(req, res, () => res.status(200).end())
   } else {
     res.setHeader("Allow", "POST")
