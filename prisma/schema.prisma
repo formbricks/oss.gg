@@ -32,6 +32,23 @@ model Account {
   @@map(name: "accounts")
 }
 
+model Repository {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  levels Level[]
+
+  @@map(name: "repositories")
+}
+
+model Level {
+  id             String     @id @default(cuid())
+  name           String     @unique
+  pointThreshold String
+  repository     Repository @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  @@map(name: "levels")
+}
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
