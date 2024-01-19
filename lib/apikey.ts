@@ -6,6 +6,8 @@ import { db } from "@/lib/db"
 
 import { TApiKey, TApiKeyCreateInput } from "./types/apiKey"
 
+export const getHash = (key: string): string =>
+  createHash("sha256").update(key).digest("hex")
 export const getApiKey = async (apiKeyId: string): Promise<TApiKey | null> => {
   try {
     const apiKeyData = await db.apiKey.findUnique({
@@ -53,7 +55,6 @@ export async function createApiKey(
         respositoryId: { connect: { id: respositoryId } },
       },
     })
-    console.log({ ...result, apiKey: key })
     return { ...result, apiKey: key }
   } catch (error) {
     throw error
@@ -69,6 +70,26 @@ export const deleteApiKey = async (id: string): Promise<TApiKey | null> => {
     })
 
     return deletedApiKeyData
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getApiKeyFromKey = async (
+  apiKey: string
+): Promise<TApiKey | null> => {
+  if (!apiKey) {
+    throw new Error("API key required")
+  }
+  const hashedKey = getHash(apiKey)
+  try {
+    const apiKeyData = await db.apiKey.findUnique({
+      where: {
+        hashedKey,
+      },
+    })
+
+    return apiKeyData
   } catch (error) {
     throw error
   }

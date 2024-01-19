@@ -3,7 +3,7 @@ import { z } from "zod"
 export const ZLevel = z.object({
   id: z.string().cuid2(),
   name: z.string(),
-  pointThreshold: z.string(), // Assuming pointThreshold is stored as a string
+  pointThreshold: z.string(),
   repositoryId: z.string().cuid2(),
 })
 
