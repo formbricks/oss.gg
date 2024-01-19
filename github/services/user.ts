@@ -1,38 +1,49 @@
+import { generateGithubToken, generateJWT } from "../utils"
+
 export const sendInstallationDetails = async (
   installationId: number,
   appId: number,
-  repos: unknown
+  repos: unknown,
+  installation: unknown
 ): Promise<unknown> => {
   try {
-    console.log("sendInstallationDetails", installationId, appId, repos)
+    console.log(
+      "sendInstallationDetails",
+      installationId,
+      appId,
+      repos,
+      installation
+    )
 
-    // const response = await fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(postData),
-    // })
+    if (installation?.account?.type === "Organization") {
+      console.log("Organization")
+      console.log(installation?.account?.login)
 
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! status: ${response.status}`)
-    // }
+      const token = await generateGithubToken(installationId, appId)
+      console.log(token)
 
-    // const data = await response.json()
+      const membersOfOrg = await fetch(
+        `https://api.github.com/orgs/${installation?.account?.login}/members`,
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
+      )
+      console.log(membersOfOrg)
+    }
+
+    // store installationId
+    // get members from their orgs
+    // and create memberships if it does not exist
+
+    // const githubToken = await generateGithubToken(installationId, appId)
+    // console.log(githubToken)
+
+    // const
+
     return { data: "data" }
   } catch (error) {
     throw new Error(`Failed to post installation details: ${error}`)
-  }
-}
-
-export const getUser = async (userId: string): Promise<unknown> => {
-  //   const url = `${WEB_API}/api/users/${userId}`
-
-  try {
-    // const response = await fetch(url)
-    // const data = await response.json()
-    return { data: "data" }
-  } catch (error) {
-    throw new Error(`Failed to get user: ${error}`)
   }
 }
