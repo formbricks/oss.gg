@@ -1,4 +1,3 @@
-import { FileTextIcon, Settings2Icon } from "lucide-react";
 import { DashboardConfig } from "types";
 
 export const dashboardConfig: DashboardConfig = {
@@ -14,10 +13,6 @@ export const dashboardConfig: DashboardConfig = {
     },
   ],
   sidebarNav: [
-    {
-      title: "Posts",
-      href: "/dashboard",
-    },
     {
       title: "Settings",
       href: "/dashboard/settings",
