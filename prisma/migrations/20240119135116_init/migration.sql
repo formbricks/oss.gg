@@ -5,6 +5,20 @@ CREATE TYPE "InstallationType" AS ENUM ('user', 'organisation');
 CREATE TYPE "MembershipRole" AS ENUM ('owner', 'member');
 
 -- CreateTable
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "githubId" TEXT,
+    "name" TEXT,
+    "email" TEXT,
+    "avatarUrl" TEXT,
+    "address" TEXT,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "accounts" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -27,7 +41,7 @@ CREATE TABLE "accounts" (
 -- CreateTable
 CREATE TABLE "installations" (
     "id" TEXT NOT NULL,
-    "githubId" INTEGER NOT NULL,
+    "githubId" TEXT NOT NULL,
     "type" "InstallationType" NOT NULL,
 
     CONSTRAINT "installations_pkey" PRIMARY KEY ("id")
@@ -36,7 +50,7 @@ CREATE TABLE "installations" (
 -- CreateTable
 CREATE TABLE "repositories" (
     "id" TEXT NOT NULL,
-    "githubId" INTEGER NOT NULL,
+    "githubId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "homepage" TEXT,
@@ -55,31 +69,6 @@ CREATE TABLE "memberships" (
     "role" "MembershipRole" NOT NULL,
 
     CONSTRAINT "memberships_pkey" PRIMARY KEY ("userId","installationId")
-);
-
--- CreateTable
-CREATE TABLE "sessions" (
-    "id" TEXT NOT NULL,
-    "sessionToken" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "expires" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "users" (
-    "id" TEXT NOT NULL,
-    "githubId" INTEGER,
-    "name" TEXT,
-    "email" TEXT,
-    "emailVerified" TIMESTAMP(3),
-    "image" TEXT,
-    "address" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -104,6 +93,15 @@ CREATE TABLE "point_transactions" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_githubId_key" ON "users"("githubId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "accounts_userId_key" ON "accounts"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "accounts_provider_providerAccountId_key" ON "accounts"("provider", "providerAccountId");
 
 -- CreateIndex
@@ -117,15 +115,6 @@ CREATE INDEX "memberships_userId_idx" ON "memberships"("userId");
 
 -- CreateIndex
 CREATE INDEX "memberships_installationId_idx" ON "memberships"("installationId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "sessions_sessionToken_key" ON "sessions"("sessionToken");
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_githubId_key" ON "users"("githubId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "verification_tokens_token_key" ON "verification_tokens"("token");
@@ -144,9 +133,6 @@ ALTER TABLE "memberships" ADD CONSTRAINT "memberships_installationId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "memberships" ADD CONSTRAINT "memberships_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "point_transactions" ADD CONSTRAINT "point_transactions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { User } from "next-auth";
-import { signOut } from "next-auth/react";
+import Link from "next/link"
+import { User } from "next-auth"
+import { signOut } from "next-auth/react"
 
 import {
   DropdownMenu,
@@ -10,11 +10,15 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { UserAvatar } from "@/components/user-avatar";
+} from "@/components/ui/dropdown-menu"
+import { UserAvatar } from "@/components/user-avatar"
 
-interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
-  user: Pick<User, "name" | "image" | "email">;
+interface UserAccountNavProps {
+  user: {
+    name: User["name"]
+    avatarUrl: User["image"]
+    email?: User["email"]
+  }
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
@@ -22,7 +26,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <UserAvatar
-          user={{ name: user.name || null, image: user.image || null }}
+          user={{ name: user.name || null, avatarUrl: user.avatarUrl || null }}
           className="h-8 w-8"
         />
       </DropdownMenuTrigger>
@@ -48,15 +52,15 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={(event) => {
-            event.preventDefault();
+            event.preventDefault()
             signOut({
               callbackUrl: `${window.location.origin}/login`,
-            });
+            })
           }}
         >
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
