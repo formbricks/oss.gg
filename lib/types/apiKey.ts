@@ -6,7 +6,7 @@ export const ZApiKey = z.object({
   lastUsedAt: z.date().nullable(),
   label: z.string().nullable(),
   hashedKey: z.string(),
-  accountId: z.string().cuid2(),
+  repositoryId: z.string().cuid2(),
   apiKey: z.string().optional(),
 })
 

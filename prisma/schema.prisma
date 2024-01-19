@@ -84,7 +84,7 @@ model Repository {
   pointTransactions PointTransaction[]
   installation      Installation       @relation(fields: [installationId], references: [id])
 
-  @@map(name: "repositories")
+  @@map(name: "repositoresries")
 }
 
 enum MembershipRole {

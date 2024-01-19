@@ -1,12 +1,12 @@
 // pages/api/repository.js
 import { db } from "@/lib/db"
 
-import { isApiKeyValid } from "../auth"
+import { isApiKeyValid } from "../../auth"
 
-export async function GET(request) {
-  if (!isApiKeyValid(request)) return
-  const { searchParams } = new URL(request.url)
-  const repositoryId = searchParams.get("id")
+export async function GET(request, { params }) {
+  const repositoryId = params.respositoryId
+  const apiKeyData = await isApiKeyValid(request)
+  if (!apiKeyData || repositoryId === apiKeyData.repositoryId) return
 
   if (!repositoryId) {
     return new Response("Repository ID is required", { status: 400 })
@@ -26,7 +26,6 @@ export async function GET(request) {
   })
 }
 
-//this route is for teting purpose
 export async function POST(request) {
   const data = await request.json()
 

@@ -3,7 +3,6 @@ import { z } from "zod"
 import { ZAccount } from "./account"
 import { ZMembership } from "./membership"
 import { ZPointTransaction } from "./pointTransaction"
-import { ZSession } from "./session"
 
 export const ZUser = z.object({
   id: z.string().cuid2(),
@@ -16,7 +15,6 @@ export const ZUser = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   accounts: z.array(ZAccount),
-  sessions: z.array(ZSession),
   pointTransactions: z.array(ZPointTransaction),
   memberships: z.array(ZMembership),
 })
