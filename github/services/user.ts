@@ -5,10 +5,7 @@ import { Octokit } from "@octokit/rest"
 
 import { db } from "@/lib/db"
 
-// import { generateGithubToken } from "../utils"
-
 const privateKeyPath = "../../../../key.pem"
-
 const resolvedPath = path.resolve(__dirname, privateKeyPath)
 const privateKey = readFileSync(resolvedPath, "utf8")
 
@@ -19,19 +16,6 @@ export const sendInstallationDetails = async (
   installation: any
 ): Promise<unknown> => {
   try {
-    console.log(
-      "sendInstallationDetails",
-      installationId,
-      appId,
-      repos,
-      installation
-    )
-
-    console.log("Organization")
-    console.log(installation?.account?.login)
-
-    // const token = await generateGithubToken(installationId, appId)
-
     const octokit = new Octokit({
       authStrategy: createAppAuth,
       auth: {
@@ -41,20 +25,18 @@ export const sendInstallationDetails = async (
       },
     })
 
-    if (installation?.account?.type === "Organization") {
-      // const membersOfOrg = await fetch(
-      //   `https://api.github.com/orgs/${installation?.account?.login}/members`,
-      //   {
-      //     headers: {
-      //       Authorization: `Token ${token}`,
-      //     },
-      //   }
-      // )
-      // console.log(membersOfOrg)
+    const installationPrisma = await db.installation.create({
+      data: {
+        githubId: installationId,
+        type: installation?.account?.type.toLowerCase(),
+      },
+    })
 
+    if (installationPrisma.type === "organization") {
       try {
         const membersOfOrg = await octokit.rest.orgs.listMembers({
           org: installation?.account?.login,
+          role: "all",
         })
 
         membersOfOrg.data.map(async (member) => {
@@ -68,31 +50,78 @@ export const sendInstallationDetails = async (
           })
 
           if (!memberInDatabase) {
-            const newMember = await db.user.create({
-              data: {
+            const newUser = await db.user.upsert({
+              where: {
+                githubId: member.id,
+              },
+              create: {
                 githubId: member.id,
                 login: member.login,
+                name: member.name,
+                email: member.email,
+              },
+              update: {
+                githubId: member.id,
+                login: member.login,
+                name: member.name,
+                email: member.email,
               },
             })
-            console.log({ newMember })
+
+            // create a new membership
+            const newMembership = await db.membership.create({
+              data: {
+                user: {
+                  connect: {
+                    id: newUser.id,
+                  },
+                },
+                installation: { connect: { id: installationPrisma.id } },
+                role: "member",
+              },
+            })
           }
 
           // check if this member has a membership
           // if not, create a new membership
         })
       } catch (error) {
-        console.log({ error })
+        console.error({ error })
       }
+    } else {
+      const user = installation.account
+
+      const newUser = await db.user.upsert({
+        where: {
+          githubId: user.id,
+        },
+        create: {
+          githubId: user.id,
+          login: user.login,
+          name: user.name,
+          email: user.email,
+        },
+        update: {
+          githubId: user.id,
+          login: user.login,
+          name: user.name,
+          email: user.email,
+        },
+      })
+
+      // create a new membership
+      const newMembership = await db.membership.create({
+        data: {
+          user: {
+            connect: {
+              id: newUser.id,
+            },
+          },
+          installation: { connect: { id: installationPrisma.id } },
+          role: "owner",
+        },
+      })
     }
-
-    // store installationId
-    // get members from their orgs
-    // and create memberships if it does not exist
-
-    // const githubToken = await generateGithubToken(installationId, appId)
-    // console.log(githubToken)
-
-    // const
 
     return { data: "data" }
   } catch (error) {
