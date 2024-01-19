@@ -36,6 +36,7 @@ model Repository {
   id     String  @id @default(cuid())
   name   String  @unique
   levels Level[]
+  pointTransactions PointTransaction[]
 
   @@map(name: "repositories")
 }
@@ -71,6 +72,7 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  pointTransactions PointTransaction[]
 
   @@map(name: "users")
 }
@@ -82,4 +84,20 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map(name: "verification_tokens")
+}
+
+model PointTransaction {
+  id           String     @id @default(cuid())
+  points       Int
+  description  String
+  url          String?    
+  userId       String     
+  repositoryId String     
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now())
+
+  user        User        @relation(fields: [userId], references: [id])
+  repository  Repository  @relation(fields: [repositoryId], references: [id])
+
+  @@map(name: "point_transactions")
 }
