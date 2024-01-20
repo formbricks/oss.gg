@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { User } from "next-auth"
 import { signOut } from "next-auth/react"
 
@@ -8,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { UserAvatar } from "@/components/user-avatar"
@@ -20,6 +18,18 @@ interface UserAccountNavProps {
     email?: User["email"]
   }
 }
+
+const topNavigation = [
+  { label: "Open issues", url: "/issues" },
+  { label: "Enroll to play", url: "/enroll" },
+  { label: "Settings", url: "/settings" },
+  { label: "Your profile", url: "/", target: "_blank" },
+]
+
+const bottomNavigation = [
+  { label: "What is oss.gg?", url: "https://oss.gg", target: "_blank" },
+  { label: "Help build oss.gg", url: "/contribute" },
+]
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
   return (
@@ -41,14 +51,6 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             )}
           </div>
         </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard">Dashboard</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings">Settings</Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={(event) => {

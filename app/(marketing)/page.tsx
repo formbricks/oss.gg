@@ -1,9 +1,4 @@
-import Link from "next/link";
-
-import { env } from "@/env.mjs";
-import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link"
 import {
   Building2,
   CircleDollarSign,
@@ -11,7 +6,14 @@ import {
   MessageCircleCode,
   Pointer,
   Shirt,
-} from "lucide-react";
+} from "lucide-react"
+
+import { env } from "@/env.mjs"
+import { siteConfig } from "@/config/site"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
+
+/* import WhyOSSGG from "./why-ossgg-article.mdx" */
 
 async function getGitHubStars(): Promise<string | null> {
   try {
@@ -26,22 +28,22 @@ async function getGitHubStars(): Promise<string | null> {
           revalidate: 60,
         },
       }
-    );
+    )
 
     if (!response?.ok) {
-      return null;
+      return null
     }
 
-    const json = await response.json();
+    const json = await response.json()
 
-    return parseInt(json["stargazers_count"]).toLocaleString();
+    return parseInt(json["stargazers_count"]).toLocaleString()
   } catch (error) {
-    return null;
+    return null
   }
 }
 
 export default async function IndexPage() {
-  const stars = await getGitHubStars();
+  const stars = await getGitHubStars()
 
   return (
     <>
@@ -58,9 +60,7 @@ export default async function IndexPage() {
             Gamify Open Source Contributions
           </h1>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-            Celebrating remarkable contributions, our ranking system that aims
-            to recognize and honor outstanding contributors within the open
-            source community.
+            Facilitate more high-quality community contributions with less work.
           </p>
           <div className="space-x-4">
             <Link href="/login" className={cn(buttonVariants({ size: "lg" }))}>
@@ -77,16 +77,17 @@ export default async function IndexPage() {
           </div>
         </div>
       </section>
+      <section>{/* <WhyOSSGG /> */}</section>
       <section
         id="features"
         className="container space-y-6 bg-slate-50 py-8 dark:bg-transparent md:py-12 lg:py-24"
       >
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
           <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
-            Features
+            Contributors,
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-            Gamify Open Source
+            play the Open Source Game and get hired!
           </p>
         </div>
         <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
@@ -204,5 +205,5 @@ export default async function IndexPage() {
         </div>
       </section>
     </>
-  );
+  )
 }

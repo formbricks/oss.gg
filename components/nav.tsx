@@ -1,21 +1,20 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
-import { SidebarNavItem } from "types";
-import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
+import { BottomNavItem } from "types"
+import { cn } from "@/lib/utils"
 
 interface DashboardNavProps {
-  items: SidebarNavItem[];
+  items: BottomNavItem[]
 }
 
 export function DashboardNav({ items }: DashboardNavProps) {
-  const path = usePathname();
+  const path = usePathname()
 
   if (!items?.length) {
-    return null;
+    return null
   }
 
   return (
@@ -35,8 +34,8 @@ export function DashboardNav({ items }: DashboardNavProps) {
               </span>
             </Link>
           )
-        );
+        )
       })}
     </nav>
-  );
+  )
 }

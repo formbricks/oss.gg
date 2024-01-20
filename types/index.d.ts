@@ -1,15 +1,13 @@
 import { User } from "@prisma/client";
-import type { Icon } from "lucide-react";
 
-export type NavItem = {
+export type MainNavItem = {
   title: string;
   href: string;
   disabled?: boolean;
+  external?: boolean;
 };
 
-export type MainNavItem = NavItem;
-
-export type SidebarNavItem = {
+export type BottomNavItem = {
   title: string;
   disabled?: boolean;
   external?: boolean;
@@ -37,7 +35,7 @@ export type SiteConfig = {
 
 export type DocsConfig = {
   mainNav: MainNavItem[];
-  sidebarNav: SidebarNavItem[];
+  bottomNav: BottomNavItem[];
 };
 
 export type MarketingConfig = {
@@ -46,7 +44,7 @@ export type MarketingConfig = {
 
 export type DashboardConfig = {
   mainNav: MainNavItem[];
-  sidebarNav: SidebarNavItem[];
+  bottomNav: BottomNavItem[];
 };
 
 export type SubscriptionPlan = {
