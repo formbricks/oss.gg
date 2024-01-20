@@ -1,16 +1,16 @@
-import { Metadata } from "next";
-import Link from "next/link";
+import { Metadata } from "next"
+import Link from "next/link"
+import { ChevronLeft } from "lucide-react"
 
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { UserAuthForm } from "@/components/user-auth-form";
-import { ChevronLeft } from "lucide-react";
-import { Logo } from "@/components/ui/logo";
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
+import { Logo } from "@/components/ui/logo"
+import { UserAuthForm } from "@/components/user-auth-form"
 
 export const metadata: Metadata = {
   title: "Login",
   description: "Login to your account",
-};
+}
 
 export default function LoginPage() {
   return (
@@ -29,7 +29,7 @@ export default function LoginPage() {
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
-          <Logo className="mx-auto h-8" />
+          <Logo />
           <h1 className="text-2xl font-semibold tracking-tight">
             Welcome back
           </h1>
@@ -48,5 +48,5 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
-  );
+  )
 }

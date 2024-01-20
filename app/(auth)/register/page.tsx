@@ -1,14 +1,14 @@
-import Link from "next/link";
+import Link from "next/link"
 
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { UserAuthForm } from "@/components/user-auth-form";
-import { Logo } from "@/components/ui/logo";
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
+import { Logo } from "@/components/ui/logo"
+import { UserAuthForm } from "@/components/user-auth-form"
 
 export const metadata = {
   title: "Create an account",
   description: "Create an account to get started.",
-};
+}
 
 export default function RegisterPage() {
   return (
@@ -26,7 +26,7 @@ export default function RegisterPage() {
       <div className="lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
-            <Logo className="mx-auto h-8" />
+            <Logo />
             <h1 className="text-2xl font-semibold tracking-tight">
               Create an account
             </h1>
@@ -55,5 +55,5 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
