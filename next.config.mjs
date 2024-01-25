@@ -1,14 +1,6 @@
-import nextMDX from "@next/mdx"
-
 import "./env.mjs"
 
-const withMDX = nextMDX({
-  extension: /\.mdx?$/,
-})
-
-/**
- * @type {import('next').NextConfig}
- */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -33,8 +25,4 @@ const nextConfig = {
     ]
   },
 }
-
-export default withMDX({
-  pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
-  ...nextConfig,
-})
+export default nextConfig

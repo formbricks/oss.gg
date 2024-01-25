@@ -16,9 +16,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
-    "@mdx-js/loader": "^3.0.0",
     "@next-auth/prisma-adapter": "^1.0.7",
-    "@next/mdx": "^14.1.0",
     "@octokit/auth-app": "^6.0.3",
     "@octokit/rest": "^20.0.2",
     "@octokit/webhooks": "^12.0.11",
