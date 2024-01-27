@@ -63,7 +63,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         })
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   })
 }
@@ -86,7 +86,7 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
         })
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   })
 }

@@ -21,7 +21,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           pr-message: |-
-            Thank you so much for making your first Pull Request and taking the time to improve Formbricks! 🚀🙏❤️
-            Feel free to join the conversation at [Discord](https://formbricks.com/discord)
+            Thank you so much for making your first Pull Request and taking the time to improve oss.gg! 🚀🙏❤️
+            Feel free to join the conversation at [Discord](https://oss.gg/discord)
           issue-message: |
             Thank you for opening your first issue! 🙏❤️ One of our team members will review it and get back to you as soon as it possible. 😊
