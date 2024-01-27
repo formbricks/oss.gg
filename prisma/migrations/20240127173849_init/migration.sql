@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "InstallationType" AS ENUM ('user', 'organisation');
+CREATE TYPE "InstallationType" AS ENUM ('user', 'organization');
 
 -- CreateEnum
 CREATE TYPE "MembershipRole" AS ENUM ('owner', 'member');
@@ -9,10 +9,10 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "githubId" TEXT NOT NULL,
+    "githubId" INTEGER NOT NULL,
     "login" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
+    "name" TEXT,
+    "email" TEXT,
     "avatarUrl" TEXT,
     "address" TEXT,
     "postalCode" TEXT,
@@ -46,7 +46,7 @@ CREATE TABLE "accounts" (
 -- CreateTable
 CREATE TABLE "installations" (
     "id" TEXT NOT NULL,
-    "githubId" TEXT NOT NULL,
+    "githubId" INTEGER NOT NULL,
     "type" "InstallationType" NOT NULL,
 
     CONSTRAINT "installations_pkey" PRIMARY KEY ("id")
@@ -55,7 +55,7 @@ CREATE TABLE "installations" (
 -- CreateTable
 CREATE TABLE "repositories" (
     "id" TEXT NOT NULL,
-    "githubId" TEXT NOT NULL,
+    "githubId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "homepage" TEXT,
