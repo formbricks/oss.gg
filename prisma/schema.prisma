@@ -78,8 +78,9 @@ model Repository {
   description    String?
   homepage       String?
   topics         String[]
-  default_branch String
+  default_branch String?
   installationId String
+  configured     Boolean  @default(false)
 
   levels            Json               @default("[]")
   pointTransactions PointTransaction[]
