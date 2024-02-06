@@ -12,10 +12,10 @@ import { selectRepoActions } from "./actions"
 
 export const metadata = {
   title: "Connect a Repository",
-  description: "Comment on these issues to get assigned to work on them.",
+  description: "Select the repository you want to integrate oss.gg with.",
 }
 
-export default async function SettingsPage() {
+export default async function SelectRepoPage() {
   const user = await getCurrentUser()
   if (!user) {
     redirect(authOptions?.pages?.signIn || "/login")
