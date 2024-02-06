@@ -5,7 +5,8 @@ import { Octokit } from "@octokit/rest"
 
 import { GITHUB_APP_APP_ID } from "./constants"
 
-const resolvedPath = path.resolve(__dirname, "../../../../key.pem")
+const privateKeyPath = "../../../../key.pem"
+const resolvedPath = path.resolve(__dirname, privateKeyPath)
 const privateKey = readFileSync(resolvedPath, "utf8")
 
 export const getOctokitInstance = (installationId: number) => {

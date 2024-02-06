@@ -1,8 +1,8 @@
 import { readFileSync } from "fs"
 import path from "path"
-import { createAppAuth } from "@octokit/auth-app"
-import { Octokit } from "@octokit/rest"
+import { App } from "octokit"
 
+import { env } from "@/env.mjs"
 import { db } from "@/lib/db"
 
 const privateKeyPath = "../../../../key.pem"
@@ -12,119 +12,118 @@ const privateKey = readFileSync(resolvedPath, "utf8")
 export const sendInstallationDetails = async (
   installationId: number,
   appId: number,
-  repos: any,
+  repos:
+    | {
+        id: number
+        node_id: string
+        name: string
+        full_name: string
+        private: boolean
+      }[]
+    | undefined,
   installation: any
-): Promise<unknown> => {
+): Promise<void> => {
   try {
-    const octokit = new Octokit({
-      authStrategy: createAppAuth,
-      auth: {
-        appId,
-        installationId,
-        privateKey,
+    const app = new App({
+      appId,
+      privateKey,
+      webhooks: {
+        secret: env.GITHUB_WEBHOOK_SECRET!,
       },
     })
+    const octokit = await app.getInstallationOctokit(installationId)
 
-    const installationPrisma = await db.installation.create({
-      data: {
-        githubId: installationId,
-        type: installation?.account?.type.toLowerCase(),
-      },
-    })
+    await db.$transaction(async (tx) => {
+      const installationPrisma = await tx.installation.upsert({
+        where: { githubId: installationId },
+        update: { type: installation?.account?.type.toLowerCase() },
+        create: {
+          githubId: installationId,
+          type: installation?.account?.type.toLowerCase(),
+        },
+      })
 
-    if (installationPrisma.type === "organization") {
-      try {
+      const userType = installation?.account?.type.toLowerCase()
+      if (userType === "organization") {
         const membersOfOrg = await octokit.rest.orgs.listMembers({
           org: installation?.account?.login,
           role: "all",
         })
 
-        membersOfOrg.data.map(async (member) => {
-          // check if this member exists in the database
-          // if not, create a new member
-
-          const memberInDatabase = await db.user.findUnique({
-            where: {
-              githubId: member.id,
-            },
-          })
-
-          if (!memberInDatabase) {
-            const newUser = await db.user.upsert({
-              where: {
-                githubId: member.id,
-              },
+        await Promise.all(
+          membersOfOrg.data.map(async (member) => {
+            const newUser = await tx.user.upsert({
+              where: { githubId: member.id },
+              update: {},
               create: {
                 githubId: member.id,
                 login: member.login,
-                name: member.name,
-                email: member.email,
-              },
-              update: {
-                githubId: member.id,
-                login: member.login,
-                name: member.name,
-                email: member.email,
               },
             })
 
-            // create a new membership
-            const newMembership = await db.membership.create({
-              data: {
-                user: {
-                  connect: {
-                    id: newUser.id,
-                  },
+            await tx.membership.upsert({
+              where: {
+                userId_installationId: {
+                  userId: newUser.id,
+                  installationId: installationPrisma.id,
                 },
-                installation: { connect: { id: installationPrisma.id } },
+              },
+              update: {},
+              create: {
+                userId: newUser.id,
+                installationId: installationPrisma.id,
                 role: "member",
               },
             })
-          }
-
-          // check if this member has a membership
-          // if not, create a new membership
+          })
+        )
+      } else {
+        const user = installation.account
+        const newUser = await tx.user.upsert({
+          where: { githubId: user.id },
+          update: {},
+          create: {
+            githubId: user.id,
+            login: user.login,
+            name: user.name || "",
+            email: user.email || "",
+          },
         })
-      } catch (error) {
-        console.error({ error })
-      }
-    } else {
-      const user = installation.account
 
-      const newUser = await db.user.upsert({
-        where: {
-          githubId: user.id,
-        },
-        create: {
-          githubId: user.id,
-          login: user.login,
-          name: user.name,
-          email: user.email,
-        },
-        update: {
-          githubId: user.id,
-          login: user.login,
-          name: user.name,
-          email: user.email,
-        },
-      })
-
-      // create a new membership
-      const newMembership = await db.membership.create({
-        data: {
-          user: {
-            connect: {
-              id: newUser.id,
+        await tx.membership.upsert({
+          where: {
+            userId_installationId: {
+              userId: newUser.id,
+              installationId: installationPrisma.id,
             },
           },
-          installation: { connect: { id: installationPrisma.id } },
-          role: "owner",
-        },
-      })
-    }
+          update: {},
+          create: {
+            userId: newUser.id,
+            installationId: installationPrisma.id,
+            role: "owner",
+          },
+        })
+      }
 
-    return { data: "data" }
+      if (repos) {
+        await Promise.all(
+          repos.map(async (repo) => {
+            await tx.repository.upsert({
+              where: { githubId: repo.id },
+              update: {},
+              create: {
+                githubId: repo.id,
+                name: repo.name,
+                installationId: installationPrisma.id,
+              },
+            })
+          })
+        )
+      }
+    })
   } catch (error) {
+    console.error(`Failed to post installation details: ${error}`)
     throw new Error(`Failed to post installation details: ${error}`)
   }
 }
