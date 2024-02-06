@@ -1,30 +1,28 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import * as React from "react"
+import { useSelectedLayoutSegment } from "next/navigation"
+import { X } from "lucide-react"
 
-import { MainNavItem } from "types";
-import { cn } from "@/lib/utils";
-import { MobileNav } from "@/components/mobile-nav";
-import { Logo } from "./ui/logo";
-import { X } from "lucide-react";
+import { MainNavItem } from "types"
+import { MobileNav } from "@/components/mobile-nav"
+
+import { Logo } from "./ui/logo"
 
 interface MainNavProps {
-  items?: MainNavItem[];
-  children?: React.ReactNode;
+  items?: MainNavItem[]
+  children?: React.ReactNode
 }
 
 export function MainNav({ items, children }: MainNavProps) {
-  const segment = useSelectedLayoutSegment();
-  const [showMobileMenu, setShowMobileMenu] = React.useState<boolean>(false);
+  const segment = useSelectedLayoutSegment()
+  const [showMobileMenu, setShowMobileMenu] = React.useState<boolean>(false)
 
   return (
     <div className="flex gap-6 md:gap-10">
-      <Link href="/" className="hidden items-center space-x-2 md:flex">
-        <Logo className="h-5" />
-      </Link>
-      {items?.length ? (
+      <Logo />
+
+      {/* {items?.length ? (
         <nav className="hidden gap-6 md:flex">
           {items?.map((item, index) => (
             <Link
@@ -42,7 +40,7 @@ export function MainNav({ items, children }: MainNavProps) {
             </Link>
           ))}
         </nav>
-      ) : null}
+      ) : null} */}
       <button
         className="flex items-center space-x-2 md:hidden"
         onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -54,5 +52,5 @@ export function MainNav({ items, children }: MainNavProps) {
         <MobileNav items={items}>{children}</MobileNav>
       )}
     </div>
-  );
+  )
 }

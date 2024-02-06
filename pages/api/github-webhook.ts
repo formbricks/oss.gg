@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { registerListeners, webhookMiddleware } from "@/github"
+import { registerHooks, webhookMiddleware } from "@/github"
 
 import "@/github/hooks/issue"
 
@@ -11,7 +11,7 @@ export const config = {
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    registerListeners()
+    registerHooks()
     webhookMiddleware(req, res, () => res.status(200).end())
   } else {
     res.setHeader("Allow", "POST")

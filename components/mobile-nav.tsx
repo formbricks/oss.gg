@@ -1,19 +1,20 @@
-import * as React from "react";
-import Link from "next/link";
+import * as React from "react"
+import Link from "next/link"
 
-import { MainNavItem } from "types";
-import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
-import { useLockBody } from "@/hooks/use-lock-body";
-import { Logo } from "./ui/logo";
+import { MainNavItem } from "types"
+import { siteConfig } from "@/config/site"
+import { cn } from "@/lib/utils"
+import { useLockBody } from "@/hooks/use-lock-body"
+
+import { Logo } from "./ui/logo"
 
 interface MobileNavProps {
-  items: MainNavItem[];
-  children?: React.ReactNode;
+  items: MainNavItem[]
+  children?: React.ReactNode
 }
 
 export function MobileNav({ items, children }: MobileNavProps) {
-  useLockBody();
+  useLockBody()
 
   return (
     <div
@@ -23,7 +24,7 @@ export function MobileNav({ items, children }: MobileNavProps) {
     >
       <div className="bg-popover text-popover-foreground relative z-20 grid gap-6 rounded-md p-4 shadow-md">
         <Link href="/" className="flex items-center space-x-2">
-          <Logo className="h-6" />
+          <Logo />
           <span className="font-bold">{siteConfig.name}</span>
         </Link>
         <nav className="grid grid-flow-row auto-rows-max text-sm">
@@ -43,5 +44,5 @@ export function MobileNav({ items, children }: MobileNavProps) {
         {children}
       </div>
     </div>
-  );
+  )
 }

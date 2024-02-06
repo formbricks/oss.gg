@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account }: any) {
+    async signIn({ user, account, profile }: any) {
       if (account.type !== "oauth") {
         return false
       }
@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
             account: true,
           },
           where: {
-            githubId: account.providerAccountId,
+            githubId: profile.id,
           },
         })
 
@@ -54,10 +54,11 @@ export const authOptions: NextAuthOptions = {
         // create user if it does not exist
         await db.user.create({
           data: {
-            name: user.name,
-            githubId: account.providerAccountId,
-            email: user.email,
-            avatarUrl: user.image,
+            name: profile.name,
+            githubId: profile.id,
+            login: profile.login,
+            email: profile.email,
+            avatarUrl: profile.avatar_url,
             account: {
               create: {
                 ...account,
@@ -71,10 +72,10 @@ export const authOptions: NextAuthOptions = {
 
       return false
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, profile }) {
       const dbUser = await db.user.findFirst({
         where: {
-          email: token.email,
+          email: token.email as string,
         },
       })
 

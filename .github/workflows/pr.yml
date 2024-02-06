@@ -23,7 +23,7 @@ jobs:
     secrets: inherit
 
   build:
-    name: Build Formbricks-web
+    name: Build ossgg
     uses: ./.github/workflows/build-web.yml
     secrets: inherit
 

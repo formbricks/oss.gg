@@ -1,6 +1,14 @@
+import { readFileSync } from "fs"
+import path from "path"
 import { Webhooks } from "@octokit/webhooks"
 
-import { EVENT_TRIGGERS, LEVEL_LABEL } from "../constants"
+import {
+  ASSIGN_IDENTIFIER,
+  EVENT_TRIGGERS,
+  LEVEL_LABEL,
+  UNASSIGN_IDENTIFIER,
+} from "../constants"
+import { getOctokitInstance } from "../utils"
 
 export const onIssueOpened = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_OPENED, async (context) => {
@@ -34,5 +42,51 @@ export const onIssueOpened = async (webhooks: Webhooks) => {
     //     body: ON_NEW_ISSUE,
     //   })
     // )
+  })
+}
+
+export const onAssignCommented = async (webhooks: Webhooks) => {
+  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
+    try {
+      const octokit = getOctokitInstance(context.payload.installation?.id!)
+
+      const issueNumber = context.payload.issue.number
+      const repo = context.payload.repository.name
+      const issueCommentBody = context.payload.comment.body
+
+      if (issueCommentBody === ASSIGN_IDENTIFIER) {
+        await octokit.issues.createComment({
+          body: "ok brother",
+          issue_number: issueNumber,
+          repo,
+          owner: "formbricks",
+        })
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  })
+}
+
+export const onUnassignCommented = async (webhooks: Webhooks) => {
+  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
+    try {
+      const octokit = getOctokitInstance(context.payload.installation?.id!)
+
+      const issueNumber = context.payload.issue.number
+      const repo = context.payload.repository.name
+      const issueCommentBody = context.payload.comment.body
+
+      if (issueCommentBody === UNASSIGN_IDENTIFIER) {
+        await octokit.issues.createComment({
+          body: "no brother",
+          issue_number: issueNumber,
+          repo,
+          owner: "formbricks",
+        })
+      }
+    } catch (err) {
+      console.error(err)
+    }
   })
 }

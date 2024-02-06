@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "InstallationType" AS ENUM ('user', 'organisation');
+CREATE TYPE "InstallationType" AS ENUM ('user', 'organization');
 
 -- CreateEnum
 CREATE TYPE "MembershipRole" AS ENUM ('owner', 'member');
@@ -9,11 +9,16 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "githubId" TEXT,
+    "githubId" INTEGER NOT NULL,
+    "login" TEXT NOT NULL,
     "name" TEXT,
     "email" TEXT,
     "avatarUrl" TEXT,
     "address" TEXT,
+    "postalCode" TEXT,
+    "city" TEXT,
+    "state" TEXT,
+    "country" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -41,7 +46,7 @@ CREATE TABLE "accounts" (
 -- CreateTable
 CREATE TABLE "installations" (
     "id" TEXT NOT NULL,
-    "githubId" TEXT NOT NULL,
+    "githubId" INTEGER NOT NULL,
     "type" "InstallationType" NOT NULL,
 
     CONSTRAINT "installations_pkey" PRIMARY KEY ("id")
@@ -50,7 +55,7 @@ CREATE TABLE "installations" (
 -- CreateTable
 CREATE TABLE "repositories" (
     "id" TEXT NOT NULL,
-    "githubId" TEXT NOT NULL,
+    "githubId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "homepage" TEXT,
@@ -94,6 +99,9 @@ CREATE TABLE "point_transactions" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_githubId_key" ON "users"("githubId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_login_key" ON "users"("login");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");

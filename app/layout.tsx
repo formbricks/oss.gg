@@ -1,19 +1,20 @@
-import { Inter as FontSans } from "next/font/google";
+import { Inter as FontSans } from "next/font/google"
 
-import "@/styles/globals.css";
-import { siteConfig } from "@/config/site";
-import { absoluteUrl, cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/toaster";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
-import { ThemeProvider } from "@/components/theme-provider";
+import { siteConfig } from "@/config/site"
+import { cn } from "@/lib/utils"
+import { Toaster } from "@/components/ui/toaster"
+import { TailwindIndicator } from "@/components/tailwind-indicator"
+import { ThemeProvider } from "@/components/theme-provider"
+
+import "@/styles/globals.css"
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-});
+})
 
 interface RootLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export const metadata = {
@@ -51,7 +52,7 @@ export const metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: `${siteConfig.url}/site.webmanifest`,
-};
+}
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
@@ -70,5 +71,5 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
