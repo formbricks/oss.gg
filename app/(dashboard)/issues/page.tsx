@@ -1,17 +1,16 @@
-import Image from "next/image"
-import Link from "next/link"
-import { redirect } from "next/navigation"
-
-import { authOptions } from "@/lib/auth"
-import { getCurrentUser } from "@/lib/session"
-import { Button } from "@/components/ui/button"
-import { DashboardHeader } from "@/components/header"
-import { DashboardShell } from "@/components/shell"
+import { DashboardHeader } from "@/components/header";
+import { DashboardShell } from "@/components/shell";
+import { Button } from "@/components/ui/button";
+import { authOptions } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/session";
+import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Open issues",
   description: "Comment on these issues to get assigned to work on them.",
-}
+};
 
 const dummyIssues = [
   {
@@ -54,13 +53,13 @@ const dummyIssues = [
     points: "500",
     key: "4",
   },
-]
+];
 
 export default async function SettingsPage() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
   if (!user) {
-    redirect(authOptions?.pages?.signIn || "/login")
+    redirect(authOptions?.pages?.signIn || "/login");
   }
   return (
     <DashboardShell>
@@ -75,28 +74,21 @@ export default async function SettingsPage() {
               href={issue.href}
               target="_blank"
               key={issue.key}
-              className="bg-slate-50 rounded-md p-3 flex space-x-3 items-center hover:bg-slate-100 hover:scale-102 border border-transparent hover:border-slate-200 transition-all hover:cursor-pointer ease-in-out duration-150"
-            >
-              <Image
-                className="rounded-md"
-                src={issue.logoHref}
-                alt={issue.title}
-                width={50}
-                height={50}
-              />
+              className="flex items-center space-x-3 rounded-md border border-transparent bg-slate-50 p-3 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer hover:border-slate-200 hover:bg-slate-100">
+              <Image className="rounded-md" src={issue.logoHref} alt={issue.title} width={50} height={50} />
               <div>
                 <p className="font-medium">{issue.title}</p>
-                <p className="text-xs mt-0.5">opened by {issue.author}</p>
+                <p className="mt-0.5 text-xs">opened by {issue.author}</p>
               </div>
             </Link>
           ))
         ) : (
-          <div className="bg-slate-50 rounded-md h-96 flex flex-col items-center justify-center space-y-4">
+          <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-50">
             <p>You have not yet enrolled to play in a repository 🕹️</p>
             <Button href="/enroll">Explore oss.gg repositories</Button>
           </div>
         )}
       </div>
     </DashboardShell>
-  )
+  );
 }

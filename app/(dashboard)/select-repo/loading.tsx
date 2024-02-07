@@ -1,5 +1,5 @@
-import { DashboardHeader } from "@/components/header"
-import { DashboardShell } from "@/components/shell"
+import { DashboardHeader } from "@/components/header";
+import { DashboardShell } from "@/components/shell";
 
 export default function SelectRepoLoading() {
   return (
@@ -9,5 +9,5 @@ export default function SelectRepoLoading() {
         text="Select the repository you want to integrate oss.gg with."
       />
     </DashboardShell>
-  )
+  );
 }

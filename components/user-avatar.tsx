@@ -1,11 +1,10 @@
-import { User } from "@prisma/client"
-import { AvatarProps } from "@radix-ui/react-avatar"
-import { UserIcon } from "lucide-react"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "@prisma/client";
+import { AvatarProps } from "@radix-ui/react-avatar";
+import { UserIcon } from "lucide-react";
 
 interface UserAvatarProps extends AvatarProps {
-  user: Pick<User, "avatarUrl" | "name">
+  user: Pick<User, "avatarUrl" | "name">;
 }
 
 export function UserAvatar({ user, ...props }: UserAvatarProps) {
@@ -20,5 +19,5 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
         </AvatarFallback>
       )}
     </Avatar>
-  )
+  );
 }

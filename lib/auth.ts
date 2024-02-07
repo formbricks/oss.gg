@@ -1,8 +1,7 @@
-import { NextAuthOptions } from "next-auth"
-import GitHubProvider from "next-auth/providers/github"
-
-import { env } from "@/env.mjs"
-import { db } from "@/lib/db"
+import { env } from "@/env.mjs";
+import { db } from "@/lib/db";
+import { NextAuthOptions } from "next-auth";
+import GitHubProvider from "next-auth/providers/github";
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -17,7 +16,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }: any) {
       if (account.type !== "oauth") {
-        return false
+        return false;
       }
 
       if (account.provider) {
@@ -29,13 +28,13 @@ export const authOptions: NextAuthOptions = {
           where: {
             githubId: profile.id,
           },
-        })
+        });
 
         if (existingUserWithAccount) {
           // User with this provider found
           // check if email still the same
           if (existingUserWithAccount.email === user.email) {
-            return true
+            return true;
           }
 
           // user seemed to change his email within the provider
@@ -47,8 +46,8 @@ export const authOptions: NextAuthOptions = {
             data: {
               email: user.email,
             },
-          })
-          return true
+          });
+          return true;
         }
 
         // create user if it does not exist
@@ -65,25 +64,25 @@ export const authOptions: NextAuthOptions = {
               },
             },
           },
-        })
+        });
 
-        return true
+        return true;
       }
 
-      return false
+      return false;
     },
     async jwt({ token, user, profile }) {
       const dbUser = await db.user.findFirst({
         where: {
           email: token.email as string,
         },
-      })
+      });
 
       if (!dbUser) {
         if (user) {
-          token.id = user?.id
+          token.id = user?.id;
         }
-        return token
+        return token;
       }
 
       return {
@@ -91,17 +90,17 @@ export const authOptions: NextAuthOptions = {
         name: dbUser.name,
         email: dbUser.email,
         avatarUrl: dbUser.avatarUrl,
-      }
+      };
     },
     async session({ token, session }) {
       if (token) {
-        session.user.id = token.id
-        if (token.name) session.user.name = token.name
-        if (token.email) session.user.email = token.email
-        if (token.avatarUrl) session.user.avatarUrl = token.avatarUrl as string
+        session.user.id = token.id;
+        if (token.name) session.user.name = token.name;
+        if (token.email) session.user.email = token.email;
+        if (token.avatarUrl) session.user.avatarUrl = token.avatarUrl as string;
       }
 
-      return session
+      return session;
     },
   },
-}
+};

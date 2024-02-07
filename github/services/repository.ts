@@ -1,4 +1,4 @@
-import { db } from "@/lib/db"
+import { db } from "@/lib/db";
 
 export const selectRepository = async (id: string) => {
   try {
@@ -9,12 +9,12 @@ export const selectRepository = async (id: string) => {
       data: {
         configured: true,
       },
-    })
-    return selectedRepository
+    });
+    return selectedRepository;
   } catch (error) {
-    throw new Error(`Failed to select repository: ${error}`)
+    throw new Error(`Failed to select repository: ${error}`);
   }
-}
+};
 
 export const getRepositoriesForUser = async (userId: string) => {
   try {
@@ -22,7 +22,7 @@ export const getRepositoriesForUser = async (userId: string) => {
       where: {
         userId,
       },
-    })
+    });
 
     const repos = await db.repository.findMany({
       where: {
@@ -31,10 +31,10 @@ export const getRepositoriesForUser = async (userId: string) => {
         },
         configured: false,
       },
-    })
-    repos.sort((a, b) => a.name.localeCompare(b.name))
-    return repos
+    });
+    repos.sort((a, b) => a.name.localeCompare(b.name));
+    return repos;
   } catch (error) {
-    throw new Error(`Failed to get repositories for user: ${error}`)
+    throw new Error(`Failed to get repositories for user: ${error}`);
   }
-}
+};
