@@ -1,36 +1,33 @@
-import Image from "next/image"
-import Link from "next/link"
-import { notFound } from "next/navigation"
+import { DashboardNav } from "@/components/nav";
+import { UserAccountNav } from "@/components/user-account-nav";
+import { dashboardConfig } from "@/config/dashboard";
+import { getCurrentUser } from "@/lib/session";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { dashboardConfig } from "@/config/dashboard"
-import { getCurrentUser } from "@/lib/session"
-import { DashboardNav } from "@/components/nav"
-import { UserAccountNav } from "@/components/user-account-nav"
-
-import OSSGGLogo from "../oss-gg-logo.png"
-import ConnectGitHubAppButton from "./client-page"
+import OSSGGLogo from "../oss-gg-logo.png";
+import ConnectGitHubAppButton from "./client-page";
 
 interface DashboardLayoutProps {
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
-export default async function DashboardLayout({
-  children,
-}: DashboardLayoutProps) {
-  const user = await getCurrentUser()
+export default async function DashboardLayout({ children }: DashboardLayoutProps) {
+  const user = await getCurrentUser();
 
   if (!user) {
-    return notFound()
+    return notFound();
   }
 
   return (
-    <div className="flex min-h-screen relative">
-      <Link href="/" className="absolute top-10 right-12 z-40">
+    <div className="relative flex min-h-screen">
+      <Link href="/" className="absolute right-12 top-10 z-40">
         <Image src={OSSGGLogo} alt="oss gg logo" width={160} />
       </Link>
-      <aside className="hidden w-[250px] flex-col md:flex bg-slate-200 p-8 justify-between">
+      <aside className="hidden w-[250px] flex-col justify-between bg-slate-200 p-8 md:flex">
         <div>
-          <div className="ml-4 mb-4">
+          <div className="mb-4 ml-4">
             <UserAccountNav
               user={{
                 name: user.name,
@@ -46,17 +43,15 @@ export default async function DashboardLayout({
             <ConnectGitHubAppButton />
           </div>
           <DashboardNav items={dashboardConfig.bottomNav} />
-          <p className="text-xs mt-5 mb-3 ml-3">
+          <p className="mb-3 ml-3 mt-5 text-xs">
             <a href="https://formbricks.com/github">Built by Formbricks</a>
           </p>
-          <p className="text-xs ml-3">
+          <p className="ml-3 text-xs">
             <a href="https://github.com/formbricks/oss.gg">View Source Code</a>
           </p>
         </div>
       </aside>
-      <main className="flex w-full flex-1 flex-col overflow-auto p-12">
-        {children}
-      </main>
+      <main className="flex w-full flex-1 flex-col overflow-auto p-12">{children}</main>
     </div>
-  )
+  );
 }

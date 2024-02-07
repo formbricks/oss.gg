@@ -1,22 +1,21 @@
-"use client"
-
-import { User } from "next-auth"
-import { signOut } from "next-auth/react"
+"use client";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { UserAvatar } from "@/components/user-avatar"
+} from "@/components/ui/dropdown-menu";
+import { UserAvatar } from "@/components/user-avatar";
+import { User } from "next-auth";
+import { signOut } from "next-auth/react";
 
 interface UserAccountNavProps {
   user: {
-    name: User["name"]
-    avatarUrl: User["image"]
-    email?: User["email"]
-  }
+    name: User["name"];
+    avatarUrl: User["image"];
+    email?: User["email"];
+  };
 }
 
 const topNavigation = [
@@ -24,12 +23,12 @@ const topNavigation = [
   { label: "Enroll to play", url: "/enroll" },
   { label: "Settings", url: "/settings" },
   { label: "Your profile", url: "/", target: "_blank" },
-]
+];
 
 const bottomNavigation = [
   { label: "What is oss.gg?", url: "https://oss.gg", target: "_blank" },
   { label: "Help build oss.gg", url: "/contribute" },
-]
+];
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
   return (
@@ -44,25 +43,20 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
             {user.name && <p className="font-medium">{user.name}</p>}
-            {user.email && (
-              <p className="w-[200px] truncate text-sm text-muted-foreground">
-                {user.email}
-              </p>
-            )}
+            {user.email && <p className="w-[200px] truncate text-sm text-muted-foreground">{user.email}</p>}
           </div>
         </div>
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={(event) => {
-            event.preventDefault()
+            event.preventDefault();
             signOut({
               callbackUrl: `${window.location.origin}/login`,
-            })
-          }}
-        >
+            });
+          }}>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

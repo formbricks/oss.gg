@@ -1,22 +1,20 @@
-import { redirect } from "next/navigation"
-
-import { authOptions } from "@/lib/auth"
-import { getCurrentUser } from "@/lib/session"
-import { Button } from "@/components/ui/button"
-import { DashboardHeader } from "@/components/header"
-import { DashboardShell } from "@/components/shell"
+import { DashboardHeader } from "@/components/header";
+import { DashboardShell } from "@/components/shell";
+import { Button } from "@/components/ui/button";
+import { authOptions } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Formbricks",
-  description:
-    "Contribute to the worlds fastest growing survey infrastructure.",
-}
+  description: "Contribute to the worlds fastest growing survey infrastructure.",
+};
 
 export default async function SettingsPage() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
   if (!user) {
-    redirect(authOptions?.pages?.signIn || "/login")
+    redirect(authOptions?.pages?.signIn || "/login");
   }
   return (
     <DashboardShell>
@@ -26,5 +24,5 @@ export default async function SettingsPage() {
       />
       <Button>Enroll to play at Formbricks</Button>
     </DashboardShell>
-  )
+  );
 }
