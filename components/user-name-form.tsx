@@ -21,7 +21,7 @@ interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
 
 type FormData = z.infer<typeof userNameSchema>;
 
-export function UserNameForm({ user, ...props }: UserNameFormProps) {
+export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
   const router = useRouter();
   const {
     handleSubmit,
@@ -50,7 +50,7 @@ export function UserNameForm({ user, ...props }: UserNameFormProps) {
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} {...props}>
+    <form className={cn(className)} onSubmit={handleSubmit(onSubmit)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Your Name</CardTitle>
@@ -68,30 +68,9 @@ export function UserNameForm({ user, ...props }: UserNameFormProps) {
           </div>
         </CardContent>
         <CardFooter>
-          <button type="submit" className={cn(buttonVariants())} disabled={isSaving}>
-            {isSaving && <Loader2Icon className="mr-2 size-4 animate-spin" />}
+          <button type="submit" className={cn(buttonVariants(), className)} disabled={isSaving}>
+            {isSaving && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
             <span>Save</span>
-          </button>
-        </CardFooter>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>API keys</CardTitle>
-          <CardDescription>Add and remobe API keys</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="name">
-              Name
-            </Label>
-            <Input id="name" className="w-[400px]" size={32} {...register("name")} />
-            {errors?.name && <p className="px-1 text-xs text-red-600">{errors.name.message}</p>}
-          </div>
-        </CardContent>
-        <CardFooter>
-          <button type="submit" className={cn(buttonVariants())} disabled={isSaving}>
-            {isSaving && <Loader2Icon className="mr-2 size-4 animate-spin" />}
-            <span>Generate API key</span>
           </button>
         </CardFooter>
       </Card>
