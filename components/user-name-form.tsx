@@ -1,27 +1,19 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
-import { cn } from "@/lib/utils";
-import { userNameSchema } from "@/lib/validations/user";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+import { userNameSchema } from "@/lib/validations/user";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "@prisma/client";
 import { Loader2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
   user: Pick<User, "id" | "name">;
@@ -52,24 +44,18 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
 
     return toast({
       title: "Something went wrong.",
-      description:
-        "The server action to save the user name is not yet implemented",
+      description: "The server action to save the user name is not yet implemented",
       variant: "destructive",
     });
   }
 
   return (
-    <form
-      className={cn(className)}
-      onSubmit={handleSubmit(onSubmit)}
-      {...props}
-    >
+    <form className={cn(className)} onSubmit={handleSubmit(onSubmit)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>Your Name</CardTitle>
           <CardDescription>
-            Please enter your full name or a display name you are comfortable
-            with.
+            Please enter your full name or a display name you are comfortable with.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -77,23 +63,12 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             <Label className="sr-only" htmlFor="name">
               Name
             </Label>
-            <Input
-              id="name"
-              className="w-[400px]"
-              size={32}
-              {...register("name")}
-            />
-            {errors?.name && (
-              <p className="px-1 text-xs text-red-600">{errors.name.message}</p>
-            )}
+            <Input id="name" className="w-[400px]" size={32} {...register("name")} />
+            {errors?.name && <p className="px-1 text-xs text-red-600">{errors.name.message}</p>}
           </div>
         </CardContent>
         <CardFooter>
-          <button
-            type="submit"
-            className={cn(buttonVariants(), className)}
-            disabled={isSaving}
-          >
+          <button type="submit" className={cn(buttonVariants(), className)} disabled={isSaving}>
             {isSaving && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
             <span>Save</span>
           </button>

@@ -1,5 +1,5 @@
-import { DashboardHeader } from "@/components/header"
-import { DashboardShell } from "@/components/shell"
+import { DashboardHeader } from "@/components/header";
+import { DashboardShell } from "@/components/shell";
 
 export default function DashboardSettingsLoading() {
   return (
@@ -9,5 +9,5 @@ export default function DashboardSettingsLoading() {
         text="Choose open source projects you want to contribute to - and gather points!"
       />
     </DashboardShell>
-  )
+  );
 }

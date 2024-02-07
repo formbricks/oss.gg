@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { DashboardHeader } from "@/components/header"
-import { DashboardShell } from "@/components/shell"
+import { DashboardHeader } from "@/components/header";
+import { DashboardShell } from "@/components/shell";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardLoading() {
   return (
@@ -9,5 +9,5 @@ export default function DashboardLoading() {
         <Button>Create</Button>
       </DashboardHeader>
     </DashboardShell>
-  )
+  );
 }

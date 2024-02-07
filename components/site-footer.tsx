@@ -1,8 +1,7 @@
-import * as React from "react"
-
-import { siteConfig } from "@/config/site"
-import { cn } from "@/lib/utils"
-import { ModeToggle } from "@/components/mode-toggle"
+import { ModeToggle } from "@/components/mode-toggle";
+import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
+import * as React from "react";
 
 export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
   return (
@@ -15,8 +14,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
               href={siteConfig.links.twitter}
               target="_blank"
               rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
+              className="font-medium underline underline-offset-4">
               Formbricks
             </a>
             . The source code is available on{" "}
@@ -24,8 +22,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
               href={siteConfig.links.github}
               target="_blank"
               rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
+              className="font-medium underline underline-offset-4">
               GitHub
             </a>
             .
@@ -34,5 +31,5 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
         <ModeToggle />
       </div>
     </footer>
-  )
+  );
 }

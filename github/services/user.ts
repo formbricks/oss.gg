@@ -1,24 +1,23 @@
-import { readFileSync } from "fs"
-import path from "path"
-import { App } from "octokit"
+import { env } from "@/env.mjs";
+import { db } from "@/lib/db";
+import { readFileSync } from "fs";
+import { App } from "octokit";
+import path from "path";
 
-import { env } from "@/env.mjs"
-import { db } from "@/lib/db"
-
-const privateKeyPath = "../../../../key.pem"
-const resolvedPath = path.resolve(__dirname, privateKeyPath)
-const privateKey = readFileSync(resolvedPath, "utf8")
+const privateKeyPath = "../../../../key.pem";
+const resolvedPath = path.resolve(__dirname, privateKeyPath);
+const privateKey = readFileSync(resolvedPath, "utf8");
 
 export const sendInstallationDetails = async (
   installationId: number,
   appId: number,
   repos:
     | {
-        id: number
-        node_id: string
-        name: string
-        full_name: string
-        private: boolean
+        id: number;
+        node_id: string;
+        name: string;
+        full_name: string;
+        private: boolean;
       }[]
     | undefined,
   installation: any
@@ -30,8 +29,8 @@ export const sendInstallationDetails = async (
       webhooks: {
         secret: env.GITHUB_WEBHOOK_SECRET!,
       },
-    })
-    const octokit = await app.getInstallationOctokit(installationId)
+    });
+    const octokit = await app.getInstallationOctokit(installationId);
 
     await db.$transaction(async (tx) => {
       const installationPrisma = await tx.installation.upsert({
@@ -41,14 +40,14 @@ export const sendInstallationDetails = async (
           githubId: installationId,
           type: installation?.account?.type.toLowerCase(),
         },
-      })
+      });
 
-      const userType = installation?.account?.type.toLowerCase()
+      const userType = installation?.account?.type.toLowerCase();
       if (userType === "organization") {
         const membersOfOrg = await octokit.rest.orgs.listMembers({
           org: installation?.account?.login,
           role: "all",
-        })
+        });
 
         await Promise.all(
           membersOfOrg.data.map(async (member) => {
@@ -59,7 +58,7 @@ export const sendInstallationDetails = async (
                 githubId: member.id,
                 login: member.login,
               },
-            })
+            });
 
             await tx.membership.upsert({
               where: {
@@ -74,11 +73,11 @@ export const sendInstallationDetails = async (
                 installationId: installationPrisma.id,
                 role: "member",
               },
-            })
+            });
           })
-        )
+        );
       } else {
-        const user = installation.account
+        const user = installation.account;
         const newUser = await tx.user.upsert({
           where: { githubId: user.id },
           update: {},
@@ -88,7 +87,7 @@ export const sendInstallationDetails = async (
             name: user.name || "",
             email: user.email || "",
           },
-        })
+        });
 
         await tx.membership.upsert({
           where: {
@@ -103,7 +102,7 @@ export const sendInstallationDetails = async (
             installationId: installationPrisma.id,
             role: "owner",
           },
-        })
+        });
       }
 
       if (repos) {
@@ -117,13 +116,13 @@ export const sendInstallationDetails = async (
                 name: repo.name,
                 installationId: installationPrisma.id,
               },
-            })
+            });
           })
-        )
+        );
       }
-    })
+    });
   } catch (error) {
-    console.error(`Failed to post installation details: ${error}`)
-    throw new Error(`Failed to post installation details: ${error}`)
+    console.error(`Failed to post installation details: ${error}`);
+    throw new Error(`Failed to post installation details: ${error}`);
   }
-}
+};
