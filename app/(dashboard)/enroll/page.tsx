@@ -23,7 +23,7 @@ const dummyProjects = [
     bountiesPaid: "15234",
     key: "0",
   },
-  {
+  /*   {
     logoHref: "https://avatars.githubusercontent.com/u/79145102?s=200&v=4",
     name: "Cal.com",
     id: "calcom",
@@ -32,7 +32,7 @@ const dummyProjects = [
     bountiesOpen: "11443",
     bountiesPaid: "45234",
     key: "1",
-  },
+  }, */
 ];
 
 export default async function SettingsPage() {
@@ -52,7 +52,7 @@ export default async function SettingsPage() {
           <Link
             href={`/enroll/${project.id}`}
             key={project.key}
-            className="flex justify-between space-x-5 rounded-md border border-transparent bg-slate-50 p-6 transition-all hover:border-slate-200 hover:bg-slate-100">
+            className="flex justify-between space-x-5 rounded-md border border-transparent bg-muted p-6 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer">
             <div className="flex items-center space-x-5">
               <Image
                 className="rounded-md"
@@ -65,15 +65,15 @@ export default async function SettingsPage() {
                 <p className="text-xl font-medium">{project.name}</p>
                 <p className="my-1 text-sm">{project.description}</p>
                 <div className="mt-1 flex space-x-1 text-xs">
-                  <div className="rounded-full bg-white px-2 py-1">{project.stars} ⭐</div>
-                  <div className="rounded-full bg-white px-2 py-1">{project.bountiesPaid} ✅</div>
-                  <div className="rounded-full bg-white px-2 py-1">{project.bountiesOpen} 💰</div>
+                  <div className="rounded-full bg-accent px-2 py-1">{project.stars} ⭐</div>
+                  <div className="rounded-full bg-accent px-2 py-1">{project.bountiesPaid} ✅</div>
+                  <div className="rounded-full bg-accent px-2 py-1">{project.bountiesOpen} 💰</div>
                 </div>
               </div>
             </div>
           </Link>
         ))}
-        <div className="flex flex-col items-center justify-center space-y-4 rounded-md border border-slate-200 pb-8 pt-10">
+        <div className="flex flex-col items-center justify-center space-y-4 rounded-md border border-accent pb-8 pt-10">
           <p>You run an OSS project and want to be part of oss.gg?</p>
           <Button
             href="https://app.formbricks.com/s/clrl910rrevx31225b389v4pw"

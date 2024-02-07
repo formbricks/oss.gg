@@ -60,7 +60,7 @@ export default async function DashboardPage() {
           <Link
             href={card.href}
             key={card.href}
-            className="flex items-center space-x-3 rounded-md border border-transparent bg-slate-50 p-6 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer hover:border-slate-200 hover:bg-slate-100">
+            className="flex items-center space-x-3 rounded-md border border-transparent bg-muted p-6 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer ">
             <div>
               <p className="mt-12 text-xl font-medium">{card.title}</p>
               <p className="mt-0.5 text-xs">opened by {card.description}</p>

@@ -4,7 +4,6 @@ export const dashboardConfig: DashboardConfig = {
   mainNav: [
     { title: "Open issues", href: "/issues" },
     { title: "Enroll to play", href: "/enroll" },
-    { title: "Settings", href: "/settings" },
     { title: "Your profile", href: "/", external: true },
   ],
   bottomNav: [

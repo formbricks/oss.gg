@@ -1,12 +1,10 @@
 import { DashboardNav } from "@/components/nav";
+import { Logo } from "@/components/ui/logo";
 import { UserAccountNav } from "@/components/user-account-nav";
 import { dashboardConfig } from "@/config/dashboard";
 import { getCurrentUser } from "@/lib/session";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import OSSGGLogo from "../oss-gg-logo.png";
 import ConnectGitHubAppButton from "./client-page";
 
 interface DashboardLayoutProps {
@@ -22,10 +20,11 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
   return (
     <div className="relative flex min-h-screen">
-      <Link href="/" className="absolute right-12 top-10 z-40">
-        <Image src={OSSGGLogo} alt="oss gg logo" width={160} />
-      </Link>
-      <aside className="hidden w-[250px] flex-col justify-between bg-slate-200 p-8 md:flex">
+      <div className="absolute right-12 top-10 z-40">
+        <Logo />
+      </div>
+
+      <aside className="hidden w-[250px] flex-col justify-between bg-muted p-8 md:flex">
         <div>
           <div className="mb-4 ml-4">
             <UserAccountNav

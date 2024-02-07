@@ -74,7 +74,7 @@ export default async function SettingsPage() {
               href={issue.href}
               target="_blank"
               key={issue.key}
-              className="flex items-center space-x-3 rounded-md border border-transparent bg-slate-50 p-3 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer hover:border-slate-200 hover:bg-slate-100">
+              className="flex items-center space-x-3 rounded-md border border-transparent bg-muted p-3 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer">
               <Image className="rounded-md" src={issue.logoHref} alt={issue.title} width={50} height={50} />
               <div>
                 <p className="font-medium">{issue.title}</p>
