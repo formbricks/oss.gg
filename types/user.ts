@@ -1,8 +1,8 @@
-import { z } from "zod"
+import { z } from "zod";
 
-import { ZAccount } from "./account"
-import { ZMembership } from "./membership"
-import { ZPointTransaction } from "./pointTransaction"
+import { ZAccount } from "./account";
+import { ZMembership } from "./membership";
+import { ZPointTransaction } from "./pointTransaction";
 
 export const ZUser = z.object({
   id: z.string().cuid2(),
@@ -17,6 +17,6 @@ export const ZUser = z.object({
   accounts: z.array(ZAccount),
   pointTransactions: z.array(ZPointTransaction),
   memberships: z.array(ZMembership),
-})
+});
 
-export type TUser = z.infer<typeof ZUser>
+export type TUser = z.infer<typeof ZUser>;

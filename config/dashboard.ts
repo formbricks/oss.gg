@@ -1,4 +1,4 @@
-import { DashboardConfig } from "types"
+import { DashboardConfig } from "types";
 
 export const dashboardConfig: DashboardConfig = {
   mainNav: [
@@ -8,7 +8,7 @@ export const dashboardConfig: DashboardConfig = {
     { title: "Your profile", href: "/", external: true },
   ],
   bottomNav: [
-  { title: "What is oss.gg?", href: "/", external: true},
-  { title: "Help build oss.gg", href: "/contribute" },
+    { title: "What is oss.gg?", href: "/", external: true },
+    { title: "Help build oss.gg", href: "/contribute" },
   ],
 };

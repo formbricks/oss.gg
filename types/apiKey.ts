@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const ZApiKey = z.object({
   id: z.string().cuid2(),
@@ -7,11 +7,11 @@ export const ZApiKey = z.object({
   hashedKey: z.string(),
   repositoryId: z.string().cuid2(),
   apiKey: z.string().optional(),
-})
+});
 
-export type TApiKey = z.infer<typeof ZApiKey>
+export type TApiKey = z.infer<typeof ZApiKey>;
 
 export const ZApiKeyCreateInput = z.object({
   label: z.string(),
-})
-export type TApiKeyCreateInput = z.infer<typeof ZApiKeyCreateInput>
+});
+export type TApiKeyCreateInput = z.infer<typeof ZApiKeyCreateInput>;

@@ -1,8 +1,8 @@
-import { z } from "zod"
+import { z } from "zod";
 
-import { ZInstallation } from "./installation"
-import { ZLevel } from "./level"
-import { ZPointTransaction } from "./pointTransaction"
+import { ZInstallation } from "./installation";
+import { ZLevel } from "./level";
+import { ZPointTransaction } from "./pointTransaction";
 
 export const ZRepository = z.object({
   id: z.string().cuid2(),
@@ -14,9 +14,9 @@ export const ZRepository = z.object({
   default_branch: z.string(),
   installationId: z.string().cuid2(),
   levels: z.array(ZLevel),
-})
+});
 
-export type TRepository = z.infer<typeof ZRepository>
+export type TRepository = z.infer<typeof ZRepository>;
 
 export const ZRepositoryCreateInput = z.object({
   githubId: z.string(),
@@ -27,6 +27,6 @@ export const ZRepositoryCreateInput = z.object({
   default_branch: z.string(),
   installationId: z.string().cuid2(),
   levels: z.array(ZLevel).optional(),
-})
+});
 
-export type TRepositoryCreateInput = z.infer<typeof ZRepositoryCreateInput>
+export type TRepositoryCreateInput = z.infer<typeof ZRepositoryCreateInput>;

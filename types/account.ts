@@ -1,6 +1,6 @@
-import { z } from "zod"
+import { z } from "zod";
 
-import { ZApiKey } from "./apiKey"
+import { ZApiKey } from "./apiKey";
 
 export const ZAccountInput = z.object({
   userId: z.string(),
@@ -13,9 +13,9 @@ export const ZAccountInput = z.object({
   scope: z.string().nullish(),
   token_type: z.string().nullish(),
   id_token: z.string().nullish(),
-})
+});
 
-export type TAccountInput = z.infer<typeof ZAccountInput>
+export type TAccountInput = z.infer<typeof ZAccountInput>;
 
 export const ZAccount = z.object({
   id: z.string(),
@@ -32,6 +32,6 @@ export const ZAccount = z.object({
   token_type: z.string().nullable(),
   id_token: z.string().nullable(),
   apiKeys: z.array(ZApiKey),
-})
+});
 
-export type TAccount = z.infer<typeof ZAccount>
+export type TAccount = z.infer<typeof ZAccount>;

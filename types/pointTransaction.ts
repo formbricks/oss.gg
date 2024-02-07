@@ -1,7 +1,7 @@
-import { z } from "zod"
+import { z } from "zod";
 
-import { ZRepository } from "./repository"
-import { ZUser } from "./user"
+import { ZRepository } from "./repository";
+import { ZUser } from "./user";
 
 export const ZPointTransaction = z.object({
   id: z.string().cuid2(),
@@ -14,6 +14,6 @@ export const ZPointTransaction = z.object({
   updatedAt: z.date(),
   user: ZUser,
   repository: ZRepository,
-})
+});
 
-export type TPointTransaction = z.infer<typeof ZPointTransaction>
+export type TPointTransaction = z.infer<typeof ZPointTransaction>;
