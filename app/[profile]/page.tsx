@@ -30,7 +30,7 @@ export default async function ProfilePage({ params }) {
         </div>
         <Link href={`https://twitter.com/${userData.twitter_username}`} target="_blank">
           <Twitter
-            className="h-10 w-10 transition-all duration-150 ease-in-out hover:scale-110"
+            className="size-10 transition-all duration-150 ease-in-out hover:scale-110"
             strokeWidth="1px"
           />
         </Link>

@@ -72,15 +72,15 @@ export default async function IndexPage() {
         </div>
         <div className="mx-auto max-w-4xl rounded-b-lg bg-slate-50 p-12 text-slate-800">
           <h2 className="mb-4 text-3xl font-medium">
-            What’s oss.gg, why we need it and how you can become a part of it 🕹️
+            What&apos;s oss.gg, why we need it and how you can become a part of it 🕹️
           </h2>
           <p className="pb-3">
             <i>
               The concept of oss.gg emerged from a common challenge faced by many open source founders and
               maintainers: the struggle to balance community contributions while fully focusing on developing
-              the core product. In this write-up, we'll walk you through the most common problems around
+              the core product. In this write-up, we&apos;ll walk you through the most common problems around
               community contributions, what has been tried to solve them, what worked well and how oss.gg
-              tries to innovate in this space. Let's dive in!
+              tries to innovate in this space. Let&apos;s dive in!
             </i>
           </p>
 
@@ -91,9 +91,9 @@ export default async function IndexPage() {
             community.
           </p>
           <p className="pb-3">
-            Our experience isn’t unique. As we are building Formnbricks, we got to know many more open source
-            founders and all of them made a similar experience. These are 8 problems we all face, in some
-            variation:
+            Our experience isn&apos;t unique. As we are building Formnbricks, we got to know many more open
+            source founders and all of them made a similar experience. These are 8 problems we all face, in
+            some variation:
           </p>
           <Image src={Problems} alt="Problems" className="mb-6 mt-4 rounded-lg" />
           <p className="pb-3">
@@ -110,7 +110,7 @@ export default async function IndexPage() {
           </div>
 
           <p className="pb-3">
-            Before we dive in, let’s have a look at what you can expect from the rest of this article:
+            Before we dive in, let&apos;s have a look at what you can expect from the rest of this article:
           </p>
           <ol className="list-decimal p-4">
             <li>
@@ -127,7 +127,7 @@ export default async function IndexPage() {
             </li>
             <li>
               <Link className="underline underline-offset-4" href="#what-has-been-tried-so-far">
-                What's been tried (and what we’ve learned)
+                What&apos;s been tried (and what we&apos;ve learned)
               </Link>
             </li>
             <li>
@@ -148,15 +148,15 @@ export default async function IndexPage() {
           </ol>
 
           <h3 className="mb-4 mt-3 text-2xl font-medium" id="-what-s-the-purpose-of-this-blog-post-">
-            What’s the purpose of this blog post?
+            What&apos;s the purpose of this blog post?
           </h3>
           <p className="pb-3">We want to catalyse the conversation. </p>
           <p className="pb-3">
             There is something in the air right now, lots of people work on different ideas to one or several
-            of these problems. Most do it as a side project, which likely won’t work out, because community
-            stuff is hard. The idea is to bring everyone onto the same page so we can move forward with a
-            joint understanding and build something that works together. So everything laid out in this
-            article is up for discussion, it’s supposed to get you involved 😉
+            of these problems. Most do it as a side project, which likely won&apos;t work out, because
+            community stuff is hard. The idea is to bring everyone onto the same page so we can move forward
+            with a joint understanding and build something that works together. So everything laid out in this
+            article is up for discussion, it&apos;s supposed to get you involved 😉
           </p>
           <h3
             className="mb-4 mt-3 text-2xl font-medium"
@@ -180,7 +180,7 @@ export default async function IndexPage() {
           </p>
           <p className="pb-3">
             When the community changes, a new set of issues arises. These issues call for a new set of tools,
-            one of which is oss.gg - but let’s look at what we’re solving first:
+            one of which is oss.gg - but let&apos;s look at what we&apos;re solving first:
           </p>
           <h3 className="mb-4 mt-3 text-2xl font-medium" id="the-problems">
             The problem(s)
@@ -193,28 +193,30 @@ export default async function IndexPage() {
               <strong>Handholding required: </strong>
               Many of the engineers wanting to contribute have little experience in software engineering or
               web development. They ask a lot of questions, get stuck, need help. While maintainers are
-              usually happy to help the first set of contributors, it quickly gets out of hand. We’ve referred
-              juniors to ChatGPT a lot, but some things need to be explained. While it’s fun to teach, we have
-              to make sure the efforts are not in vain because the contributor does not stick around.
+              usually happy to help the first set of contributors, it quickly gets out of hand. We&apos;ve
+              referred juniors to ChatGPT a lot, but some things need to be explained. While it&apos;s fun to
+              teach, we have to make sure the efforts are not in vain because the contributor does not stick
+              around.
             </li>
             <li>
               <strong>Seniors leaving: </strong>
-              Every now and then, a more senior engineer gets excited by a project and contributes. That’s
-              obviously really cool and valuable. The issue? They usually don’t stick around. While it’s not
-              an issue that a company with a commercialisation interest maintains a project (vs. a completely
-              free and community-run project) these seniors make 1, 2, 3 contributions and then ask
-              themselves, why they are spending their evenings and weekends creating value which will be
-              harvest by someone else. Curiosity and altruism only go so far. So why not pay them?{" "}
+              Every now and then, a more senior engineer gets excited by a project and contributes.
+              That&apos;s obviously really cool and valuable. The issue? They usually don&apos;t stick around.
+              While it&apos;s not an issue that a company with a commercialisation interest maintains a
+              project (vs. a completely free and community-run project) these seniors make 1, 2, 3
+              contributions and then ask themselves, why they are spending their evenings and weekends
+              creating value which will be harvest by someone else. Curiosity and altruism only go so far. So
+              why not pay them?{" "}
             </li>
             <li>
               <strong>Incentive dilemma: </strong>
               Incentives are a funny thing because they can shift the mental model for looking at something.
               There is lots of research proving that a financial incentive can lower the motivation for a
               specific task, because it takes the aspects of reciprocity and signalling out of the picture: If
-              I receive money for it, I won’t get a favour back nor can I tell myself I worked for the greater
-              good and feel good about it. This, and the short-term thinking attached to doing the minimum to
-              get the financial reward make it difficult to just hang a price tag to an issue and wait for
-              someone to fix it properly. In most cases, it’s a quick and dirty patch.
+              I receive money for it, I won&apos;t get a favour back nor can I tell myself I worked for the
+              greater good and feel good about it. This, and the short-term thinking attached to doing the
+              minimum to get the financial reward make it difficult to just hang a price tag to an issue and
+              wait for someone to fix it properly. In most cases, it&apos;s a quick and dirty patch.
             </li>
             <li>
               <strong>Review overhead: </strong>
@@ -229,13 +231,13 @@ export default async function IndexPage() {
               People keep coming back when they feel recognized. It not only feels good to be appreciated for
               the time invested but is also an important signal, for both side: Contributors can showcase
               their work publicly (and share it) and projects show that their project is actively contributed
-              to. Win win. The only issue? It’s time-consuming to keep track, write content and find the
+              to. Win win. The only issue? It&apos;s time-consuming to keep track, write content and find the
               social handles of contributors to tag them. This can be semi-automated.
             </li>
             <li>
               <strong>Hard to flex: </strong>
               Along with the projects effort to recognize contributors, these contributors have a hard time
-              flexing with their contributions. There isn’t really a good plaform to do that. Important
+              flexing with their contributions. There isn&apos;t really a good plaform to do that. Important
               contributions on GitHub profiles get lost in other activity. CVs are outdated. Contributors want
               a publicly accessible page where they can collect contributions like stickers.
             </li>
@@ -243,15 +245,15 @@ export default async function IndexPage() {
               <strong>Assignment overhead &amp; redundant work: </strong>
               Keeping track of who works on which issue can get messy with an active community. We ran a
               hackathon with a Macbook prize and for every issue we released we had 5 people who wanted to
-              work on it. First come, first assigned works well, until people claim issues and don’t deliver.
-              This can be solved by automating the enforcement of rules such as “If you don’t open a draft PR
-              within 48h, we will assign the issue to the next developer in line”.
+              work on it. First come, first assigned works well, until people claim issues and don&apos;t
+              deliver. This can be solved by automating the enforcement of rules such as “If you don&apos;t
+              open a draft PR within 48h, we will assign the issue to the next developer in line”.
             </li>
             <li>
               <strong>Unfinished PRs</strong>
               Along the lines of the previous problem: If contributors drop out, maintainers have to notice.
-              To be able to do that we have to monitor all issues manually. It’d be much easier if a GitHub
-              app would do that for us.
+              To be able to do that we have to monitor all issues manually. It&apos;d be much easier if a
+              GitHub app would do that for us.
             </li>
           </ol>
           <h2 className="mb-4 mt-6 text-3xl font-medium" id="what-has-been-tried-so-far">
@@ -288,7 +290,7 @@ export default async function IndexPage() {
             <li>There is enough excitement for it to be worth building a system</li>
           </ul>
           <h3 className="mb-4 mt-3 text-2xl font-medium" id="novu-s-hero-directory">
-            Novu’s Hero Directory
+            Novu&apos;s Hero Directory
           </h3>
           <p className="pb-3">
             Novu built a pretty cool directory of their{" "}
@@ -302,32 +304,32 @@ export default async function IndexPage() {
             done 😎
           </p>
           <h3 className="mb-4 mt-3 text-2xl font-medium" id="algora-s-bounty-system">
-            Algora’s Bounty System
+            Algora&apos;s Bounty System
           </h3>
           <p className="pb-3">
             The Algora team did a great job building a well-functioning GitHub app as well as attracting a
             community of bounty-hungry contributors. However, tying back to what I wrote above about
-            incentives, I don’t think it solve the right problem. In our experience (and what I’ve heard from
-            other projects) it’s not hard to find people who want to contribute. It’s much harder to handle
-            the contributions and keep people familiar with the code base engaged over longer periods of time.
-            To some extent, bounties make the situation worse by sending engineers our way who are only
-            looking for a quick buck. They tend to be more spammy and push for a quick review of their
-            half-baked code. This might sound harsh but it has been exactly our experience.
+            incentives, I don&apos;t think it solve the right problem. In our experience (and what I&apos;ve
+            heard from other projects) it&apos;s not hard to find people who want to contribute. It&apos;s
+            much harder to handle the contributions and keep people familiar with the code base engaged over
+            longer periods of time. To some extent, bounties make the situation worse by sending engineers our
+            way who are only looking for a quick buck. They tend to be more spammy and push for a quick review
+            of their half-baked code. This might sound harsh but it has been exactly our experience.
           </p>
           <p className="pb-3">
             We strongly believe in bounties and they are an essential element of oss.gg but they have to be
             wrapped in a bigger picture (see below).
           </p>
           <p className="pb-3">
-            <strong>Please note:</strong> I’m fully aware that many projects are happy with Algora and their
-            success justifies their approach :)
+            <strong>Please note:</strong> I&apos;m fully aware that many projects are happy with Algora and
+            their success justifies their approach :)
           </p>
           <h2 className="mb-4 mt-6 text-3xl font-medium" id="what-is-oss-gg">
             What is oss.gg?
           </h2>
           <p className="pb-3">
-            So far we looked at the problems and what has been tried to solve some of them. Let’s now have a
-            closer look at how we imagine oss.gg solve for all of the problems above.
+            So far we looked at the problems and what has been tried to solve some of them. Let&apos;s now
+            have a closer look at how we imagine oss.gg solve for all of the problems above.
           </p>
           <h2 className="mb-4 mt-6 text-2xl font-medium" id="-oss-gg-http-oss-gg-the-concept">
             oss.gg - the concept
@@ -350,14 +352,14 @@ export default async function IndexPage() {
             to do what. Here is an overview:
           </p>
           <Image src={Levels2} alt="so much fun" className="mb-6 mt-4 rounded-lg" />
-          <p className="pb-3">How does this help us? Let’s look at the problems:</p>
+          <p className="pb-3">How does this help us? Let&apos;s look at the problems:</p>
           <ul className="list-disc space-y-1.5 p-4">
             <li>
               <strong>Handholding</strong>: By limiting who can get assigned to e.g. issues for end-to-end
               features, we limit the requests for handholding significantly. We know that every “Deploy
               Deputy” already went through a set of DevRel related tasks so is somewhat familiar with the code
               base and tech stack. Secondly, we can filter out a lot of the “I can quickly ship this”
-              engineers. Additionally, we as a team don’t have to help dozens of engineers set up their
+              engineers. Additionally, we as a team don&apos;t have to help dozens of engineers set up their
               development environment by limiting support to GitPod when contributors are getting started.
             </li>
             <li>
@@ -417,7 +419,7 @@ export default async function IndexPage() {
             oss.gg - the tech
           </h2>
           <p className="pb-3">
-            Now that we have an understanding of what we want to build and why, let’s talk about the how.
+            Now that we have an understanding of what we want to build and why, let&apos;s talk about the how.
             oss.gg consists of 5 different parts:
           </p>
           <ol className="list-decimal p-4">
@@ -427,7 +429,7 @@ export default async function IndexPage() {
             <li>A bounty system +</li>
             <li>An automations interface</li>
           </ol>
-          <p className="pb-3">Let’s go through them one by one:</p>
+          <p className="pb-3">Let&apos;s go through them one by one:</p>
           <h3 className="mb-4 mt-3 text-xl font-medium" id="1-a-web-app-">
             1. A Web App
           </h3>
@@ -477,7 +479,7 @@ export default async function IndexPage() {
               Assign first contributor to issue, if eligible (has enough points / level required for this
               issue)
             </li>
-            <li>Unassign and reassign if contributor doesn’t ship</li>
+            <li>Unassign and reassign if contributor doesn&apos;t ship</li>
             <li>Follows up with dormant PRs</li>
             <li>Makes awarding points easy “/award 500 points”</li>
             <li>Makes tipping easy “/tip 10$”</li>
@@ -487,9 +489,9 @@ export default async function IndexPage() {
             4. A Bounty System
           </h3>
           <p className="pb-3">
-            Shoutout to Bailey who built a low-fee bounty system for the OSSHack in NYC. It’s a very
-            convenient and inexpensive way to pay out bounties worldwide. We’ll leverage that for anyone who
-            wants to open a bounty for an issue.
+            Shoutout to Bailey who built a low-fee bounty system for the OSSHack in NYC. It&apos;s a very
+            convenient and inexpensive way to pay out bounties worldwide. We&apos;ll leverage that for anyone
+            who wants to open a bounty for an issue.
           </p>
           <h3 className="mb-4 mt-3 text-xl font-medium" id="5-an-automations-interface-later-on-">
             5. An Automations Interface (later on)
@@ -519,8 +521,8 @@ export default async function IndexPage() {
             What is the status quo?
           </h2>
           <p className="pb-3">
-            We’ve shipped the core for this launch so that we as a community can pick up the fun stuff right
-            away. Here is a broad plan forward:
+            We&apos;ve shipped the core for this launch so that we as a community can pick up the fun stuff
+            right away. Here is a broad plan forward:
           </p>
           <p className="pb-3">
             <strong>Phase 1:</strong> To keep iteration cycles short, we limit the number of projects who can
@@ -558,7 +560,7 @@ export default async function IndexPage() {
           <h2 className="font-heading mb-3 text-3xl sm:text-4xl md:text-5xl lg:text-7xl">🕹️</h2>
           <div>
             <Link href="/login" className={cn(buttonVariants({ size: "lg" }))}>
-              Let's play
+              Let&apos;s play
             </Link>
           </div>
         </div>
