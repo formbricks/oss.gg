@@ -36,7 +36,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
       <DropdownMenuTrigger>
         <UserAvatar
           user={{ name: user.name || null, avatarUrl: user.avatarUrl || null }}
-          className="h-8 w-8"
+          className="size-8"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
