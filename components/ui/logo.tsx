@@ -8,7 +8,7 @@ export const Logo = ({ theme = "light" }) => {
   const logoSrc = theme === "dark" ? OSSGGLogoDark : OSSGGLogoLight
 
   return (
-    <Link href="/">
+    <Link href="/" className="flex justify-center items-center">
       <Image src={logoSrc} alt="gamify open source contributions" width={120} />
     </Link>
   )
