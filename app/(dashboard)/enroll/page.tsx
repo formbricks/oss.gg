@@ -65,9 +65,9 @@ export default async function SettingsPage() {
                 <p className="text-xl font-medium">{project.name}</p>
                 <p className="my-1 text-sm">{project.description}</p>
                 <div className="mt-1 flex space-x-1 text-xs">
-                  <div className="rounded-full bg-accent px-2 py-1">{project.stars} ⭐</div>
-                  <div className="rounded-full bg-accent px-2 py-1">{project.bountiesPaid} ✅</div>
-                  <div className="rounded-full bg-accent px-2 py-1">{project.bountiesOpen} 💰</div>
+                  <div className="mt-1 rounded-full bg-accent px-2 py-1">{project.stars} ⭐</div>
+                  {/*                   <div className="rounded-full bg-accent px-2 py-1">{project.bountiesPaid} ✅</div>
+                  <div className="rounded-full bg-accent px-2 py-1">{project.bountiesOpen} 💰</div> */}
                 </div>
               </div>
             </div>
