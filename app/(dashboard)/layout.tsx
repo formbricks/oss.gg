@@ -24,7 +24,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         <Logo />
       </div>
 
-      <aside className="hidden w-[250px] flex-col justify-between bg-muted p-8 md:flex">
+      <aside className="fixed hidden h-screen w-[250px] flex-col justify-between bg-muted p-8 md:flex">
         <div>
           <div className="mb-4 ml-4">
             <UserAccountNav
@@ -50,7 +50,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           </p>
         </div>
       </aside>
-      <main className="flex w-full flex-1 flex-col overflow-auto p-12">{children}</main>
+      <main className="ml-[250px] flex w-full flex-1 flex-col overflow-auto p-12">{children}</main>
     </div>
   );
 }
