@@ -7,9 +7,10 @@ import { BottomNavItem } from "types";
 
 interface DashboardNavProps {
   items: BottomNavItem[];
+  userGitHubId?: string;
 }
 
-export function DashboardNav({ items }: DashboardNavProps) {
+export function DashboardNav({ items, userGitHubId }: DashboardNavProps) {
   const path = usePathname();
 
   if (!items?.length) {
@@ -34,6 +35,16 @@ export function DashboardNav({ items }: DashboardNavProps) {
           )
         );
       })}
+      {userGitHubId && (
+        <Link key={userGitHubId} href={`/${userGitHubId}`}>
+          <span
+            className={cn(
+              "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+            )}>
+            <span>Your Profile</span>
+          </span>
+        </Link>
+      )}
     </nav>
   );
 }

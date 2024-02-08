@@ -90,6 +90,7 @@ export const authOptions: NextAuthOptions = {
         name: dbUser.name,
         email: dbUser.email,
         avatarUrl: dbUser.avatarUrl,
+        login: dbUser.login
       };
     },
     async session({ token, session }) {
@@ -98,6 +99,7 @@ export const authOptions: NextAuthOptions = {
         if (token.name) session.user.name = token.name;
         if (token.email) session.user.email = token.email;
         if (token.avatarUrl) session.user.avatarUrl = token.avatarUrl as string;
+        if (token.login) session.user.login = token.login as string;
       }
 
       return session;

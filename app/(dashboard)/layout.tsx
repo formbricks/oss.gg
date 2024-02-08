@@ -14,6 +14,8 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({ children }: DashboardLayoutProps) {
   const user = await getCurrentUser();
 
+  console.log(user);
+
   if (!user) {
     return notFound();
   }
@@ -35,7 +37,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
               }}
             />
           </div>
-          <DashboardNav items={dashboardConfig.mainNav} />
+          <DashboardNav items={dashboardConfig.mainNav} userGitHubId={user.login} />
         </div>
         <div>
           <div className="mb-2">
