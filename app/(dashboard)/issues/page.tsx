@@ -1,10 +1,9 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
+import GitHubIssue from "@/components/ui/githubIssue";
 import { authOptions } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/session";
-import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -69,19 +68,7 @@ export default async function SettingsPage() {
       />
       <div className="space-y-2">
         {dummyIssues ? (
-          dummyIssues.map((issue) => (
-            <Link
-              href={issue.href}
-              target="_blank"
-              key={issue.key}
-              className="flex items-center space-x-3 rounded-md border border-transparent bg-muted p-3 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer">
-              <Image className="rounded-md" src={issue.logoHref} alt={issue.title} width={50} height={50} />
-              <div>
-                <p className="font-medium">{issue.title}</p>
-                <p className="mt-0.5 text-xs">opened by {issue.author}</p>
-              </div>
-            </Link>
-          ))
+          dummyIssues.map((issue) => <GitHubIssue issue={issue} />)
         ) : (
           <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-50">
             <p>You have not yet enrolled to play in a repository 🕹️</p>
