@@ -1,5 +1,4 @@
 import GitHubIssue from "@/components/ui/githubIssue";
-import { db } from "@/lib/db";
 import { getGithubUserByLogin } from "@/lib/githubUser/service";
 import { getUserByLogin } from "@/lib/user/service";
 import Image from "next/image";
@@ -23,13 +22,13 @@ async function fetchMergedPullRequests(githubLogin: string) {
   const response = await fetch(url, { headers });
   const data = await response.json();
 
-  // Map the GitHub API response to your issue format if necessary
+  // Map the GitHub API response to issue
   const mergedPRs = data.items.map((pr) => ({
     logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     href: pr.html_url,
     title: pr.title,
     author: pr.user.login,
-    points: "500", // You will need to define how to calculate points
+    points: "500",
     key: pr.id.toString(),
   }));
 
@@ -47,13 +46,13 @@ async function fetchOpenPullRequests(githubLogin: string) {
   const response = await fetch(url, { headers });
   const data = await response.json();
 
-  // Map the GitHub API response to your issue format if necessary
+  // Map the GitHub API response to issue
   const openPRs = data.items.map((pr) => ({
     logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     href: pr.html_url,
     title: pr.title,
     author: pr.user.login,
-    points: "500", // You will need to define how to calculate points
+    points: "500",
     key: pr.id.toString(),
     state: pr.state,
     draft: pr.draft,
