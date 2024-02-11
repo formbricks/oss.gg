@@ -1,19 +1,16 @@
+"use client";
+
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
-import { authOptions } from "@/lib/auth";
-import { getCurrentUser } from "@/lib/session";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
+import { createEnrollmentAction } from "./actions";
+
+/* import { createEnrollmentAction } from "../actions"; */
 import FB1 from "./fb-view-1.webp";
 import FB2 from "./fb-view-2.webp";
-
-export const metadata = {
-  title: "Formbricks",
-  description: "Contribute to the worlds fastest growing survey infrastructure.",
-};
 
 const FrombricksFeatures = [
   {
@@ -85,12 +82,18 @@ const FormbricksTechStack = [
   },
 ];
 
-export default async function SettingsPage() {
-  const user = await getCurrentUser();
+export default function RepositoryDetailPage({ params }) {
+  const repositoryId = params.repositoryId;
 
-  if (!user) {
-    redirect(authOptions?.pages?.signIn || "/login");
-  }
+  const handleEnrollment = async () => {
+    console.log("handleEnrollment: fired");
+    try {
+      await createEnrollmentAction(repositoryId);
+    } catch (error) {
+      console.error("handleEnrollment: Error changing enrollment status", error);
+    }
+  };
+
   return (
     <DashboardShell>
       <DashboardHeader
@@ -98,7 +101,9 @@ export default async function SettingsPage() {
         text="Contribute to the worlds fastest growing survey infrastructure."
       />
       <div className="flex justify-end rounded-md bg-muted p-4">
-        <Button size={"sm"}>Enroll to play</Button>
+        <Button size={"sm"} onClick={() => handleEnrollment()}>
+          Enroll to play
+        </Button>
       </div>
       <div className="grid gap-2 md:grid-cols-2">
         <Image src={FB1} alt="formbricks open source survey infrastructure" className="rounded-md" />

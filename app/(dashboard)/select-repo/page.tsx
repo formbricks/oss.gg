@@ -2,7 +2,6 @@ import { DashboardHeader } from "@/components/header";
 import { RepoSelector } from "@/components/repo-selecor";
 import { DashboardShell } from "@/components/shell";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { getRepositoriesForUser } from "@/lib/github/services/repository";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
