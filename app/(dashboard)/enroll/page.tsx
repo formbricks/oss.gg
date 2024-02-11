@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { getAllRepositoriesAction } from "./actions";
+import { getAllRepositoriesAction } from "../actions";
 
 export const metadata = {
   title: "Enroll to play",
@@ -17,7 +17,6 @@ export const metadata = {
 export default async function SettingsPage() {
   const user = await getCurrentUser();
   const repos = await getAllRepositoriesAction();
-  console.log("repos", repos);
 
   if (!user) {
     redirect(authOptions?.pages?.signIn || "/login");

@@ -7,8 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { createEnrollmentAction } from "./actions";
-
-/* import { createEnrollmentAction } from "../actions"; */
 import FB1 from "./fb-view-1.webp";
 import FB2 from "./fb-view-2.webp";
 

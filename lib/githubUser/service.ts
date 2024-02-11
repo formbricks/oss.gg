@@ -1,5 +1,4 @@
 import { GITHUB_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL } from "@/lib/constants";
-import { GithubError } from "@/types/errors";
 import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
@@ -17,7 +16,7 @@ export const getGithubUserByLogin = (githubLogin: string) =>
         return data;
       } catch (error) {
         console.error("Error fetching GitHub user data:", error);
-        throw GithubError;
+        return false;
       }
     },
     [`getGithubUserByLogin-${githubLogin}`],
@@ -26,3 +25,4 @@ export const getGithubUserByLogin = (githubLogin: string) =>
       revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
     }
   )();
+
