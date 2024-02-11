@@ -4,10 +4,11 @@ import { db } from "@/lib/db";
 import { ZId } from "@/types/common";
 import { DatabaseError, ResourceNotFoundError } from "@/types/errors";
 import { TUser, TUserCreateInput, TUserUpdateInput, ZUser, ZUserUpdateInput } from "@/types/user";
+import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { z } from "zod";
 
-import { SERVICES_REVALIDATION_INTERVAL } from "../constants";
+import { DEFAULT_CACHE_REVALIDATION_INTERVAL } from "../constants";
 import { formatDateFields } from "../utils/datetime";
 import { validateInputs } from "../utils/validate";
 import { userCache } from "./cache";
@@ -42,7 +43,7 @@ export const getUser = async (id: string): Promise<TUser | null> => {
         }
         return user;
       } catch (error) {
-        if (error instanceof db.PrismaClientKnownRequestError) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
           throw new DatabaseError(error.message);
         }
 
@@ -52,7 +53,7 @@ export const getUser = async (id: string): Promise<TUser | null> => {
     [`getUser-${id}`],
     {
       tags: [userCache.tag.byId(id)],
-      revalidate: SERVICES_REVALIDATION_INTERVAL,
+      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
     }
   )();
 
@@ -79,7 +80,7 @@ export const getUserByLogin = async (login: string): Promise<TUser | null> => {
 
         return user;
       } catch (error) {
-        if (error instanceof db.PrismaClientKnownRequestError) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
           throw new DatabaseError(error.message);
         }
 
@@ -89,7 +90,7 @@ export const getUserByLogin = async (login: string): Promise<TUser | null> => {
     [`getUserByLogin-${login}`],
     {
       tags: [userCache.tag.byLogin(login)],
-      revalidate: SERVICES_REVALIDATION_INTERVAL,
+      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
     }
   )();
 
@@ -121,7 +122,7 @@ export const updateUser = async (personId: string, data: TUserUpdateInput): Prom
 
     return updatedUser;
   } catch (error) {
-    if (error instanceof db.PrismaClientKnownRequestError && error.code === "P2016") {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2016") {
       throw new ResourceNotFoundError("User", personId);
     } else {
       throw error; // Re-throw any other errors

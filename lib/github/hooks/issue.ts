@@ -1,8 +1,6 @@
+import { ASSIGN_IDENTIFIER, EVENT_TRIGGERS, LEVEL_LABEL, UNASSIGN_IDENTIFIER } from "@/lib/constants";
 import { Webhooks } from "@octokit/webhooks";
-import { readFileSync } from "fs";
-import path from "path";
 
-import { ASSIGN_IDENTIFIER, EVENT_TRIGGERS, LEVEL_LABEL, UNASSIGN_IDENTIFIER } from "../constants";
 import { getOctokitInstance } from "../utils";
 
 export const onIssueOpened = async (webhooks: Webhooks) => {

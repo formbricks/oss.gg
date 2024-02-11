@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-class ResourceNotFoundError extends Error {
+export class ResourceNotFoundError extends Error {
   statusCode = 404;
   constructor(resource: string, id: string) {
     super(`${resource} with ID ${id} not found`);
@@ -8,7 +8,7 @@ class ResourceNotFoundError extends Error {
   }
 }
 
-class InvalidInputError extends Error {
+export class InvalidInputError extends Error {
   statusCode = 400;
   constructor(message: string) {
     super(message);
@@ -16,7 +16,7 @@ class InvalidInputError extends Error {
   }
 }
 
-class ValidationError extends Error {
+export class ValidationError extends Error {
   statusCode = 400;
   constructor(message: string) {
     super(message);
@@ -24,7 +24,7 @@ class ValidationError extends Error {
   }
 }
 
-class UnknownError extends Error {
+export class UnknownError extends Error {
   statusCode = 500;
   constructor(message: string) {
     super(message);
@@ -32,7 +32,7 @@ class UnknownError extends Error {
   }
 }
 
-class DatabaseError extends Error {
+export class DatabaseError extends Error {
   statusCode = 500;
   constructor(message: string) {
     super(message);
@@ -40,7 +40,15 @@ class DatabaseError extends Error {
   }
 }
 
-class UniqueConstraintError extends Error {
+export class GithubError extends Error {
+  statusCode = 500;
+  constructor(message: string) {
+    super(message);
+    this.name = "GithubError";
+  }
+}
+
+export class UniqueConstraintError extends Error {
   statusCode = 409;
   constructor(message: string) {
     super(message);
@@ -48,7 +56,7 @@ class UniqueConstraintError extends Error {
   }
 }
 
-class ForeignKeyConstraintError extends Error {
+export class ForeignKeyConstraintError extends Error {
   statusCode = 409;
   constructor(message: string) {
     super(message);
@@ -56,7 +64,7 @@ class ForeignKeyConstraintError extends Error {
   }
 }
 
-class OperationNotAllowedError extends Error {
+export class OperationNotAllowedError extends Error {
   statusCode = 403;
   constructor(message: string) {
     super(message);
@@ -64,7 +72,7 @@ class OperationNotAllowedError extends Error {
   }
 }
 
-class AuthenticationError extends Error {
+export class AuthenticationError extends Error {
   statusCode = 401;
   constructor(message: string) {
     super(message);
@@ -72,7 +80,7 @@ class AuthenticationError extends Error {
   }
 }
 
-class AuthorizationError extends Error {
+export class AuthorizationError extends Error {
   statusCode = 403;
   constructor(message: string) {
     super(message);
@@ -80,7 +88,7 @@ class AuthorizationError extends Error {
   }
 }
 
-type NetworkError = {
+export type NetworkError = {
   code: "network_error";
   message: string;
   status: number;
@@ -88,17 +96,3 @@ type NetworkError = {
 };
 
 export const ZErrorHandler = z.function().args(z.any()).returns(z.void());
-
-export {
-  ResourceNotFoundError,
-  InvalidInputError,
-  ValidationError,
-  DatabaseError,
-  UniqueConstraintError,
-  UnknownError,
-  ForeignKeyConstraintError,
-  OperationNotAllowedError,
-  AuthenticationError,
-  AuthorizationError,
-};
-export type { NetworkError };

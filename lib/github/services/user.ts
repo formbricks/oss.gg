@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 import { App } from "octokit";
 import path from "path";
 
-const privateKeyPath = "../../../../key.pem";
+const privateKeyPath = "@/key.pem";
 const resolvedPath = path.resolve(__dirname, privateKeyPath);
 const privateKey = readFileSync(resolvedPath, "utf8");
 

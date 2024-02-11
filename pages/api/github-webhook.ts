@@ -1,5 +1,4 @@
-import { registerHooks, webhookMiddleware } from "@/github";
-import "@/github/hooks/issue";
+import { registerHooks, webhookMiddleware } from "@/lib/github";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {

@@ -1,5 +1,6 @@
 import GitHubIssue from "@/components/ui/githubIssue";
 import { db } from "@/lib/db";
+import { getGithubUserByLogin } from "@/lib/githubUser/service";
 import { getUserByLogin } from "@/lib/user/service";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,16 +11,6 @@ export const metadata = {
 };
 
 const githubToken = process.env.GITHUB_ACCESS_TOKEN;
-
-async function fetchGithubUserData(userName: string) {
-  const headers = {
-    Authorization: `token ${githubToken}`,
-  };
-
-  const res = await fetch(`https://api.github.com/users/${userName}`, { headers });
-  const data = await res.json();
-  return data;
-}
 
 async function fetchMergedPullRequests(githubLogin: string) {
   const url = `https://api.github.com/search/issues?q=repo:formbricks/formbricks+is:pull-request+is:merged+author:${githubLogin}&per_page=10&sort=created&order=desc`;
@@ -77,7 +68,7 @@ export default async function ProfilePage({ params }) {
   const user = await getUserByLogin(githubLogin);
 
   if (user) {
-    const userData = await fetchGithubUserData(githubLogin);
+    const userData = await getGithubUserByLogin(githubLogin);
     const mergedIssues = await fetchMergedPullRequests(githubLogin);
     const openPRs = await fetchOpenPullRequests(githubLogin);
 

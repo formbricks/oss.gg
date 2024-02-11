@@ -1,6 +1,6 @@
+import { EVENT_TRIGGERS } from "@/lib/constants";
 import { Webhooks } from "@octokit/webhooks";
 
-import { EVENT_TRIGGERS } from "../constants";
 import { sendInstallationDetails } from "../services/user";
 
 export const onInstallationCreated = async (webhooks: Webhooks) => {
