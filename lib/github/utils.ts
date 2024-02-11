@@ -3,9 +3,9 @@ import { Octokit } from "@octokit/rest";
 import { readFileSync } from "fs";
 import path from "path";
 
-import { GITHUB_APP_APP_ID } from "./constants";
+import { GITHUB_APP_APP_ID } from "../constants";
 
-const privateKeyPath = "../../../../key.pem";
+const privateKeyPath = "@/key.pem";
 const resolvedPath = path.resolve(__dirname, privateKeyPath);
 const privateKey = readFileSync(resolvedPath, "utf8");
 
