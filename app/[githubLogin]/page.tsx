@@ -1,4 +1,5 @@
 import GitHubIssue from "@/components/ui/githubIssue";
+import { getMergedPullRequests, getOpenPullRequests } from "@/lib/github/service";
 import { getGithubUserByLogin } from "@/lib/githubUser/service";
 import { getUserByLogin } from "@/lib/user/service";
 import Image from "next/image";
@@ -9,58 +10,6 @@ export const metadata = {
   title: "oss.gg Profile",
 };
 
-const githubToken = process.env.GITHUB_ACCESS_TOKEN;
-
-async function fetchMergedPullRequests(githubLogin: string) {
-  const url = `https://api.github.com/search/issues?q=repo:formbricks/formbricks+is:pull-request+is:merged+author:${githubLogin}&per_page=10&sort=created&order=desc`;
-
-  const headers = {
-    Authorization: `Bearer ${githubToken}`,
-    Accept: "application/vnd.github.v3+json",
-  };
-
-  const response = await fetch(url, { headers });
-  const data = await response.json();
-
-  // Map the GitHub API response to issue
-  const mergedPRs = data.items.map((pr) => ({
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-    href: pr.html_url,
-    title: pr.title,
-    author: pr.user.login,
-    points: "500",
-    key: pr.id.toString(),
-  }));
-
-  return mergedPRs;
-}
-
-async function fetchOpenPullRequests(githubLogin: string) {
-  const url = `https://api.github.com/search/issues?q=repo:formbricks/formbricks+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
-
-  const headers = {
-    Authorization: `Bearer ${githubToken}`,
-    Accept: "application/vnd.github.v3+json",
-  };
-
-  const response = await fetch(url, { headers });
-  const data = await response.json();
-
-  // Map the GitHub API response to issue
-  const openPRs = data.items.map((pr) => ({
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-    href: pr.html_url,
-    title: pr.title,
-    author: pr.user.login,
-    points: "500",
-    key: pr.id.toString(),
-    state: pr.state,
-    draft: pr.draft,
-  }));
-
-  return openPRs;
-}
-
 export default async function ProfilePage({ params }) {
   const githubLogin = params.githubLogin;
 
@@ -68,8 +17,8 @@ export default async function ProfilePage({ params }) {
 
   if (user) {
     const userData = await getGithubUserByLogin(githubLogin);
-    const mergedIssues = await fetchMergedPullRequests(githubLogin);
-    const openPRs = await fetchOpenPullRequests(githubLogin);
+    const mergedIssues = await getMergedPullRequests("formbricks/formbricks", githubLogin);
+    const openPRs = await getOpenPullRequests("formbricks/formbricks", githubLogin);
 
     return (
       <div>
