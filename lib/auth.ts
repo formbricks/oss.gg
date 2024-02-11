@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 
+import { createAccount } from "./account/service";
+import { createUser } from "./user/service";
+
 export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
@@ -51,27 +54,22 @@ export const authOptions: NextAuthOptions = {
         }
 
         // create user if it does not exist
-        await db.user.create({
-          data: {
-            name: profile.name,
-            githubId: profile.id,
-            login: profile.login,
-            email: profile.email,
-            avatarUrl: profile.avatar_url,
-            account: {
-              create: {
-                ...account,
-              },
-            },
-          },
+        const dbUser = await createUser({
+          name: profile.name,
+          githubId: profile.id,
+          login: profile.login,
+          email: profile.email,
+          avatarUrl: profile.avatar_url,
         });
+
+        await createAccount({ ...account, userId: dbUser.id });
 
         return true;
       }
 
       return false;
     },
-    async jwt({ token, user, profile }) {
+    async jwt({ token, user }) {
       const dbUser = await db.user.findFirst({
         where: {
           email: token.email as string,
@@ -90,7 +88,7 @@ export const authOptions: NextAuthOptions = {
         name: dbUser.name,
         email: dbUser.email,
         avatarUrl: dbUser.avatarUrl,
-        login: dbUser.login
+        login: dbUser.login,
       };
     },
     async session({ token, session }) {

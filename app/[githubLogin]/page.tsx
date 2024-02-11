@@ -1,26 +1,15 @@
 import GitHubIssue from "@/components/ui/githubIssue";
 import { db } from "@/lib/db";
+import { getUserByLogin } from "@/lib/user/service";
 import Image from "next/image";
 import Link from "next/link";
 import { FaGithub, FaTwitter } from "react-icons/fa";
 
 export const metadata = {
-  title: "Your oss.gg Profile Page",
+  title: "oss.gg Profile",
 };
 
-const userCache = new Map();
 const githubToken = process.env.GITHUB_ACCESS_TOKEN;
-
-async function fetchGithubUserDataWithCache(userName: string) {
-  if (userCache.has(userName)) {
-    return userCache.get(userName);
-  }
-
-  const data = await fetchGithubUserData(userName);
-  userCache.set(userName, data);
-
-  return data;
-}
 
 async function fetchGithubUserData(userName: string) {
   const headers = {
@@ -32,8 +21,8 @@ async function fetchGithubUserData(userName: string) {
   return data;
 }
 
-async function fetchMergedPullRequests(userName: string) {
-  const url = `https://api.github.com/search/issues?q=repo:formbricks/formbricks+is:pull-request+is:merged+author:${userName}&per_page=10&sort=created&order=desc`;
+async function fetchMergedPullRequests(githubLogin: string) {
+  const url = `https://api.github.com/search/issues?q=repo:formbricks/formbricks+is:pull-request+is:merged+author:${githubLogin}&per_page=10&sort=created&order=desc`;
 
   const headers = {
     Authorization: `Bearer ${githubToken}`,
@@ -56,8 +45,8 @@ async function fetchMergedPullRequests(userName: string) {
   return mergedPRs;
 }
 
-async function fetchOpenPullRequests(userName: string) {
-  const url = `https://api.github.com/search/issues?q=repo:formbricks/formbricks+is:pull-request+is:open+author:${userName}&sort=created&order=desc`;
+async function fetchOpenPullRequests(githubLogin: string) {
+  const url = `https://api.github.com/search/issues?q=repo:formbricks/formbricks+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
 
   const headers = {
     Authorization: `Bearer ${githubToken}`,
@@ -66,7 +55,6 @@ async function fetchOpenPullRequests(userName: string) {
 
   const response = await fetch(url, { headers });
   const data = await response.json();
-  console.log("openPRdata", data);
 
   // Map the GitHub API response to your issue format if necessary
   const openPRs = data.items.map((pr) => ({
@@ -84,17 +72,15 @@ async function fetchOpenPullRequests(userName: string) {
 }
 
 export default async function ProfilePage({ params }) {
-  const userName = params.profile;
+  const githubLogin = params.githubLogin;
 
-  const user = await db.user.findFirst({
-    where: { login: userName },
-  });
+  const user = await getUserByLogin(githubLogin);
 
   if (user) {
-    const userData = await fetchGithubUserDataWithCache(userName);
-    const mergedIssues = await fetchMergedPullRequests(userName);
-    const openPRs = await fetchOpenPullRequests(userName);
-    console.log("openPRs", openPRs);
+    const userData = await fetchGithubUserData(githubLogin);
+    const mergedIssues = await fetchMergedPullRequests(githubLogin);
+    const openPRs = await fetchOpenPullRequests(githubLogin);
+
     return (
       <div>
         <div className="z-40 -mt-36 grid grid-cols-5 gap-6 text-slate-50">
