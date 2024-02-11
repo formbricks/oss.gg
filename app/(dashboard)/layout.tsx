@@ -14,8 +14,6 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({ children }: DashboardLayoutProps) {
   const user = await getCurrentUser();
 
-  console.log(user);
-
   if (!user) {
     return notFound();
   }
