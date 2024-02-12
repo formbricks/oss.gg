@@ -80,7 +80,6 @@ export const getOpenPullRequestsByGithubLogin = (repo: string, githubLogin: stri
 
       const response = await fetch(url, { headers });
       const data = await response.json();
-      console.log(data)
 
       // Map the GitHub API response to issue format
       const openPRs = data.items.map((pr) => ({

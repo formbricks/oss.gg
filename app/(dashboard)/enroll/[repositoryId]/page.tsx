@@ -1,16 +1,13 @@
-"use client";
-
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
-import { enrollCurrentUserAction } from "./actions";
+import EnrollmentStatusBar from "./enrollmentStatusBar";
 import FB1 from "./fb-view-1.webp";
 import FB2 from "./fb-view-2.webp";
 
-const FrombricksFeatures = [
+const frombricksFeatures = [
   {
     icon: "📲",
     description: "Create conversion-optimized surveys with our no-code editor with several question types.",
@@ -42,7 +39,7 @@ const FrombricksFeatures = [
   },
 ];
 
-const FormbricksTechStack = [
+const formbricksTechStack = [
   {
     icon: "💻",
     name: "Typescript",
@@ -71,70 +68,78 @@ const FormbricksTechStack = [
   {
     icon: "🔒",
     name: "Auth.js",
-    href: "https://auth0.com/", // Assuming Auth.js refers to Auth0, adjust if needed
+    href: "https://auth0.com/",
   },
   {
     icon: "🧘‍♂️",
     name: "Zod",
-    href: "https://github.com/colinhacks/zod", // Zod's documentation is often hosted on GitHub
+    href: "https://github.com/colinhacks/zod",
   },
 ];
 
 export default function RepositoryDetailPage({ params }) {
-  const repositoryId = params.repositoryId;
-
-  const handleEnrollment = async () => {
-    console.log("handleEnrollment: fired");
-    try {
-      await enrollCurrentUserAction(repositoryId);
-    } catch (error) {
-      console.error("handleEnrollment: Error changing enrollment status", error);
-    }
-  };
-
   return (
     <DashboardShell>
       <DashboardHeader
         heading="Formbricks"
         text="Contribute to the worlds fastest growing survey infrastructure."
       />
-      <div className="flex justify-end rounded-md bg-muted p-4">
-        <Button size={"sm"} onClick={() => handleEnrollment()}>
-          Enroll to play
-        </Button>
-      </div>
+      <EnrollmentStatusBar repositoryId={params.repositoryId} />
       <div className="grid gap-2 md:grid-cols-2">
-        <Image src={FB1} alt="formbricks open source survey infrastructure" className="rounded-md" />
-        <Image src={FB2} alt="formbricks open source survey infrastructure" className="rounded-md" />
+        <Image src={FB1} alt="Formbricks open source survey infrastructure" className="rounded-md" />
+        <Image src={FB2} alt="Formbricks open source survey infrastructure" className="rounded-md" />
       </div>
       <div className="space-y-4">
-        <h2 className=" text-xl font-medium">About Formbricks</h2>
-        <p>
-          Formbricks provides a free and open source surveying platform. Gather feedback at every point in the
-          user journey with beautiful in-app, website, link and email surveys. Build on top of Formbricks or
-          leverage prebuilt data analysis capabilities.{" "}
-        </p>
-        <hr />
-        <h2 className="text-xl font-medium">Features</h2>
-        <ul>
-          {FrombricksFeatures.map((feature, index) => (
-            <li key={index}>
-              {feature.icon} {feature.description}
-            </li>
-          ))}
-        </ul>
-        <hr />
-        <h2 className="text-xl font-medium">Tech Stack</h2>
-        <ul>
-          {FormbricksTechStack.map((tech, index) => (
-            <li key={index}>
-              <Link href={tech.href} target="_blank" rel="noopener noreferrer">
-                {tech.icon} {tech.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <Section
+          title="About Formbricks"
+          content="Formbricks provides a free and open source surveying platform. Gather feedback at every point in the user journey with beautiful in-app, website, link and email surveys. Build on top of Formbricks or leverage prebuilt data analysis capabilities."
+        />
+        <FeaturesSection title="Features" features={frombricksFeatures} />
+        <TechStackSection title="Tech Stack" techStack={formbricksTechStack} />
       </div>
     </DashboardShell>
+  );
+}
+
+function Section({ title, content }) {
+  return (
+    <>
+      <h2 className="text-xl font-medium">{title}</h2>
+      <p>{content}</p>
+      <hr />
+    </>
+  );
+}
+
+function FeaturesSection({ title, features }) {
+  return (
+    <>
+      <h2 className="text-xl font-medium">{title}</h2>
+      <ul>
+        {features.map((feature, index) => (
+          <li key={index}>
+            {feature.icon} {feature.description}
+          </li>
+        ))}
+      </ul>
+      <hr />
+    </>
+  );
+}
+
+function TechStackSection({ title, techStack }) {
+  return (
+    <>
+      <h2 className="text-xl font-medium">{title}</h2>
+      <ul>
+        {techStack.map((tech, index) => (
+          <li key={index}>
+            <Link href={tech.href} target="_blank" rel="noopener noreferrer">
+              {tech.icon} {tech.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }

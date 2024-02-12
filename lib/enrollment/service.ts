@@ -11,26 +11,33 @@ import { validateInputs } from "../utils/validate";
  */
 
 export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promise<TEnrollment> => {
-  console.log("createEnrollment: Start", { enrollmentData });
 
   validateInputs([enrollmentData, ZEnrollmentInput]);
 
   try {
+    // Check if enrollment already exists
+    const existingEnrollment = await db.enrollment.findFirst({
+      where: {
+        userId: enrollmentData.userId,
+        repositoryId: enrollmentData.repositoryId,
+      },
+    });
+
+    if (existingEnrollment) {
+      throw new Error("Enrollment already exists.");
+    }
+
     const enrollment = await db.enrollment.create({
       data: enrollmentData,
     });
-    console.log("createEnrollment: Success", { enrollment });
     return enrollment;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error("createEnrollment: Prisma Error", error.message, { error });
       throw new DatabaseError(error.message);
     }
-    console.error("createEnrollment: Error", error.message, { error });
     throw error;
   }
 };
-
 
 /**
  * Deletes an enrollment for a user in a repository.
@@ -74,3 +81,30 @@ export const hasEnrollmentForRepository = async (userId: string, repositoryId: s
   return count > 0;
 };
 
+/**
+ * Retrieves an array of repositories that a user is enrolled in.
+ * @param userId - The ID of the user for whom enrolled repositories are being queried.
+ * @returns A Promise that resolves to an array of TRepository objects, each representing
+ * a repository the user is enrolled in. The array is empty if the user has no enrollments.
+
+export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> => {
+  const enrolledRepositories = await db.repository.findMany({
+    where: {
+      Enrollment: {
+        some: {
+          userId: userId,
+        },
+      },
+    },
+    select: {
+      id: true,
+      githubId: true,
+      name: true,
+      description: true,
+      homepage: true,
+      configured: true,
+    },
+  });
+
+  return enrolledRepositories;
+}; */

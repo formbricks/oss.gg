@@ -5,8 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 
 /**
  * Creates an enrollment for the authenticated user in a specific repository.
- * @param req - The Next.js API request object, used to retrieve the current user.
- * @param enrollmentData - The data needed to create the enrollment, excluding the userId.
+ * @param repositoryId - The data needed to create the enrollment, excluding the userId.
  * @returns The created enrollment object.
  */
 export const enrollCurrentUserAction = async (repositoryId: string) => {
@@ -14,33 +13,26 @@ export const enrollCurrentUserAction = async (repositoryId: string) => {
 
   try {
     const user = await getCurrentUser();
-    console.log("createEnrollmentAction: User", { user });
 
     if (!user || !user.id) {
-      console.error("createEnrollmentAction: User not authenticated");
       throw new Error("User must be authenticated to perform this action.");
     }
 
     const fullEnrollmentData = { repositoryId: repositoryId, userId: user.id };
-    console.log("createEnrollmentAction: Full enrollment data", { fullEnrollmentData });
 
     const enrollment = await createEnrollment(fullEnrollmentData);
-    console.log("createEnrollmentAction: Enrollment success", { enrollment });
-
     return enrollment;
   } catch (error) {
-    console.error("createEnrollmentAction: Error", error.message, { error });
-    throw new Error("Failed to create enrollment.");
+    throw new Error(`Failed to create enrollment: ${error}`);
   }
 };
 
 
 /**
  * Deletes an existing enrollment for the authenticated user in a specific repository.
- * @param req - The Next.js API request object, used to retrieve the current user.
  * @param repositoryId - The ID of the repository from which the user is to be unenrolled.
  */
-export const deleteEnrollmentAction = async (repositoryId: string): Promise<void> => {
+export const disenrollCurrentUserAction = async (repositoryId: string): Promise<void> => {
   try {
     const user = await getCurrentUser();
     if (!user || !user.id) {
@@ -56,7 +48,6 @@ export const deleteEnrollmentAction = async (repositoryId: string): Promise<void
 
 /**
  * Checks if the authenticated user is already enrolled in a specific repository.
- * @param req - The Next.js API request object, used to retrieve the current user.
  * @param repositoryId - The ID of the repository to check enrollment against.
  * @returns A boolean indicating whether the user is enrolled.
  */

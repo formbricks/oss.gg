@@ -35,24 +35,53 @@ export interface ButtonProps
   asChild?: boolean;
   href?: string;
   openInNewTab?: boolean;
+  loading?: boolean; // Added loading prop
+  disabled?: boolean; // Explicitly declare disabled prop
 }
 
 const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, href, openInNewTab = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      href,
+      openInNewTab = false,
+      loading = false,
+      disabled = false,
+      ...props
+    },
+    ref
+  ) => {
     let Comp: React.ElementType = asChild ? Slot : "button";
 
     if (href) {
-      Comp = "a"; // Use anchor tag if href is provided
+      Comp = "a";
     }
+
+    // Consolidate disabled state considering both disabled and loading props
+    const isDisabled = disabled || loading;
+    const loadingClass = loading ? "loading" : "";
 
     return (
       <Comp
         href={href}
-        className={cn(buttonVariants({ variant, size }), className)}
+        className={cn(buttonVariants({ variant, size }), className, loadingClass, { disabled: isDisabled })}
         ref={ref}
         {...props}
+        disabled={isDisabled}
         {...(href && openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      />
+        {...(href ? {} : { type: "button" })}
+        {...(loading && { "aria-busy": true })}>
+        {loading ? (
+          <>
+            <span className="spinner">Loading...</span>
+          </>
+        ) : (
+          props.children
+        )}
+      </Comp>
     );
   }
 );

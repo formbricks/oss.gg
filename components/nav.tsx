@@ -36,7 +36,7 @@ export function DashboardNav({ items, userGitHubId }: DashboardNavProps) {
         );
       })}
       {userGitHubId && (
-        <Link key={userGitHubId} href={`/${userGitHubId}`}>
+        <Link key={userGitHubId} href={`/${userGitHubId}`} target="_blank">
           <span
             className={cn(
               "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"

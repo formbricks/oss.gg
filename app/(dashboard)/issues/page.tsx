@@ -2,10 +2,7 @@ import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import GitHubIssue from "@/components/ui/githubIssue";
-import { authOptions } from "@/lib/auth";
 import { getAllOpenIssuesOfRepo } from "@/lib/github/service";
-import { getCurrentUser } from "@/lib/session";
-import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Open issues",
@@ -13,12 +10,8 @@ export const metadata = {
 };
 
 export default async function SettingsPage() {
-  const user = await getCurrentUser();
   const openPRs = await getAllOpenIssuesOfRepo("formbricks/formbricks");
 
-  if (!user) {
-    redirect(authOptions?.pages?.signIn || "/login");
-  }
   return (
     <DashboardShell>
       <DashboardHeader
