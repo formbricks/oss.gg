@@ -1,26 +1,18 @@
+"use client";
+
+import OSSLogoDark from "@/public/oss-gg-logo-dark.png";
+import OSSLogoLight from "@/public/oss-gg-logo.png";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 
-import OSSLogoDark from "../../app/oss-gg-logo-dark.png";
-
 export const Logo = () => {
-  /*   const { resolvedTheme } = useTheme();
-  let src;
+  const { resolvedTheme } = useTheme();
+  let src = resolvedTheme === "dark" ? OSSLogoDark : OSSLogoLight;
 
-  switch (resolvedTheme) {
-    case "light":
-      src = "../../app/oss-gg-logo.png";
-      break;
-    case "dark":
-      src = "../../app/oss-gg-logo-dark.png";
-      break;
-    default:
-      src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-      break;
-  } */
   return (
-    <Link href="/" className="flex items-center justify-center">
-      <Image alt="oss.gg logo" src={OSSLogoDark} width={120} />
+    <Link href="/">
+      <Image alt="oss.gg logo" src={src} width={120} height={60} layout="fixed" />
     </Link>
   );
 };

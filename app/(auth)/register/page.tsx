@@ -1,5 +1,4 @@
 import { buttonVariants } from "@/components/ui/button";
-import { Logo } from "@/components/ui/logo";
 import { UserAuthForm } from "@/components/user-auth-form";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -20,8 +19,8 @@ export default function RegisterPage() {
 
       <div className="lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-          <div className="flex flex-col space-y-2 text-center">
-            <Logo />
+          <div className="flex flex-col items-center justify-center space-y-2 text-center">
+            <h1 className="mb-3 text-7xl">🕹️</h1>
             <p className="text-sm text-muted-foreground">
               Use Github to <b>create</b> your account
             </p>
