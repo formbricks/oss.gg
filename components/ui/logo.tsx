@@ -12,7 +12,7 @@ export const Logo = () => {
 
   return (
     <Link href="/">
-      <Image alt="oss.gg logo" src={src} width={120} height={60} layout="fixed" />
+      <Image alt="oss.gg logo" src={src} width={120} height={60} />
     </Link>
   );
 };

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
-import { createEnrollmentAction } from "./actions";
+import { enrollCurrentUserAction } from "./actions";
 import FB1 from "./fb-view-1.webp";
 import FB2 from "./fb-view-2.webp";
 
@@ -86,7 +86,7 @@ export default function RepositoryDetailPage({ params }) {
   const handleEnrollment = async () => {
     console.log("handleEnrollment: fired");
     try {
-      await createEnrollmentAction(repositoryId);
+      await enrollCurrentUserAction(repositoryId);
     } catch (error) {
       console.error("handleEnrollment: Error changing enrollment status", error);
     }

@@ -2,7 +2,6 @@
 
 import { createEnrollment, deleteEnrollment, hasEnrollmentForRepository } from "@/lib/enrollment/service";
 import { getCurrentUser } from "@/lib/session";
-import { TEnrollmentInput } from "@/types/enrollment";
 
 /**
  * Creates an enrollment for the authenticated user in a specific repository.
@@ -10,8 +9,8 @@ import { TEnrollmentInput } from "@/types/enrollment";
  * @param enrollmentData - The data needed to create the enrollment, excluding the userId.
  * @returns The created enrollment object.
  */
-export const createEnrollmentAction = async (enrollmentData: Omit<TEnrollmentInput, 'userId'>) => {
-  console.log("createEnrollmentAction: Start", { enrollmentData });
+export const enrollCurrentUserAction = async (repositoryId: string) => {
+  console.log("createEnrollmentAction: Start", { repositoryId });
 
   try {
     const user = await getCurrentUser();
@@ -22,7 +21,7 @@ export const createEnrollmentAction = async (enrollmentData: Omit<TEnrollmentInp
       throw new Error("User must be authenticated to perform this action.");
     }
 
-    const fullEnrollmentData = { ...enrollmentData, userId: user.id };
+    const fullEnrollmentData = { repositoryId: repositoryId, userId: user.id };
     console.log("createEnrollmentAction: Full enrollment data", { fullEnrollmentData });
 
     const enrollment = await createEnrollment(fullEnrollmentData);
