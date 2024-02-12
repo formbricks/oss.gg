@@ -117,13 +117,15 @@ export default async function ProfilePage({ params }) {
                 ))}
               </div>
             )}
-            <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
-              <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
-              <div>
-                <p className="font-medium">{userData.name} enrolled at Formbricks</p>
-                <p className="mt-0.5 text-xs">Let the games begin!</p>
+            {userData && (
+              <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
+                <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
+                <div>
+                  <p className="font-medium">{userData.name} enrolled at Formbricks</p>
+                  <p className="mt-0.5 text-xs">Let the games begin!</p>
+                </div>
               </div>
-            </div>
+            )}
             <h3 className="mb-2 mt-12 text-xl font-medium">Contributions @ Formbricks</h3>
             {mergedIssues ? (
               mergedIssues.map((issue) => <GitHubIssue issue={issue} key={issue.title} />)
