@@ -67,9 +67,10 @@ const ProfileInfo = ({ userData }) => (
       alt="github avatar"
       width={180}
       height={180}
-      className="col-span-2 rounded-md md:col-span-1"
+      className="z-50 col-span-2 rounded-md md:col-span-1"
       priority={true}
     />
+
     <div className="col-span-3 flex items-center space-x-6 md:col-span-4">
       <div>
         <h1 className="text-3xl font-bold">{userData.name}</h1>
