@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { ZEnrollment } from './enrollment';
+import { ZInstallation } from './installation';
+import { ZPointTransaction } from './pointTransaction';
 
 export const ZRepository = z.object({
   id: z.string(),
@@ -12,9 +15,9 @@ export const ZRepository = z.object({
   configured: z.boolean().default(false),
   levels: z.any(), 
 
-  pointTransactions: z.array(z.any()), // Placeholder, define `PointTransaction` schema separately
-  installation: z.any(), // Placeholder, define `Installation` schema separately
-  Enrollment: z.array(z.any()), // Placeholder, define `Enrollment` schema separately
+  pointTransactions: z.array(ZPointTransaction),
+  installation: ZInstallation,
+  Enrollment: z.array(ZEnrollment),
 }).strict();
 
 export type TRepository = z.infer<typeof ZRepository>;
