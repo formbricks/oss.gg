@@ -97,18 +97,22 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
       const octokit = getOctokitInstance(context.payload.installation?.id!);
-
-      const issueNumber = context.payload.issue.number;
       const repo = context.payload.repository.name;
       const issueCommentBody = context.payload.comment.body;
-
       const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
       const match = issueCommentBody.match(awardPointsRegex);
+      const isPR = !!context.payload.issue.pull_request;
+      const issueNumber = isPR ? context.payload.issue.number : undefined;
 
       let comment: string = "";
 
       if (match) {
         const points = parseInt(match[1], 10);
+
+        if (!issueNumber) {
+          console.error("Comment is not on a PR.");
+          return;
+        }
 
         const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
 
