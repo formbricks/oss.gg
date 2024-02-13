@@ -1,11 +1,11 @@
-import { env } from "@/env.mjs";
 import { Webhooks, createNodeMiddleware } from "@octokit/webhooks";
 
 import { onInstallationCreated } from "./hooks/installation";
 import { onAssignCommented, onIssueOpened, onUnassignCommented } from "./hooks/issue";
+import { GITHUB_WEBHOOK_SECRET } from "../constants";
 
 const webhooks = new Webhooks({
-  secret: env.GITHUB_WEBHOOK_SECRET as string,
+  secret: GITHUB_WEBHOOK_SECRET,
 });
 
 export const webhookMiddleware = createNodeMiddleware(webhooks, {

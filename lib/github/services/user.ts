@@ -1,12 +1,6 @@
-import { env } from "@/env.mjs";
+import { GITHUB_APP_PRIVATE_KEY, GITHUB_WEBHOOK_SECRET } from "@/lib/constants";
 import { db } from "@/lib/db";
-import { readFileSync } from "fs";
 import { App } from "octokit";
-import path from "path";
-
-const privateKeyPath = "@/key.pem";
-const resolvedPath = path.resolve(__dirname, privateKeyPath);
-const privateKey = readFileSync(resolvedPath, "utf8");
 
 export const sendInstallationDetails = async (
   installationId: number,
@@ -25,9 +19,9 @@ export const sendInstallationDetails = async (
   try {
     const app = new App({
       appId,
-      privateKey,
+      privateKey: GITHUB_APP_PRIVATE_KEY,
       webhooks: {
-        secret: env.GITHUB_WEBHOOK_SECRET!,
+        secret: GITHUB_WEBHOOK_SECRET!,
       },
     });
     const octokit = await app.getInstallationOctokit(installationId);
