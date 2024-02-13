@@ -1,5 +1,3 @@
-import "server-only";
-
 import { env } from "../env.mjs";
 
 export const DEFAULT_CACHE_REVALIDATION_INTERVAL = 60 * 30; // 30 minutes
@@ -17,6 +15,8 @@ export enum EVENT_TRIGGERS {
   INSTALLATION_CREATED = "installation.created",
   ISSUE_COMMENTED = "issue_comment.created",
 }
+export const AWARD_POINTS_IDENTIFIER = "/award" as const;
+
 export const ON_NEW_ISSUE = "Thanks for opening an issue! It's live on oss.gg!";
 export const ON_REPO_NOT_REGISTERED = `This repository is not registered with oss.gg. Please register it at https://oss.gg.`;
 export const GITHUB_APP_APP_ID = env.GITHUB_APP_APP_ID as string;

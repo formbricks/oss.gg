@@ -1,4 +1,13 @@
-import { ASSIGN_IDENTIFIER, EVENT_TRIGGERS, LEVEL_LABEL, UNASSIGN_IDENTIFIER } from "@/lib/constants";
+import {
+  ASSIGN_IDENTIFIER,
+  AWARD_POINTS_IDENTIFIER,
+  EVENT_TRIGGERS,
+  LEVEL_LABEL,
+  UNASSIGN_IDENTIFIER,
+} from "@/lib/constants";
+import { assignUserPoints } from "@/lib/points/service";
+import { getRepositoryByGithubId } from "@/lib/repository/service";
+import { getUserByGithubId } from "@/lib/user/service";
 import { Webhooks } from "@octokit/webhooks";
 
 import { getOctokitInstance } from "../utils";
@@ -73,6 +82,55 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
       if (issueCommentBody === UNASSIGN_IDENTIFIER) {
         await octokit.issues.createComment({
           body: "no brother",
+          issue_number: issueNumber,
+          repo,
+          owner: "formbricks",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+};
+
+export const onAwardPoints = async (webhooks: Webhooks) => {
+  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
+    try {
+      const octokit = getOctokitInstance(context.payload.installation?.id!);
+
+      const issueNumber = context.payload.issue.number;
+      const repo = context.payload.repository.name;
+      const issueCommentBody = context.payload.comment.body;
+
+      const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
+      const match = issueCommentBody.match(awardPointsRegex);
+
+      let comment: string = "";
+
+      if (match) {
+        const points = parseInt(match[1], 10);
+
+        const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
+        if (!ossGgRepo) {
+          comment = "If you are the repo owner, please register at oss.gg to be able to award points";
+        } else {
+          const user = await getUserByGithubId(context.payload.comment.user.id);
+          if (!user) {
+            comment = "Please register at oss.gg to be able to claim your awarded points";
+          } else {
+            await assignUserPoints(
+              user?.id,
+              points,
+              "Awarded points",
+              context.payload.comment.html_url,
+              ossGgRepo?.id
+            );
+            comment = `Awarding ${user.login}: ${points} points!`;
+          }
+        }
+
+        await octokit.issues.createComment({
+          body: comment,
           issue_number: issueNumber,
           repo,
           owner: "formbricks",

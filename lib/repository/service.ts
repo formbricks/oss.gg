@@ -18,3 +18,20 @@ export const getAllRepositories = async (): Promise<TRepository[]> => {
     throw error;
   }
 };
+
+export const getRepositoryByGithubId = async (githubId: number) => {
+  try {
+    const repository = await db.repository.findFirst({
+      where: {
+        githubId,
+      },
+    });
+    return repository;
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error("An error occurred while fetching repository:", error.message);
+      throw new Error("Database error occurred");
+    }
+    throw error;
+  }
+};

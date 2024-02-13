@@ -1,5 +1,3 @@
-import "server-only";
-
 import { db } from "@/lib/db";
 import { ZId } from "@/types/common";
 import { DatabaseError, ResourceNotFoundError } from "@/types/errors";
@@ -90,6 +88,43 @@ export const getUserByLogin = async (login: string): Promise<TUser | null> => {
     [`getUserByLogin-${login}`],
     {
       tags: [userCache.tag.byLogin(login)],
+      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
+    }
+  )();
+
+  return user
+    ? {
+        ...user,
+        ...formatDateFields(user, ZUser),
+      }
+    : null;
+};
+
+export const getUserByGithubId = async (githubId: number): Promise<TUser | null> => {
+  const user = await unstable_cache(
+    async () => {
+      validateInputs([githubId, z.number()]);
+
+      try {
+        const user = await db.user.findFirst({
+          where: {
+            githubId,
+          },
+          select: userSelection,
+        });
+
+        return user;
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new DatabaseError(error.message);
+        }
+
+        throw error;
+      }
+    },
+    [`getUserByGithubId-${githubId}`],
+    {
+      tags: [userCache.tag.byGithubId(githubId)],
       revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
     }
   )();
