@@ -7,7 +7,7 @@ import {
 } from "@/lib/constants";
 import { assignUserPoints } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
-import { getUserByGithubId } from "@/lib/user/service";
+import { getUser, getUserByGithubId } from "@/lib/user/service";
 import { Webhooks } from "@octokit/webhooks";
 
 import { getOctokitInstance } from "../utils";
@@ -111,21 +111,37 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
         const points = parseInt(match[1], 10);
 
         const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
-        if (!ossGgRepo) {
-          comment = "If you are the repo owner, please register at oss.gg to be able to award points";
+
+        let usersThatCanAwardPoints = ossGgRepo?.installation.memberships.map((m) => m.userId);
+        if (!usersThatCanAwardPoints) {
+          throw new Error("No admins for the given repo in oss.gg!");
+        }
+        const ossGgUsers = await Promise.all(
+          usersThatCanAwardPoints.map(async (userId) => {
+            const user = await getUser(userId);
+            return user?.githubId;
+          })
+        );
+        const isUserAllowedToAwardPoints = ossGgUsers?.includes(context.payload.comment.user.id);
+        if (!isUserAllowedToAwardPoints) {
+          comment = "You are not allowed to award points";
         } else {
-          const user = await getUserByGithubId(context.payload.comment.user.id);
-          if (!user) {
-            comment = "Please register at oss.gg to be able to claim your awarded points";
+          if (!ossGgRepo) {
+            comment = "If you are the repo owner, please register at oss.gg to be able to award points";
           } else {
-            await assignUserPoints(
-              user?.id,
-              points,
-              "Awarded points",
-              context.payload.comment.html_url,
-              ossGgRepo?.id
-            );
-            comment = `Awarding ${user.login}: ${points} points!`;
+            const user = await getUserByGithubId(context.payload.comment.user.id);
+            if (!user) {
+              comment = "Please register at oss.gg to be able to claim your awarded points";
+            } else {
+              await assignUserPoints(
+                user?.id,
+                points,
+                "Awarded points",
+                context.payload.comment.html_url,
+                ossGgRepo?.id
+              );
+              comment = `Awarding ${user.login}: ${points} points!`;
+            }
           }
         }
 

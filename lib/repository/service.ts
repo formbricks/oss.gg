@@ -25,6 +25,13 @@ export const getRepositoryByGithubId = async (githubId: number) => {
       where: {
         githubId,
       },
+      include: {
+        installation: {
+          include: {
+            memberships: true,
+          },
+        },
+      },
     });
     return repository;
   } catch (error) {
