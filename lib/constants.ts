@@ -21,4 +21,5 @@ export const ON_NEW_ISSUE = "Thanks for opening an issue! It's live on oss.gg!";
 export const ON_REPO_NOT_REGISTERED = `This repository is not registered with oss.gg. Please register it at https://oss.gg.`;
 export const GITHUB_APP_APP_ID = env.GITHUB_APP_APP_ID as string;
 export const GITHUB_APP_PRIVATE_KEY = env.GITHUB_APP_PRIVATE_KEY as string;
+
 export const GITHUB_WEBHOOK_SECRET = env.GITHUB_WEBHOOK_SECRET as string;
