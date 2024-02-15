@@ -41,7 +41,8 @@
 - Setup URL: `http://localhost:3000/select-repo` (Check the **Redirect on Update** option)
 - Webhook set to Active and get a URL from `https://smee.io/` by clicking on **Start a new channel** and then paste the URL in the Webhook URL field.
 - Disable SSL verification for now
+- Hit "Create GitHub App"
+- Copy the Client ID and keep it in the `.env` file (at the top of the page)
 - Generate a Client Secret and keep it in the `.env` file
 - Generate a Private Key and keep it in the `.env` file
-- Copy the Client ID and keep it in the `.env` file
 - Now Hit the **Save Changes** button
