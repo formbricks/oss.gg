@@ -3,13 +3,9 @@ import { ZId } from "@/types/common";
 import { DatabaseError, ResourceNotFoundError } from "@/types/errors";
 import { TUser, TUserCreateInput, TUserUpdateInput, ZUser, ZUserUpdateInput } from "@/types/user";
 import { Prisma } from "@prisma/client";
-import { unstable_cache } from "next/cache";
-import { z } from "zod";
 
-import { DEFAULT_CACHE_REVALIDATION_INTERVAL } from "../constants";
 import { formatDateFields } from "../utils/datetime";
 import { validateInputs } from "../utils/validate";
-import { userCache } from "./cache";
 
 const userSelection = {
   id: true,
@@ -24,117 +20,78 @@ const userSelection = {
 
 // function to retrive basic information about a user's user
 export const getUser = async (id: string): Promise<TUser | null> => {
-  const user = await unstable_cache(
-    async () => {
-      validateInputs([id, ZId]);
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        id,
+      },
+      select: userSelection,
+    });
 
-      try {
-        const user = await db.user.findUnique({
-          where: {
-            id,
-          },
-          select: userSelection,
-        });
-
-        if (!user) {
-          return null;
-        }
-        return user;
-      } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new DatabaseError(error.message);
-        }
-
-        throw error;
-      }
-    },
-    [`getUser-${id}`],
-    {
-      tags: [userCache.tag.byId(id)],
-      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
+    if (!user) {
+      return null;
     }
-  )();
+    return {
+      ...user,
+      ...formatDateFields(user, ZUser),
+    };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      throw new DatabaseError(error.message);
+    }
 
-  return user
-    ? {
-        ...user,
-        ...formatDateFields(user, ZUser),
-      }
-    : null;
+    throw error;
+  }
 };
 
 export const getUserByLogin = async (login: string): Promise<TUser | null> => {
-  const user = await unstable_cache(
-    async () => {
-      validateInputs([login, z.string()]);
-
-      try {
-        const user = await db.user.findFirst({
-          where: {
-            login,
-          },
-          select: userSelection,
-        });
-
-        return user;
-      } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new DatabaseError(error.message);
-        }
-
-        throw error;
-      }
-    },
-    [`getUserByLogin-${login}`],
-    {
-      tags: [userCache.tag.byLogin(login)],
-      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
+  try {
+    const user = await db.user.findFirst({
+      where: {
+        login,
+      },
+      select: userSelection,
+    });
+    if (!user) {
+      return null;
     }
-  )();
 
-  return user
-    ? {
-        ...user,
-        ...formatDateFields(user, ZUser),
-      }
-    : null;
+    return {
+      ...user,
+      ...formatDateFields(user, ZUser),
+    };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      throw new DatabaseError(error.message);
+    }
+
+    throw error;
+  }
 };
 
 export const getUserByGithubId = async (githubId: number): Promise<TUser | null> => {
-  const user = await unstable_cache(
-    async () => {
-      validateInputs([githubId, z.number()]);
-
-      try {
-        const user = await db.user.findFirst({
-          where: {
-            githubId,
-          },
-          select: userSelection,
-        });
-
-        return user;
-      } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new DatabaseError(error.message);
-        }
-
-        throw error;
-      }
-    },
-    [`getUserByGithubId-${githubId}`],
-    {
-      tags: [userCache.tag.byGithubId(githubId)],
-      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
+  try {
+    const user = await db.user.findFirst({
+      where: {
+        githubId,
+      },
+      select: userSelection,
+    });
+    if (!user) {
+      return null;
     }
-  )();
 
-  return user
-    ? {
-        ...user,
-        ...formatDateFields(user, ZUser),
-      }
-    : null;
+    return {
+      ...user,
+      ...formatDateFields(user, ZUser),
+    };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      throw new DatabaseError(error.message);
+    }
+
+    throw error;
+  }
 };
 
 // function to update a user's user
@@ -148,11 +105,6 @@ export const updateUser = async (personId: string, data: TUserUpdateInput): Prom
       },
       data: data,
       select: userSelection,
-    });
-
-    userCache.revalidate({
-      login: updatedUser.login,
-      id: updatedUser.id,
     });
 
     return updatedUser;
@@ -175,11 +127,6 @@ export const deleteUser = async (id: string): Promise<TUser> => {
     select: userSelection,
   });
 
-  userCache.revalidate({
-    login: user.login,
-    id,
-  });
-
   return user;
 };
 
@@ -189,11 +136,6 @@ export const createUser = async (data: TUserCreateInput): Promise<TUser> => {
   const user = await db.user.create({
     data: data,
     select: userSelection,
-  });
-
-  userCache.revalidate({
-    login: user.login,
-    id: user.id,
   });
 
   return user;

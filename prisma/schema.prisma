@@ -144,5 +144,6 @@ model PointTransaction {
   user       User       @relation(fields: [userId], references: [id])
   repository Repository @relation(fields: [repositoryId], references: [id])
 
+  @@unique([userId, repositoryId, url])
   @@map(name: "point_transactions")
 }

@@ -7,7 +7,7 @@ import {
 } from "@/lib/constants";
 import { assignUserPoints } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
-import { getUser, getUserByGithubId } from "@/lib/user/service";
+import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
 import { Webhooks } from "@octokit/webhooks";
 
 import { getOctokitInstance } from "../utils";
@@ -128,24 +128,35 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
         );
         const isUserAllowedToAwardPoints = ossGgUsers?.includes(context.payload.comment.user.id);
         if (!isUserAllowedToAwardPoints) {
-          comment = "You are not allowed to award points";
+          comment = "You are not allowed to award points! Please contact an admin.";
         } else {
           if (!ossGgRepo) {
             comment = "If you are the repo owner, please register at oss.gg to be able to award points";
           } else {
-            const user = await getUserByGithubId(context.payload.comment.user.id);
+            const prAuthorGithubId = context.payload.issue.user.id;
+            const prAuthorUsername = context.payload.issue.user.login;
+            const { data: prAuthorProfile } = await octokit.users.getByUsername({
+              username: prAuthorUsername,
+            });
+            let user = await getUserByGithubId(prAuthorGithubId);
             if (!user) {
-              comment = "Please register at oss.gg to be able to claim your awarded points";
-            } else {
-              await assignUserPoints(
-                user?.id,
-                points,
-                "Awarded points",
-                context.payload.comment.html_url,
-                ossGgRepo?.id
-              );
-              comment = `Awarding ${user.login}: ${points} points!`;
+              user = await createUser({
+                githubId: prAuthorGithubId,
+                login: prAuthorUsername,
+                email: prAuthorProfile.email,
+                name: prAuthorProfile.name,
+                avatarUrl: context.payload.issue.user.avatar_url,
+              });
+              comment = "Please register at oss.gg to be able to claim your rewards.";
             }
+            await assignUserPoints(
+              user?.id,
+              points,
+              "Awarded points",
+              context.payload.comment.html_url,
+              ossGgRepo?.id
+            );
+            comment = `Awarding ${user.login}: ${points} points!` + " " + comment;
           }
         }
 
