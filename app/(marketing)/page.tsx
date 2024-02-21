@@ -1,6 +1,6 @@
 import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
-import { env } from "@/env.mjs";
+import { GITHUB_APP_ACCESS_TOKEN } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +18,7 @@ async function getGitHubStars(): Promise<string | null> {
     const response = await fetch("https://api.github.com/repos/formbricks/oss.gg", {
       headers: {
         Accept: "application/vnd.github+json",
-        Authorization: `Bearer ${env.GITHUB_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
       },
       next: {
         revalidate: 60,

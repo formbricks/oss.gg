@@ -4,7 +4,7 @@ export const DEFAULT_CACHE_REVALIDATION_INTERVAL = 60 * 30; // 30 minutes
 
 export const GITHUB_CACHE_REVALIDATION_INTERVAL = 60 * 60 * 24; // 24 hours
 
-export const GITHUB_ACCESS_TOKEN = env.GITHUB_ACCESS_TOKEN;
+export const GITHUB_APP_CLIENT_SECRET = env.GITHUB_APP_CLIENT_SECRET;
 
 // Github
 export const LEVEL_LABEL = "level";
@@ -19,7 +19,10 @@ export const AWARD_POINTS_IDENTIFIER = "/award" as const;
 
 export const ON_NEW_ISSUE = "Thanks for opening an issue! It's live on oss.gg!";
 export const ON_REPO_NOT_REGISTERED = `This repository is not registered with oss.gg. Please register it at https://oss.gg.`;
-export const GITHUB_APP_APP_ID = env.GITHUB_APP_APP_ID as string;
+export const GITHUB_APP_ID = env.GITHUB_APP_ID as string;
 export const GITHUB_APP_PRIVATE_KEY = env.GITHUB_APP_PRIVATE_KEY as string;
 
-export const GITHUB_WEBHOOK_SECRET = env.GITHUB_WEBHOOK_SECRET as string;
+export const GITHUB_APP_WEBHOOK_SECRET = env.GITHUB_APP_WEBHOOK_SECRET as string;
+
+export const GITHUB_APP_INSTALLATION_URL = env.GITHUB_APP_INSTALLATION_URL as string;
+export const GITHUB_APP_ACCESS_TOKEN = env.GITHUB_APP_ACCESS_TOKEN as string;

@@ -1,4 +1,4 @@
-import { GITHUB_APP_PRIVATE_KEY, GITHUB_WEBHOOK_SECRET } from "@/lib/constants";
+import { GITHUB_APP_PRIVATE_KEY, GITHUB_APP_WEBHOOK_SECRET } from "@/lib/constants";
 import { db } from "@/lib/db";
 import { App } from "octokit";
 
@@ -21,7 +21,7 @@ export const sendInstallationDetails = async (
       appId,
       privateKey: GITHUB_APP_PRIVATE_KEY,
       webhooks: {
-        secret: GITHUB_WEBHOOK_SECRET!,
+        secret: GITHUB_APP_WEBHOOK_SECRET!,
       },
     });
     const octokit = await app.getInstallationOctokit(installationId);

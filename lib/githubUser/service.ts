@@ -1,4 +1,4 @@
-import { GITHUB_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL } from "@/lib/constants";
+import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL } from "@/lib/constants";
 import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
@@ -8,7 +8,7 @@ export const getGithubUserByLogin = (githubLogin: string) =>
   unstable_cache(
     async () => {
       try {
-        const octokit = new Octokit({ auth: `token ${GITHUB_ACCESS_TOKEN}` });
+        const octokit = new Octokit({ auth: `token ${GITHUB_APP_ACCESS_TOKEN}` });
         // Use the 'users' endpoint to get user data
         const { data } = await octokit.rest.users.getByUsername({
           username: githubLogin,
@@ -25,4 +25,3 @@ export const getGithubUserByLogin = (githubLogin: string) =>
       revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
     }
   )();
-
