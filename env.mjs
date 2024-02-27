@@ -19,7 +19,7 @@ export const env = createEnv({
     GITHUB_APP_CLIENT_SECRET: z.string().min(1),
     GITHUB_APP_WEBHOOK_SECRET: z.string().min(1).optional(),
     GITHUB_APP_PRIVATE_KEY: z.string().min(1).optional(),
-    GITHUB_APP_INSTALLATION_URL: z.string().min(1),
+    GITHUB_APP_SLUG: z.string().min(1),
     GITHUB_APP_ACCESS_TOKEN: z.string().min(1),
   },
   client: {
@@ -41,7 +41,7 @@ export const env = createEnv({
     GITHUB_APP_CLIENT_SECRET: process.env.GITHUB_APP_CLIENT_SECRET,
     GITHUB_APP_WEBHOOK_SECRET: process.env.GITHUB_APP_WEBHOOK_SECRET,
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
-    GITHUB_APP_INSTALLATION_URL: process.env.GITHUB_APP_INSTALLATION_URL,
+    GITHUB_APP_SLUG: process.env.GITHUB_APP_SLUG,
     GITHUB_APP_ACCESS_TOKEN: process.env.GITHUB_APP_ACCESS_TOKEN,
   },
 });

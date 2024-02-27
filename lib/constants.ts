@@ -4,6 +4,7 @@ export const DEFAULT_CACHE_REVALIDATION_INTERVAL = 60 * 30; // 30 minutes
 
 export const GITHUB_CACHE_REVALIDATION_INTERVAL = 60 * 60 * 24; // 24 hours
 
+export const GITHUB_APP_CLIENT_ID = env.GITHUB_APP_CLIENT_ID;
 export const GITHUB_APP_CLIENT_SECRET = env.GITHUB_APP_CLIENT_SECRET;
 
 // Github
@@ -24,5 +25,5 @@ export const GITHUB_APP_PRIVATE_KEY = env.GITHUB_APP_PRIVATE_KEY as string;
 
 export const GITHUB_APP_WEBHOOK_SECRET = env.GITHUB_APP_WEBHOOK_SECRET as string;
 
-export const GITHUB_APP_INSTALLATION_URL = env.GITHUB_APP_INSTALLATION_URL as string;
+export const GITHUB_APP_SLUG = env.GITHUB_APP_SLUG as string;
 export const GITHUB_APP_ACCESS_TOKEN = env.GITHUB_APP_ACCESS_TOKEN as string;

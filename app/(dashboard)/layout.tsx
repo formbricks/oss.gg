@@ -2,7 +2,7 @@ import { DashboardNav } from "@/components/nav";
 import { Logo } from "@/components/ui/logo";
 import { UserAccountNav } from "@/components/user-account-nav";
 import { dashboardConfig } from "@/config/dashboard";
-import { GITHUB_APP_INSTALLATION_URL } from "@/lib/constants";
+import { GITHUB_APP_SLUG } from "@/lib/constants";
 import { getCurrentUser } from "@/lib/session";
 import { notFound } from "next/navigation";
 
@@ -40,7 +40,9 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
         </div>
         <div>
           <div className="mb-2">
-            <ConnectGitHubAppButton appInstallationUrl={GITHUB_APP_INSTALLATION_URL} />
+            <ConnectGitHubAppButton
+              appInstallationUrl={`https://github.com/apps/${GITHUB_APP_SLUG}/installations/new`}
+            />
           </div>
           <DashboardNav items={dashboardConfig.bottomNav} />
           <p className="mb-3 ml-3 mt-5 text-xs">
