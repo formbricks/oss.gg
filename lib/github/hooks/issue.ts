@@ -210,6 +210,7 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
       const match = issueCommentBody.match(awardPointsRegex);
       const isPR = !!context.payload.issue.pull_request;
       const issueNumber = isPR ? context.payload.issue.number : undefined;
+      const owner = context.payload.repository.owner.login;
 
       let comment: string = "";
 
@@ -271,11 +272,12 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
           body: comment,
           issue_number: issueNumber,
           repo,
-          owner: "formbricks",
+          owner,
         });
       }
     } catch (err) {
       console.error(err);
+      throw new Error(err);
     }
   });
 };
