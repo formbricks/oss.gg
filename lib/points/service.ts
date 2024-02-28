@@ -31,10 +31,6 @@ export const assignUserPoints = async (
     });
     return pointsUpdated;
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error("An error occurred while updating user points:", error.message);
-      throw new Error("Database error occurred");
-    }
     throw error;
   }
 };
