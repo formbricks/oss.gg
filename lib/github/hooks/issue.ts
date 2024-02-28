@@ -3,6 +3,7 @@ import {
   AWARD_POINTS_IDENTIFIER,
   EVENT_TRIGGERS,
   LEVEL_LABEL,
+  OSS_GG_LABEL,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
 import { assignUserPoints } from "@/lib/points/service";
@@ -50,18 +51,62 @@ export const onIssueOpened = async (webhooks: Webhooks) => {
 export const onAssignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
-      const octokit = getOctokitInstance(context.payload.installation?.id!);
-
-      const issueNumber = context.payload.issue.number;
-      const repo = context.payload.repository.name;
       const issueCommentBody = context.payload.comment.body;
-
       if (issueCommentBody === ASSIGN_IDENTIFIER) {
-        await octokit.issues.createComment({
-          body: "ok brother",
-          issue_number: issueNumber,
+        const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
+        if (!isOssGgLabel) return;
+
+        const issueNumber = context.payload.issue.number;
+        const repo = context.payload.repository.name;
+        const owner = context.payload.repository.owner.login;
+        const commenter = context.payload.comment.user.login;
+        const octokit = getOctokitInstance(context.payload.installation?.id!);
+
+        const isAssigned = context.payload.issue.assignees.length > 0;
+        if (isAssigned) {
+          const assignee = context.payload.issue.assignees[0].login;
+          const message =
+            assignee === commenter
+              ? `This issue is already assigned to you. Let's get this shipped!`
+              : `This issue is already assigned to another person. Please find more issues [here](https://oss.gg/issues).`;
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: message,
+          });
+          return;
+        }
+
+        const { data: userIssues } = await octokit.issues.listForRepo({
+          owner,
           repo,
-          owner: "formbricks",
+          assignee: commenter,
+          state: "open",
+        });
+
+        if (userIssues.length > 0) {
+          const assignedIssue = userIssues[0];
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: `You already have an open issue assigned to you [here](${assignedIssue.html_url}). Once that's closed or unassigned, only then we recommend you to take up more.`,
+          });
+          return;
+        }
+
+        await octokit.issues.addAssignees({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          assignees: [commenter],
+        });
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: `Assigned to @${commenter}! Excited to have you ship this 🕹️`,
         });
       }
     } catch (err) {
