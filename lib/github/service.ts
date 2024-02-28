@@ -3,7 +3,7 @@ import "server-only";
 import { ZGithubApiResponseSchema } from "@/types/issue";
 import { unstable_cache } from "next/cache";
 
-import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL } from "../constants";
+import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
 
 export const getMergedPullRequestsByGithubLogin = (repo: string, githubLogin: string) =>
   unstable_cache(
@@ -76,7 +76,7 @@ export const getOpenPullRequestsByGithubLogin = (repo: string, githubLogin: stri
 export const getAllOpenIssuesOfRepo = (repo: string) =>
   unstable_cache(
     async () => {
-      const url = `https://api.github.com/search/issues?q=repo:${repo}+is:issue+is:open+label:"🕹️ oss.gg"&sort=created&order=desc`;
+      const url = `https://api.github.com/search/issues?q=repo:${repo}+is:issue+is:open+no:assignee+label:"${OSS_GG_LABEL}"&sort=created&order=desc`;
 
       const headers = {
         Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,

@@ -14,7 +14,6 @@ export const metadata = {
 export default async function IssuesPage() {
   const openPRs = await getAllOpenIssuesOfRepo("formbricks/formbricks");
   const enrolledRepos = await getEnrolledRepositoriesAction();
-  console.log("enrolledRepos", enrolledRepos);
 
   return (
     <DashboardShell>
@@ -26,7 +25,7 @@ export default async function IssuesPage() {
         {enrolledRepos ? (
           openPRs.map((issue) => <GitHubIssue issue={issue} key={issue.title} />)
         ) : (
-          <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-50">
+          <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-900">
             <p>You have not yet enrolled to play in a repository 🕹️</p>
             <Button href="/enroll">Explore oss.gg repositories</Button>
           </div>
