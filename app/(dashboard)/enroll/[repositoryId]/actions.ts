@@ -9,8 +9,6 @@ import { getCurrentUser } from "@/lib/session";
  * @returns The created enrollment object.
  */
 export const enrollCurrentUserAction = async (repositoryId: string) => {
-  console.log("createEnrollmentAction: Start", { repositoryId });
-
   try {
     const user = await getCurrentUser();
 
@@ -27,7 +25,6 @@ export const enrollCurrentUserAction = async (repositoryId: string) => {
   }
 };
 
-
 /**
  * Deletes an existing enrollment for the authenticated user in a specific repository.
  * @param repositoryId - The ID of the repository from which the user is to be unenrolled.
@@ -38,7 +35,7 @@ export const disenrollCurrentUserAction = async (repositoryId: string): Promise<
     if (!user || !user.id) {
       throw new Error("User must be authenticated to perform this action.");
     }
-    
+
     await deleteEnrollment(user.id, repositoryId);
   } catch (error) {
     console.error("Error deleting enrollment:", error.message);
@@ -57,7 +54,7 @@ export const hasEnrollmentForRepositoryAction = async (repositoryId: string): Pr
     if (!user || !user.id) {
       throw new Error("User must be authenticated to perform this action.");
     }
-    
+
     return await hasEnrollmentForRepository(user.id, repositoryId);
   } catch (error) {
     console.error("Error checking enrollment:", error.message);

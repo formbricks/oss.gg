@@ -41,7 +41,7 @@ export function DashboardNav({ items, userGitHubId }: DashboardNavProps) {
             className={cn(
               "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
             )}>
-            <span>Your Profile</span>
+            <span>Your oss.gg Profile</span>
           </span>
         </Link>
       )}

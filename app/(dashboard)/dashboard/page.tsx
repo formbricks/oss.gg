@@ -22,17 +22,6 @@ const cards = [
     description: "Already enrolled? Explore open issues or non-code tasks specific to each OS project.",
   },
   {
-    href: "/settings",
-    title: "Settings",
-    description: "Add your address to receive merch and change notification settings.",
-  },
-  {
-    href: "/",
-    title: "Your profile",
-    description:
-      "oss.gg provides you with a profile page to show case your contributions. Attach it to your CV!",
-  },
-  {
     href: "/contribute",
     title: "Help build oss.gg",
     description:

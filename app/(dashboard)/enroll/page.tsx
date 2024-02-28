@@ -43,7 +43,7 @@ export default async function EnrollPage() {
               <Link
                 href={`/enroll/${project.id}`}
                 key={project.githubId}
-                className="flex justify-between space-x-5 rounded-md border border-transparent bg-muted p-6 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer">
+                className="my-3 flex justify-between space-x-5 rounded-md border border-transparent bg-muted p-6 transition-all duration-150 ease-in-out hover:scale-102 hover:cursor-pointer">
                 <div className="flex items-center space-x-5">
                   <Image
                     className="rounded-md"

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import GitHubIssue from "@/components/ui/githubIssue";
+import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getMergedPullRequestsByGithubLogin, getOpenPullRequestsByGithubLogin } from "@/lib/github/service";
 import { getGithubUserByLogin } from "@/lib/githubUser/service";
 import { getUserByLogin } from "@/lib/user/service";
@@ -102,6 +103,9 @@ export default async function ProfilePage({ params }) {
       getOpenPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
     ]);
 
+    const userEnrollments = await getEnrolledRepositories(user?.id);
+    console.log(userEnrollments);
+
     return (
       <div>
         <ProfileInfo userData={userData} />
@@ -110,29 +114,39 @@ export default async function ProfilePage({ params }) {
             {/* <h2 className="text-7xl text-gray-800">#3</h2> <p className="text-sm text-gray-500">of 727</p> */}
           </div>
           <div className="col-span-4">
-            {openPRs && (
+            {openPRs.length > 1 && (
               <div>
-                <h3 className="mb-2 text-xl font-medium">Open PRs @ Formbricks</h3>
+                <h3 className="mb-2 text-xl font-medium">Open PRs @ Formbricks by {userData.name} </h3>
                 {openPRs.map((pr) => (
                   <GitHubIssue issue={pr} key={pr.title} />
                 ))}
               </div>
             )}
-            {userData && (
-              <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
-                <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
-                <div>
-                  <p className="font-medium">{userData.name} enrolled at Formbricks</p>
-                  <p className="mt-0.5 text-xs">Let the games begin!</p>
+            {userEnrollments.some((item) => item.name === "formbricks") && (
+              <>
+                <h3 className="mb-2 mt-12  text-xl font-medium">Congrats! </h3>
+                <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
+                  <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
+                  <div>
+                    <p className="font-medium">{userData.name} enrolled to play at Formbricks</p>
+                    <p className="mt-0.5 text-xs">Let the games begin!</p>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
-            <h3 className="mb-2 mt-12 text-xl font-medium">Contributions @ Formbricks</h3>
-            {mergedIssues ? (
-              mergedIssues.map((issue) => <GitHubIssue issue={issue} key={issue.title} />)
+            {mergedIssues.length > 1 ? (
+              <>
+                <h3 className="mb-2 mt-12 text-xl font-medium">
+                  Contributions @ Formbricks by {userData.name}
+                </h3>
+                {mergedIssues.map((issue) => (
+                  <GitHubIssue issue={issue} key={issue.title} />
+                ))}
+              </>
             ) : (
               <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-50">
-                <p>You have not yet contributed to Formbricks🕹️</p>
+                <p>You have not yet contributed to an oss.gg repository 🕹️</p>
+                <Button href="/enroll">Get started!</Button>
               </div>
             )}
           </div>
