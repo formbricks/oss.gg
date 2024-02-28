@@ -6,7 +6,7 @@ export default function DashboardSettingsLoading() {
     <DashboardShell>
       <DashboardHeader
         heading="Open issues"
-        text="Comment on these issues to get assigned to work on them."
+        text="Comment /assign on these issues to assign yourself to these issues."
       />
     </DashboardShell>
   );

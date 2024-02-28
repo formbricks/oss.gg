@@ -8,7 +8,7 @@ import { getEnrolledRepositoriesAction } from "./actions";
 
 export const metadata = {
   title: "Open issues",
-  description: "Comment on these issues to get assigned to work on them.",
+  description: "Comment /assign on these issues to assign yourself to these issues.",
 };
 
 export default async function IssuesPage() {
@@ -19,7 +19,7 @@ export default async function IssuesPage() {
     <DashboardShell>
       <DashboardHeader
         heading="Open issues"
-        text="Comment on these issues to get assigned to work on them."
+        text="Comment /assign on these issues to assign yourself to these issues."
       />
       <div className="space-y-2">
         {enrolledRepos && openPRs.length > 1 ? (
