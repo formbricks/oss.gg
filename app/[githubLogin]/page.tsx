@@ -61,10 +61,10 @@ const dummyIssues = [
   },
 ];
 
-const ProfileInfo = ({ userData }) => (
+const ProfileInfo = ({ githubUserData }) => (
   <div className="z-40 -mt-24 grid grid-cols-5 gap-6 text-slate-50 md:-mt-36">
     <Image
-      src={userData.avatar_url}
+      src={githubUserData.avatar_url}
       alt="github avatar"
       width={180}
       height={180}
@@ -74,14 +74,14 @@ const ProfileInfo = ({ userData }) => (
 
     <div className="col-span-3 flex items-center space-x-6 md:col-span-4">
       <div>
-        <h1 className="text-3xl font-bold">{userData.name}</h1>
-        <p className="mt-1 text-xs">{userData.bio}</p>
+        <h1 className="text-3xl font-bold">{githubUserData.name}</h1>
+        <p className="mt-1 text-xs">{githubUserData.bio}</p>
       </div>
 
-      {userData.twitter_username && (
-        <SocialLink href={`https://twitter.com/${userData.twitter_username}`} Icon={FaTwitter} />
+      {githubUserData.twitter_username && (
+        <SocialLink href={`https://twitter.com/${githubUserData.twitter_username}`} Icon={FaTwitter} />
       )}
-      <SocialLink href={userData.html_url || "https://formbricks.com/github"} Icon={FaGithub} />
+      <SocialLink href={githubUserData.html_url || "https://formbricks.com/github"} Icon={FaGithub} />
     </div>
   </div>
 );
@@ -97,58 +97,67 @@ export default async function ProfilePage({ params }) {
   const user = await getUserByLogin(githubLogin);
 
   if (user) {
-    const [userData, mergedIssues, openPRs] = await Promise.all([
-      getGithubUserByLogin(githubLogin),
+    const [githubUserData, mergedIssues, openPRs] = await Promise.all([
+      getGithubUserByLogin(githubLogin).then(
+        (data) => data || { name: "Unknown", avatar_url: Rick, bio: "No bio available" }
+      ),
       getMergedPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
       getOpenPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
     ]);
 
     const userEnrollments = await getEnrolledRepositories(user?.id);
-    console.log(userEnrollments);
 
     return (
       <div>
-        <ProfileInfo userData={userData} />
-        <div className="gird-cols-4 mt-12 grid gap-6 md:grid-cols-5">
+        <ProfileInfo githubUserData={githubUserData} />
+        <div className="mt-12 grid grid-cols-4 gap-6 md:grid-cols-5">
           <div className="col-span-1 hidden text-center md:block">
             {/* <h2 className="text-7xl text-gray-800">#3</h2> <p className="text-sm text-gray-500">of 727</p> */}
           </div>
-          <div className="col-span-4">
-            {openPRs.length > 1 && (
-              <div>
-                <h3 className="mb-2 text-xl font-medium">Open PRs @ Formbricks by {userData.name} </h3>
-                {openPRs.map((pr) => (
-                  <GitHubIssue issue={pr} key={pr.title} />
-                ))}
-              </div>
-            )}
-            {userEnrollments.some((item) => item.name === "formbricks") && (
-              <>
-                <h3 className="mb-2 mt-12  text-xl font-medium">Congrats! </h3>
-                <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
-                  <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
-                  <div>
-                    <p className="font-medium">{userData.name} enrolled to play at Formbricks</p>
-                    <p className="mt-0.5 text-xs">Let the games begin!</p>
-                  </div>
+          <div className="col-span-4 space-y-12">
+            <div>
+              {openPRs.length > 1 && (
+                <div>
+                  <h3 className="mb-2 text-xl font-medium">
+                    Open PRs @ Formbricks by {githubUserData.name}{" "}
+                  </h3>
+                  {openPRs.map((pr) => (
+                    <GitHubIssue issue={pr} key={pr.title} />
+                  ))}
                 </div>
-              </>
-            )}
-            {mergedIssues.length > 1 ? (
-              <>
-                <h3 className="mb-2 mt-12 text-xl font-medium">
-                  Contributions @ Formbricks by {userData.name}
-                </h3>
-                {mergedIssues.map((issue) => (
-                  <GitHubIssue issue={issue} key={issue.title} />
-                ))}
-              </>
-            ) : (
-              <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-50">
-                <p>You have not yet contributed to an oss.gg repository 🕹️</p>
-                <Button href="/enroll">Get started!</Button>
-              </div>
-            )}
+              )}
+            </div>
+            <div>
+              {userEnrollments.some((item) => item.name === "formbricks") && (
+                <>
+                  <h3 className="mb-2 text-xl font-medium">Congrats! </h3>
+                  <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
+                    <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
+                    <div>
+                      <p className="font-medium">{githubUserData?.name} enrolled to play at Formbricks</p>
+                      <p className="mt-0.5 text-xs">Let the games begin!</p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div>
+              {mergedIssues.length > 1 ? (
+                <>
+                  <h3 className="mb-2 text-xl font-medium">
+                    Contributions @ Formbricks by {githubUserData.name}
+                  </h3>
+                  {mergedIssues.map((issue) => (
+                    <GitHubIssue issue={issue} key={issue.title} />
+                  ))}
+                </>
+              ) : (
+                <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-50">
+                  <p>You have not yet contributed to an oss.gg repository 🕹️</p>
+                  <Button href="/enroll">Get started!</Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -161,7 +170,7 @@ export default async function ProfilePage({ params }) {
     };
     return (
       <div>
-        <ProfileInfo userData={gitHubData} />
+        <ProfileInfo githubUserData={gitHubData} />
         <div className="grid grid-cols-4 gap-6 md:grid-cols-5">
           <div className="col-span-1 hidden text-center md:block"></div>
           <div className="relative col-span-4 mb-12">

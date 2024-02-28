@@ -10,6 +10,7 @@ interface Issue {
   state?: string;
   draft?: boolean;
   isIssue: boolean;
+  points?: number;
 }
 
 const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
@@ -30,9 +31,14 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
       ) : (
         <Image className="rounded-md" src={issue.logoHref} alt={issue.title} width={50} height={50} />
       )}
-      <div>
-        <p className="font-medium">{issue.title}</p>
-        <p className="mt-0.5 text-xs">opened by {issue.author}</p>
+      <div className="flex w-full justify-between">
+        <div>
+          <p className="font-medium">{issue.title}</p>
+          <p className="mt-0.5 text-xs">opened by {issue.author}</p>
+        </div>
+        <div className="flex items-center justify-center rounded-full bg-white px-6 py-1 font-semibold">
+          {issue.points} Points
+        </div>
       </div>
     </Link>
   );

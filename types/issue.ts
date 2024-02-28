@@ -1,7 +1,17 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const ZGithubUserSchema = z.object({
   login: z.string(),
+});
+
+export const ZGithubLabelSchema = z.object({
+  id: z.number(),
+  node_id: z.string(),
+  url: z.string(),
+  name: z.string(),
+  color: z.string(),
+  default: z.boolean(),
+  description: z.string().nullable(),
 });
 
 export const ZGithubPrIssueSchema = z.object({
@@ -9,6 +19,7 @@ export const ZGithubPrIssueSchema = z.object({
   title: z.string(),
   user: ZGithubUserSchema,
   id: z.number(),
+  labels: z.array(ZGithubLabelSchema),
   state: z.string().optional(), // Optional because it might not be present in all mappings
   draft: z.boolean().optional(), // Optional because it might not be present in all mappings
 });

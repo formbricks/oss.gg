@@ -22,10 +22,17 @@ export default async function IssuesPage() {
         text="Comment on these issues to get assigned to work on them."
       />
       <div className="space-y-2">
-        {enrolledRepos ? (
+        {enrolledRepos && openPRs.length > 1 ? (
           openPRs.map((issue) => <GitHubIssue issue={issue} key={issue.title} />)
+        ) : enrolledRepos && openPRs.length < 1 ? (
+          <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-muted">
+            <p>Currently, all oss.gg issues are assigned to players 👷</p>
+            <Button href="https://github.com/formbricks/formbricks/labels/%F0%9F%95%B9%EF%B8%8F%20oss.gg">
+              Have a look
+            </Button>
+          </div>
         ) : (
-          <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-900">
+          <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-muted">
             <p>You have not yet enrolled to play in a repository 🕹️</p>
             <Button href="/enroll">Explore oss.gg repositories</Button>
           </div>
