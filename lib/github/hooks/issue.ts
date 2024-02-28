@@ -118,20 +118,82 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
 export const onUnassignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
-      const octokit = getOctokitInstance(context.payload.installation?.id!);
+      const issueCommentBody = context.payload.comment.body;
+      if (issueCommentBody !== UNASSIGN_IDENTIFIER) {
+        return;
+      }
+
+      const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === "🕹️ oss.gg");
+      if (!isOssGgLabel) {
+        return;
+      }
 
       const issueNumber = context.payload.issue.number;
       const repo = context.payload.repository.name;
-      const issueCommentBody = context.payload.comment.body;
+      const owner = context.payload.repository.owner.login;
+      const commenter = context.payload.comment.user.login;
+      const octokit = getOctokitInstance(context.payload.installation?.id!);
 
-      if (issueCommentBody === UNASSIGN_IDENTIFIER) {
+      const isAssigned = context.payload.issue.assignees.length > 0;
+      if (!isAssigned) {
         await octokit.issues.createComment({
-          body: "no brother",
-          issue_number: issueNumber,
+          owner,
           repo,
-          owner: "formbricks",
+          issue_number: issueNumber,
+          body: "This issue is not assigned to anyone.",
         });
+        return;
       }
+
+      const assignee = context.payload.issue.assignees[0].login;
+      if (assignee === commenter) {
+        console.log("Unassigning issue from author");
+        await octokit.issues.removeAssignees({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          assignees: [assignee],
+        });
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: "Issue unassigned.",
+        });
+        return;
+      }
+
+      const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
+      const usersThatCanUnassign = ossGgRepo?.installation.memberships.map((m) => m.userId) || [];
+      const ossGgUsers = await Promise.all(
+        usersThatCanUnassign.map(async (userId) => {
+          const user = await getUser(userId);
+          return user?.githubId;
+        })
+      );
+
+      const isUserAllowedToUnassign = ossGgUsers?.includes(context.payload.comment.user.id);
+      if (!isUserAllowedToUnassign) {
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: "You cannot unassign this issue as it is not assigned to you.",
+        });
+        return;
+      }
+      await octokit.issues.removeAssignees({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        assignees: [assignee],
+      });
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        body: "Issue unassigned.",
+      });
     } catch (err) {
       console.error(err);
     }
