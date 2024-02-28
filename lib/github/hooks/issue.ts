@@ -147,7 +147,6 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
 
       const assignee = context.payload.issue.assignees[0].login;
       if (assignee === commenter) {
-        console.log("Unassigning issue from author");
         await octokit.issues.removeAssignees({
           owner,
           repo,
