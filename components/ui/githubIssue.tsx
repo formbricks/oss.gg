@@ -36,9 +36,11 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
           <p className="font-medium">{issue.title}</p>
           <p className="mt-0.5 text-xs">opened by {issue.author}</p>
         </div>
-        <div className="flex items-center justify-center rounded-full bg-white px-6 py-1 font-semibold">
-          {issue.points} Points
-        </div>
+        {issue.points && (
+          <div className="flex items-center justify-center rounded-full bg-white px-6 py-1 font-semibold">
+            {issue.points} Points
+          </div>
+        )}
       </div>
     </Link>
   );
