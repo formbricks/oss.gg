@@ -51,6 +51,9 @@ export const sendInstallationDetails = async (
               create: {
                 githubId: member.id,
                 login: member.login,
+                name: member.name,
+                email: member.email,
+                avatarUrl: member.avatar_url,
               },
             });
 
@@ -78,8 +81,9 @@ export const sendInstallationDetails = async (
           create: {
             githubId: user.id,
             login: user.login,
-            name: user.name || "",
-            email: user.email || "",
+            name: user.name,
+            email: user.email,
+            avatarUrl: user.avatar_url,
           },
         });
 

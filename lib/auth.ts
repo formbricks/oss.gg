@@ -14,7 +14,6 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: env.GITHUB_APP_CLIENT_ID,
       clientSecret: env.GITHUB_APP_CLIENT_SECRET,
-      
     }),
   ],
   callbacks: {
@@ -36,19 +35,27 @@ export const authOptions: NextAuthOptions = {
 
         if (existingUserWithAccount) {
           // User with this provider found
-          // check if email still the same
-          if (existingUserWithAccount.email === user.email) {
+          // check if email & metadata is still the same
+          if (
+            existingUserWithAccount.email === user.email &&
+            existingUserWithAccount.name === user.name &&
+            existingUserWithAccount.avatarUrl === user.avatarUrl
+          ) {
             return true;
           }
 
-          // user seemed to change his email within the provider
-          // update the email in the database
+          // user seemed to change their core details within the provider
+          // update them in the database
           await db.user.update({
             where: {
               id: existingUserWithAccount.id,
             },
             data: {
-              email: user.email,
+              name: profile.name,
+              githubId: profile.id,
+              login: profile.login,
+              email: profile.email,
+              avatarUrl: profile.avatar_url,
             },
           });
           return true;
@@ -71,9 +78,13 @@ export const authOptions: NextAuthOptions = {
       return false;
     },
     async jwt({ token, user }) {
+      if (!token.sub) {
+        return token;
+      }
+
       const dbUser = await db.user.findFirst({
         where: {
-          email: token.email as string,
+          githubId: parseInt(token.sub),
         },
       });
 
