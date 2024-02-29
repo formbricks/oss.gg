@@ -134,7 +134,9 @@ export default async function ProfilePage({ params }) {
                   <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
                     <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
                     <div>
-                      <p className="font-medium">{githubUserData?.name} enrolled to play at Formbricks</p>
+                      <p className="font-medium">
+                        {githubUserData?.name} enrolled to contribute to Formbricks
+                      </p>
                       <p className="mt-0.5 text-xs">Let the games begin!</p>
                     </div>
                   </div>
