@@ -19,7 +19,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
           className="rounded-md bg-slate-50 px-8 py-3 font-medium text-slate-900 hover:bg-slate-200">
           Let&apos;s play
         </Link>
-        <p className="absolute bottom-5 flex gap-x-1 text-xs text-slate-400 opacity-0 transition-all delay-700 duration-500 group-hover:opacity-100">
+        <p className="absolute bottom-5 flex gap-x-1 text-xs text-slate-400 opacity-0 transition-all duration-500 group-hover:opacity-100">
           Find out more <MoveDown className="h-4 w-4 animate-bounce" strokeWidth={1.5} />
         </p>
       </div>
