@@ -1,5 +1,6 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/rest";
+import crypto from "node:crypto";
 
 import {
   GITHUB_APP_CLIENT_ID,
@@ -13,11 +14,19 @@ export const getOctokitInstance = (installationId: number) => {
     throw new Error("No installation id provided");
   }
 
+  //Converting PKCS#1 to PKCS#8
+  //For it to work trigger it has to be in  PKCS#8 format
+
+  const privateKeyPkcs8 = crypto.createPrivateKey(GITHUB_APP_PRIVATE_KEY).export({
+    type: "pkcs8",
+    format: "pem",
+  });
+
   const octokit = new Octokit({
     authStrategy: createAppAuth,
     auth: {
       appId: GITHUB_APP_ID!,
-      privateKey: GITHUB_APP_PRIVATE_KEY!,
+      privateKey: privateKeyPkcs8!,
       installationId,
     },
   });
