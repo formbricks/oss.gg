@@ -42,3 +42,27 @@ export const getRepositoryByGithubId = async (githubId: number) => {
     throw error;
   }
 };
+
+export const getRepositoryById = async (id: string) => {
+  try {
+    const repository = await db.repository.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        installation: {
+          include: {
+            memberships: true,
+          },
+        },
+      },
+    });
+    return repository;
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error("An error occurred while fetching repository:", error.message);
+      throw new Error("Database error occurred");
+    }
+    throw error;
+  }
+};

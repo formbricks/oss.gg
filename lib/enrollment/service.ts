@@ -4,6 +4,8 @@ import { DatabaseError } from "@/types/errors";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
 
+import { getRepositoryById } from "../repository/service";
+import { getUser } from "../user/service";
 import { validateInputs } from "../utils/validate";
 
 /**
@@ -35,6 +37,12 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
     const enrollment = await db.enrollment.create({
       data: enrollmentData,
     });
+
+    const user = await getUser(enrollmentData.userId);
+    console.log("user", user);
+
+    const repository = await getRepositoryById(enrollmentData.repositoryId);
+    console.log("repository", repository);
 
     console.log("new enrollment created", enrollment);
 
