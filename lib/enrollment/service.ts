@@ -32,18 +32,9 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
       throw new Error("Enrollment already exists.");
     }
 
-    const user = await getUser(enrollmentData.userId);
-    console.log("user", user);
-
-    const repository = await getRepositoryById(enrollmentData.repositoryId);
-    console.log("repository", repository);
-
-    console.log("creating new enrollment");
     const enrollment = await db.enrollment.create({
       data: enrollmentData,
     });
-
-    console.log("new enrollment created", enrollment);
 
     return enrollment;
   } catch (error) {
