@@ -17,6 +17,7 @@ export const enrollCurrentUserAction = async (repositoryId: string) => {
     }
 
     const fullEnrollmentData = { repositoryId: repositoryId, userId: user.id };
+    console.log("full enroll data", fullEnrollmentData);
 
     const enrollment = await createEnrollment(fullEnrollmentData);
     return enrollment;
