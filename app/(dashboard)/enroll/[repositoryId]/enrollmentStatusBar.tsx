@@ -39,14 +39,8 @@ export default function EnrollmentStatusBar({ repositoryId }) {
     async (isEnrolling) => {
       setIsLoading(true);
       try {
-        console.log("came in try for handleenrolmchange");
-        
         if (isEnrolling) {
-          console.log("is enrolling tru");
-          
           await enrollCurrentUserAction(repositoryId);
-          console.log("await over enrol current action");
-          
           toast({ title: "Let the games begin 🕹️", description: "You're successfully enrolled." });
         } else {
           await disenrollCurrentUserAction(repositoryId);
