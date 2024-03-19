@@ -7,11 +7,15 @@ import Link from "next/link";
 
 import Auto1 from "../../public/automations-1.webp";
 import Auto2 from "../../public/automations-2.webp";
+import CommPage1 from "../../public/comms-page-1.webp";
+import CommPage2 from "../../public/comms-page-2.webp";
 import Levels2 from "../../public/levels-2.webp";
 import Levels1 from "../../public/levels.webp";
 import MergeCeleb from "../../public/merge-celeb.webp";
 import ProblemsSolved from "../../public/problems-solved.webp";
 import Problems from "../../public/problems-with-contributions.webp";
+import WebApp1 from "../../public/webapp-0.webp";
+import WebApp2 from "../../public/webapp-1.webp";
 
 async function getGitHubStars(): Promise<string | null> {
   try {
@@ -45,7 +49,7 @@ export default async function IndexPage() {
       <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
         <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
           <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
-            Gamified Open Source Contributions
+            Gamify Open Source Contributions
           </h1>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
             More quality community contributions with less work. Join the fun!
@@ -61,6 +65,12 @@ export default async function IndexPage() {
               className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
               GitHub
             </Link>
+            <Link
+              target="_blank"
+              href="https://www.figma.com/file/usCYaOpv13zMpvjEVc5z0Z/oss.gg-web-app?type=design&node-id=9%3A1897&mode=design&t=DnQbQCeApQQoXDbT-1"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+              Figma
+            </Link>
           </div>
         </div>
       </section>
@@ -72,15 +82,15 @@ export default async function IndexPage() {
         </div>
         <div className="mx-auto max-w-4xl rounded-b-lg bg-slate-50 p-12 text-slate-800">
           <h2 className="mb-4 text-3xl font-medium">
-            What&apos;s oss.gg, why we need it and how you can become a part of it 🕹️
+            What&apos;s oss.gg 🕹️, why we need it and how you can become a part of it
           </h2>
           <p className="pb-3">
             <i>
-              The concept of oss.gg emerged from a common challenge faced by many open source founders and
+              The concept of oss.gg 🕹️ emerged from a common challenge faced by many open source founders and
               maintainers: the struggle to balance community contributions while fully focusing on developing
               the core product. In this write-up, we&apos;ll walk you through the most common problems around
-              community contributions, what has been tried to solve them, what worked well and how oss.gg
-              tries to innovate in this space. Let&apos;s dive in!
+              community contributions, what has been tried to solve them, what worked well and how oss.gg 🕹️
+              tries to innovate in this space. Grab a coffee, get comfy and and dive in ☕
             </i>
           </p>
 
@@ -91,13 +101,14 @@ export default async function IndexPage() {
             community.
           </p>
           <p className="pb-3">
-            Our experience isn&apos;t unique. As we are building Formnbricks, we got to know many more open
-            source founders and all of them made a similar experience. These are 8 problems we all face, in
+            Our experience isn&apos;t unique. As we are building Formbricks, we got to know many more open
+            source founders and all of them have a similar experience. These are 8 problems we all face, in
             some variation:
           </p>
           <Image src={Problems} alt="Problems" className="mb-6 mt-4 rounded-lg" />
           <p className="pb-3">
-            This is a slide from a talk Johannes gave at the Open Core Summit in San Francisco:
+            This is a slide from a talk Johannes gave at the Open Core Summit in San Francisco. Here is the
+            talk:
           </p>
 
           <div className="relative mb-8 mt-4" style={{ paddingTop: "56.25%" }}>
@@ -110,8 +121,10 @@ export default async function IndexPage() {
           </div>
 
           <p className="pb-3">
-            Before we dive in, let&apos;s have a look at what you can expect from the rest of this article:
+            If you prefer watching a video, the talk give you a good understanding of what oss.gg 🕹️ is meant
+            to become.
           </p>
+          <p className="pb-3">If you like reading, this article walks you through the concept as well:</p>
           <ol className="list-decimal p-4">
             <li>
               <Link
@@ -132,12 +145,12 @@ export default async function IndexPage() {
             </li>
             <li>
               <Link className="underline underline-offset-4" href="#what-is-oss-gg">
-                oss.gg - the concept
+                oss.gg 🕹️ - the concept
               </Link>
             </li>
             <li>
               <Link className="underline underline-offset-4" href="#oss-gg-the-tech">
-                oss.gg - the tech
+                oss.gg 🕹️ - the tech
               </Link>
             </li>
             <li>
@@ -150,12 +163,15 @@ export default async function IndexPage() {
           <h3 className="mb-4 mt-3 text-2xl font-medium" id="-what-s-the-purpose-of-this-blog-post-">
             What&apos;s the purpose of this blog post?
           </h3>
-          <p className="pb-3">We want to catalyse the conversation. </p>
+          <p className="pb-3">
+            We want to convey what we have and mind and why we&apos;re building it. And we want you to join
+            us!{" "}
+          </p>
           <p className="pb-3">
             There is something in the air right now, lots of people work on different ideas to one or several
             of these problems. Most do it as a side project, which likely won&apos;t work out, because
             community stuff is hard. The idea is to bring everyone onto the same page so we can move forward
-            with a joint understanding and build something that works together. So everything laid out in this
+            with a joint understanding and build something that works together. Evrything laid out in this
             article is up for discussion, it&apos;s supposed to get you involved 😉
           </p>
           <h3
@@ -164,9 +180,9 @@ export default async function IndexPage() {
             The Open Source Renaissance and what it did to communities
           </h3>
           <p className="pb-3">
-            With the rise of hugely popular open source tools like Supabase, Appflowy, cal.com (and Formbricks
-            obviously 😋) open source experiences something like a Renaissance. And it seems that this also
-            has a significant impact on the composition of open source communities:
+            With the rise of hugely popular app-based open source tools like Supabase, Appflowy, Cal.com (and
+            Formbricks obviously 😋) Open Source Software (OSS) experiences a renaissance. And it seems that
+            this significantly impacts the composition of open source communities:
           </p>
           <p className="pb-3">
             Five years ago, open source contributions were mostly done by experienced engineers with domain
@@ -180,7 +196,7 @@ export default async function IndexPage() {
           </p>
           <p className="pb-3">
             When the community changes, a new set of issues arises. These issues call for a new set of tools,
-            one of which is oss.gg - but let&apos;s look at what we&apos;re solving first:
+            one of which is oss.gg 🕹️ - but let&apos;s look at what we&apos;re solving first:
           </p>
           <h3 className="mb-4 mt-3 text-2xl font-medium" id="the-problems">
             The problem(s)
@@ -250,7 +266,7 @@ export default async function IndexPage() {
               open a draft PR within 48h, we will assign the issue to the next developer in line”.
             </li>
             <li>
-              <strong>Unfinished PRs</strong>
+              <strong>Unfinished PRs: </strong>
               Along the lines of the previous problem: If contributors drop out, maintainers have to notice.
               To be able to do that we have to monitor all issues manually. It&apos;d be much easier if a
               GitHub app would do that for us.
@@ -293,7 +309,7 @@ export default async function IndexPage() {
             Novu&apos;s Hero Directory
           </h3>
           <p className="pb-3">
-            Novu built a pretty cool directory of their{" "}
+            Novu built a pretty cool directory for their{" "}
             <Link href="https://novu.co/contributors/" target="_blank" className="underline">
               community heroes.
             </Link>
@@ -309,7 +325,7 @@ export default async function IndexPage() {
           <p className="pb-3">
             The Algora team did a great job building a well-functioning GitHub app as well as attracting a
             community of bounty-hungry contributors. However, tying back to what I wrote above about
-            incentives, I don&apos;t think it solve the right problem. In our experience (and what I&apos;ve
+            incentives, I don&apos;t think it solves the right problem. In our experience (and what I&apos;ve
             heard from other projects) it&apos;s not hard to find people who want to contribute. It&apos;s
             much harder to handle the contributions and keep people familiar with the code base engaged over
             longer periods of time. To some extent, bounties make the situation worse by sending engineers our
@@ -317,7 +333,7 @@ export default async function IndexPage() {
             of their half-baked code. This might sound harsh but it has been exactly our experience.
           </p>
           <p className="pb-3">
-            We strongly believe in bounties and they are an essential element of oss.gg but they have to be
+            We strongly believe in bounties and they are an essential element of oss.gg 🕹️ but they have to be
             wrapped in a bigger picture (see below).
           </p>
           <p className="pb-3">
@@ -325,14 +341,14 @@ export default async function IndexPage() {
             their success justifies their approach :)
           </p>
           <h2 className="mb-4 mt-6 text-3xl font-medium" id="what-is-oss-gg">
-            What is oss.gg?
+            What is oss.gg 🕹️?
           </h2>
           <p className="pb-3">
             So far we looked at the problems and what has been tried to solve some of them. Let&apos;s now
-            have a closer look at how we imagine oss.gg solve for all of the problems above.
+            have a closer look at how we imagine oss.gg 🕹️ solve for all of the problems above.
           </p>
           <h2 className="mb-4 mt-6 text-2xl font-medium" id="-oss-gg-http-oss-gg-the-concept">
-            oss.gg - the concept
+            oss.gg 🕹️ - the concept
           </h2>
           <p className="pb-3">
             To address all of the issues above, we leverage two things:{" "}
@@ -393,7 +409,7 @@ export default async function IndexPage() {
             Automations
           </h4>
           <p className="pb-3">
-            The second big advantage of oss.gg is that you can automate many of the tedious tasks - while
+            The second big advantage of oss.gg 🕹️ is that you can automate many of the tedious tasks - while
             making sure that the personal touch is not getting lost. The key here is to strike the right
             balance.
           </p>
@@ -408,19 +424,21 @@ export default async function IndexPage() {
             in our team having to touch the issue on GitHub. Especially when the number of issues grows, this
             will come in super handy.
           </p>
-          <p className="pb-3">Here is another one:</p>
+          <p className="pb-3">
+            Here is another one: The <strong>Merge Celebration Flow.</strong>{" "}
+          </p>
           <Image src={MergeCeleb} alt="Automations" className="mb-6 mt-4 rounded-lg" />
           <p className="pb-3">
-            The <strong>Merge Celebration Flow.</strong> It nicely shows how the community management side can
-            get automated without losing the personal touch.
+            It nicely shows how the community management side can get automated without losing the personal
+            touch. You get the idea!
           </p>
-          <p className="pb-3">You get the idea!</p>
+
           <h2 className="mb-4 mt-6 text-3xl font-medium" id="oss-gg-tech">
-            oss.gg - the tech
+            oss.gg 🕹️ - the tech
           </h2>
           <p className="pb-3">
             Now that we have an understanding of what we want to build and why, let&apos;s talk about the how.
-            oss.gg consists of 5 different parts:
+            oss.gg 🕹️ consists of 5 different parts:
           </p>
           <ol className="list-decimal p-4">
             <li>A web app +</li>
@@ -434,10 +452,10 @@ export default async function IndexPage() {
             1. A Web App
           </h3>
           <p className="pb-3">
-            The heart of oss.gg is a web app. Both contributors and projects can sign up to preform a set of
-            actions. Here is a preliminary overview of what people can do with the web app:
+            The heart of oss.gg 🕹️ is a web app. Both contributors and projects can sign up to preform a set
+            of actions. Here is a preliminary overview of what people can do with the web app:
           </p>
-          <p className="pb-3">
+          <p className="pt-3">
             <strong>Contributors</strong>
           </p>
           <ul className="list-disc space-y-1.5 p-4">
@@ -445,21 +463,25 @@ export default async function IndexPage() {
             <li>Add their social handles (to be tagged in shoutouts)</li>
             <li>Add their address (to receive merch)</li>
             <li>View a feed of issues they can work on</li>
+            <li>Add their info to receive bounty payouts</li>
             <li>Manage notification settings (alerts for issues they are eligible to work on)</li>
           </ul>
-          <p className="pb-3">
-            <strong>Projects</strong>
+          <p className="pt-3">
+            <strong>Maintainers</strong>
           </p>
           <ul className="list-disc space-y-1.5 p-4">
             <li>Manage API keys</li>
             <li>Manage rights for different levels contributors can reach</li>
+            <li>Manage players</li>
           </ul>
+          <Image src={WebApp1} alt="oss.gg webapp mock up" className="mb-6 mt-4 rounded-lg" />
+          <Image src={WebApp2} alt="oss.gg webapp mock up" className="mb-6 mt-4 rounded-lg" />
           <h3 className="mb-4 mt-3 text-xl font-medium" id="2-an-api-">
             2. An API
           </h3>
           <p className="pb-3">
-            The API provides all oss.gg related info so that the projects can display them on their community
-            pages. Think of it as an enrichment layer over the GitHub API. It serves:
+            The API provides all oss.gg 🕹️ related info so that the projects can display them on their
+            community pages. Think of it as an enrichment layer over the GitHub API. It serves:
           </p>
           <ul className="list-disc space-y-1.5 p-4">
             <li>Points per contributor</li>
@@ -467,6 +489,16 @@ export default async function IndexPage() {
             <li>Contributor Rank</li>
             <li>Contributor social handles and addresses to build automations</li>
           </ul>
+
+          <p className="pb-3">
+            This allows projects to build dynamic community pages like these easily:{" "}
+            <Link href="https://formbricks.com/community" target="_blank" className="underline">
+              formbricks.com/community
+            </Link>
+            <Image src={CommPage1} alt="Formbricks Community Page" className="mb-6 mt-4 rounded-lg" />
+            <Image src={CommPage2} alt="Formbricks Community Page 2" className="mb-6 mt-4 rounded-lg" />
+          </p>
+
           <h3 className="mb-4 mt-3 text-xl font-medium" id="3-a-github-app-">
             3. A GitHub App
           </h3>
@@ -504,7 +536,7 @@ export default async function IndexPage() {
             60 seconds.
           </p>
           <h3 className="mb-4 mt-3 text-2xl font-medium" id="the-oss-gg-http-oss-gg-stack">
-            The oss.gg stack
+            The oss.gg 🕹️ stack
           </h3>
           <ul className="list-disc space-y-1.5 p-4">
             <li>Next.js (React) + Typescript</li>
@@ -512,9 +544,11 @@ export default async function IndexPage() {
               TailwindCss + <Link href="http://ui.shadcn.com">ui.shadcn.com</Link>
             </li>
             <li>PostgreSQL + Prisma</li>
-            <li>Unkey? Anything to make building APIs easy?</li>
             <li>
               <Link href="http://trigger.dev">trigger.dev</Link> for automations
+            </li>
+            <li>
+              <i>If you&apos;re building something open source which fits in here, please reach out :)</i>
             </li>
           </ul>
           <h2 className="mb-4 mt-6 text-3xl font-medium" id="status-quo">
@@ -526,33 +560,78 @@ export default async function IndexPage() {
           </p>
           <p className="pb-3">
             <strong>Phase 1:</strong> To keep iteration cycles short, we limit the number of projects who can
-            participate to 2. This allows us to build a solution which is somewhat generalizable (vs.
-            Formbricks-specific). And less people involved = faster shipping speed! Once we have figured what
-            works well we move to Phase 2.
+            participate to 2 (Formbricks and oss.gg). This allows us to build a solution which is somewhat
+            generalizable (vs. Formbricks-specific). And less people involved = faster shipping speed! Once we
+            have figured what works well we move to Phase 2.
           </p>
           <p className="pb-3">
-            <strong>Phase 2:</strong> We open oss.gg up to a total of 5 select projects. These projects commit
-            to work closely with the community by providing sufficient open issues for the community members
-            to work on.
+            <strong>Phase 2:</strong> We open oss.gg 🕹️ up to a total of 5 select projects. These projects
+            commit to work closely with the community by providing sufficient open issues for the community
+            members to work on.
           </p>
           <p className="pb-3">
             <strong>Phase 3:</strong> Opening up to more and more projects. When and how will be determined in
             the future.
           </p>
-          <h3 className="mb-4 mt-3 text-2xl font-medium" id="call-for-contributions-">
-            Call for Contributions!
+          <h3 className="mb-4 mt-6 text-2xl font-medium" id="call-for-contributions-">
+            Sounds good? Let&apos;s make this happen!
+          </h3>
+          <p className="flex gap-3 pb-3">
+            <Link
+              href="https://oss.gg/discord"
+              target="_blank"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+              Join our Discord and say Hi 👋
+            </Link>
+            <Link
+              target="_blank"
+              href="https://www.figma.com/file/usCYaOpv13zMpvjEVc5z0Z/oss.gg-web-app?type=design&node-id=9%3A1897&mode=design&t=DnQbQCeApQQoXDbT-1"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+              Check out Figma
+            </Link>
+            <Link href="/login" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+              Start playing
+            </Link>
+          </p>
+          <h3 className="mb-4 mt-6 text-2xl font-medium" id="#open-roles">
+            Open Key Roles
           </h3>
           <p className="pb-3">
-            <strong>Interested</strong>? Sign up on our waitlist to stay in the loop
+            You want to play a bigger role in this? We love that! Currently, we&apos;re looking for:
           </p>
+          <h4 className="mb-4 mt-3 text-xl font-medium">Design Dude(ette) 🧑‍🎨</h4>
+          <p>
+            Build more UI and master the Figma file (relevant xp required, great oppo to extend portfolio){" "}
+          </p>
+          <h4 className="mb-4 mt-3 text-xl font-medium">Community Magician 🧙</h4>
+          <p>Seed this community well, right from the get go</p>
+          <h4 className="mb-4 mt-3 text-xl font-medium">Automations.dev 🤖</h4>
+          <p>
+            <span className="line-through">If it needs automation, you&apos;ll solve it</span>{" "}
+            <Link href="https://github.com/Chigala" target="_blank" className="underline">
+              Chigala ✅
+            </Link>
+          </p>
+          <h4 className="mb-4 mt-3 text-xl font-medium">Bounty Bunny 🐰</h4>
+          <p className="pb-3">Build the bounty system and maintain it</p>
+
+          <p className="py-3">
+            Apart from that, we&apos;d love to onboard several <span className="text-xl">PMs</span> and{" "}
+            <span className="text-xl">Full-stack Engineers.</span>
+          </p>
+
           <p className="pb-3">
-            <strong>Have something to share?</strong>{" "}
-            <Link href="https://cal.com/johannes/30">Schedule a call</Link> with me to share your experiences
-            and ideas to make oss.gg better!
+            oss.gg 🕹️ is a community project, so it is not designed to make money. Nontheless, to take over
+            responsibility, it makes sense for you bring at least a bit relevant experience i.e. you can
+            somehow showcase that you&apos;re up for the task 🙌
           </p>
-          <p className="pb-3">
-            <strong>Wanna help build?</strong> Join the oss.gg Discord!
-          </p>
+          <p className="pb-6">Sounds fair? Let&apos;s get this party started 🪩👇</p>
+          <Link
+            href="https://app.formbricks.com/s/clty2r3bm1bf512gsavwd2nib"
+            target="_blank"
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+            Avengers... assemble!
+          </Link>
         </div>
       </section>
       <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-24">

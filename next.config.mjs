@@ -1,4 +1,4 @@
-import "./env.mjs"
+import "./env.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -18,11 +18,17 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/figma",
+        destination:
+          "https://www.figma.com/file/usCYaOpv13zMpvjEVc5z0Z/oss.gg-web-app?type=design&node-id=0%3A1&mode=design&t=DnQbQCeApQQoXDbT-1",
+        permanent: true,
+      },
+      {
         source: "/github",
         destination: "https://github.com/formbricks/oss.gg",
         permanent: true,
       },
-    ]
+    ];
   },
-}
-export default nextConfig
+};
+export default nextConfig;
