@@ -9,7 +9,7 @@ import {
 import { assignUserPoints } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
-import { client } from "@/trigger";
+import { triggerDotDevClient } from "@/trigger";
 import { Webhooks } from "@octokit/webhooks";
 
 import { getOctokitInstance } from "../utils";
@@ -20,7 +20,7 @@ export const onIssueOpened = async (webhooks: Webhooks) => {
 
     //TODO:
     //1. check if the issue has the oss label
-    //2. if it has the OSS label find all the users that are currently subscribed to the repo and have the right points, then send them an email
+    //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
 
     // const isProjectRegistered = await getProject(projectId)
     // if (!isProjectRegistered) {
@@ -109,8 +109,8 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         });
 
         //send trigger event to wait for 36hrs then send a reminder if the user has not created a pull request
-        await client.sendEvent({
-          name: "issue.remainder",
+        await triggerDotDevClient.sendEvent({
+          name: "issue.reminder",
           payload: {
             issueNumber,
             repo,
