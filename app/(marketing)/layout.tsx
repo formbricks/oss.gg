@@ -21,12 +21,10 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
         property="og:description"
         content="oss.gg is a community-driven platform to help facilitate more community contributions with less work for project maintainers."
       />
-      <meta name="image" content="../favicon.ico" />
-      <meta property="og:image" content="<generated>" />
-      <meta property="og:image:type" content="<generated>" />
-      <meta property="og:image:width" content="<generated>" />
-      <meta property="og:image:height" content="<generated>" />
-      <link rel="icon" href="/favicon.ico" sizes="any" />
+      <meta property="og:image" content="https://oss.gg/opengraph-image.png" />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="120" />
+      <meta property="og:image:height" content="630" />
       <link rel="canonical" href="https://oss.gg" />
       <meta property="og:image:alt" content="Gamify Open Source Contribution" />
       <meta property="og:locale" content="en_US" />
