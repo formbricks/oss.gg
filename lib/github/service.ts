@@ -73,10 +73,10 @@ export const getOpenPullRequestsByGithubLogin = (repo: string, githubLogin: stri
     }
   )();
 
-export const getAllOpenIssuesOfRepo = (repo: string) =>
+export const getAllOssGgIssuesOfRepo = (repo: string) =>
   unstable_cache(
     async () => {
-      const url = `https://api.github.com/search/issues?q=repo:${repo}+is:issue+is:open+no:assignee+label:"${OSS_GG_LABEL}"&sort=created&order=desc`;
+      const url = `https://api.github.com/search/issues?q=repo:${repo}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`;
 
       const headers = {
         Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
@@ -85,8 +85,10 @@ export const getAllOpenIssuesOfRepo = (repo: string) =>
 
       const response = await fetch(url, { headers });
       const data = await response.json();
+      console.log("data", data);
 
       const validatedData = ZGithubApiResponseSchema.parse(data);
+      console.log("validatedData", validatedData);
 
       // Map the GitHub API response to  issue format
       const openPRs = validatedData.items.map((pr) => {
@@ -112,6 +114,10 @@ export const getAllOpenIssuesOfRepo = (repo: string) =>
           isIssue: true,
           labels: pr.labels.map((label) => label.name),
           points,
+          assignee: pr.assignee ? pr.assignee.login : null,
+          createdAt: pr.created_at,
+          updatedAt: pr.updated_at,
+          closedAt: pr.closed_at,
         };
       });
       console.log(openPRs);
