@@ -21,7 +21,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
         property="og:description"
         content="oss.gg is a community-driven platform to help facilitate more community contributions with less work for project maintainers."
       />
-      <meta property="og:image" content="https://oss.gg/opengraph-image.png" />
+      <meta property="og:image" content="https://oss.gg/opengraph-image.png?twittersucks" />
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content="120" />
       <meta property="og:image:height" content="630" />
