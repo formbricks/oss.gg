@@ -1,6 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
-import { GITHUB_APP_ACCESS_TOKEN } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,33 +16,7 @@ import Problems from "../../public/problems-with-contributions.webp";
 import WebApp1 from "../../public/webapp-0.webp";
 import WebApp2 from "../../public/webapp-1.webp";
 
-async function getGitHubStars(): Promise<string | null> {
-  try {
-    const response = await fetch("https://api.github.com/repos/formbricks/oss.gg", {
-      headers: {
-        Accept: "application/vnd.github+json",
-        Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-      },
-      next: {
-        revalidate: 60,
-      },
-    });
-
-    if (!response?.ok) {
-      return null;
-    }
-
-    const json = await response.json();
-
-    return parseInt(json["stargazers_count"]).toLocaleString();
-  } catch (error) {
-    return null;
-  }
-}
-
 export default async function IndexPage() {
-  const stars = await getGitHubStars();
-
   return (
     <>
       <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
