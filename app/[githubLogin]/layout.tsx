@@ -20,7 +20,7 @@ export default async function ProfileLayout({ children }: ProfileLayoutProps) {
         </header>
       </div>
       <div className="">
-        <main className="mx-auto flex min-h-[65vh] max-w-6xl flex-1 flex-col px-8">{children}</main>
+        <main className="mx-auto mb-24 flex min-h-[65vh] max-w-6xl flex-1 flex-col px-8">{children}</main>
       </div>
       <SiteFooter className="border-t" />
     </div>
