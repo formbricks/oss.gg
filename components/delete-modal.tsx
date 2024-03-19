@@ -17,29 +17,6 @@ function DeleteAccountModal({
 
   async function deleteAccount() {
     setDeleting(true);
-    console.log("deleting account");
-    //TODO: add function that would be responsible for deleting the account
-    // await fetch(`/api/user`, {
-    //   method: "DELETE",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // }).then(async (res) => {
-    //   if (res.status === 200) {
-    //     update();
-    //     // delay to allow for the route change to complete
-    //     await new Promise((resolve) =>
-    //       setTimeout(() => {
-    //         router.push("/register");
-    //         resolve(null);
-    //       }, 200)
-    //     );
-    //   } else {
-    //     setDeleting(false);
-    //     const error = await res.text();
-    //     throw error;
-    //   }
-    // });
   }
 
   return (

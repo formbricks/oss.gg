@@ -24,7 +24,6 @@ const emailSettingItems = [
 
 export default async function SettingsPage() {
   const handleDeleteAccount = () => {
-    console.log("Deleting account");
   };
   return (
     <DashboardShell>
