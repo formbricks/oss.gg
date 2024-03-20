@@ -93,23 +93,31 @@ export default function RepositoryDetailPage({ params }) {
           <TabsTrigger value="open-issues">Open Issues</TabsTrigger>
         </TabsList>
         <TabsContent value="project-details">
-          <div className="grid gap-2 md:grid-cols-2">
-            <Image src={FB1} alt="Formbricks open source survey infrastructure" className="rounded-md" />
-            <Image src={FB2} alt="Formbricks open source survey infrastructure" className="rounded-md" />
-          </div>
-          <div className="space-y-4">
-            <Section
-              title="About Formbricks"
-              content="Formbricks provides a free and open source surveying platform. Gather feedback at every point in the user journey with beautiful in-app, website, link and email surveys. Build on top of Formbricks or leverage prebuilt data analysis capabilities."
-            />
-            <FeaturesSection title="Features" features={frombricksFeatures} />
-            <TechStackSection title="Tech Stack" techStack={formbricksTechStack} />
-          </div>
+          <ProjectDetailsSection />
         </TabsContent>
         <TabsContent value="leaderboard">Coming soon: A new adventure awaits!</TabsContent>
         <TabsContent value="open-issues">Coming soon: A new adventure awaits!</TabsContent>
       </Tabs>
     </DashboardShell>
+  );
+}
+
+function ProjectDetailsSection() {
+  return (
+    <>
+      <div className="grid gap-2 md:grid-cols-2">
+        <Image src={FB1} alt="Formbricks open source survey infrastructure" className="rounded-md" />
+        <Image src={FB2} alt="Formbricks open source survey infrastructure" className="rounded-md" />
+      </div>
+      <div className="space-y-4">
+        <Section
+          title="About Formbricks"
+          content="Formbricks provides a free and open source surveying platform. Gather feedback at every point in the user journey with beautiful in-app, website, link and email surveys. Build on top of Formbricks or leverage prebuilt data analysis capabilities."
+        />
+        <FeaturesSection title="Features" features={frombricksFeatures} />
+        <TechStackSection title="Tech Stack" techStack={formbricksTechStack} />
+      </div>
+    </>
   );
 }
 
