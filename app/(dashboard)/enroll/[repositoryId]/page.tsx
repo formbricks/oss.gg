@@ -1,5 +1,6 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -85,6 +86,25 @@ export default function RepositoryDetailPage({ params }) {
         text="Contribute to the worlds fastest growing survey infrastructure."
       />
       <EnrollmentStatusBar repositoryId={params.repositoryId} />
+      <Tabs defaultValue="project-details" className="w-full">
+        <TabsList>
+          <TabsTrigger value="project-details">Project Details</TabsTrigger>
+          <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
+          <TabsTrigger value="open-issues">Open Issues</TabsTrigger>
+        </TabsList>
+        <TabsContent value="project-details">
+          <ProjectDetailsSection />
+        </TabsContent>
+        <TabsContent value="leaderboard">Coming soon: A new adventure awaits!</TabsContent>
+        <TabsContent value="open-issues">Coming soon: A new adventure awaits!</TabsContent>
+      </Tabs>
+    </DashboardShell>
+  );
+}
+
+function ProjectDetailsSection() {
+  return (
+    <>
       <div className="grid gap-2 md:grid-cols-2">
         <Image src={FB1} alt="Formbricks open source survey infrastructure" className="rounded-md" />
         <Image src={FB2} alt="Formbricks open source survey infrastructure" className="rounded-md" />
@@ -97,7 +117,7 @@ export default function RepositoryDetailPage({ params }) {
         <FeaturesSection title="Features" features={frombricksFeatures} />
         <TechStackSection title="Tech Stack" techStack={formbricksTechStack} />
       </div>
-    </DashboardShell>
+    </>
   );
 }
 
