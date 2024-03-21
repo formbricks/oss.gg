@@ -20,6 +20,7 @@ export default async function SelectRepoPage() {
   }
 
   const repos = await getRepositoriesForUser(user.id);
+  console.log("repos", repos);
 
   return (
     <DashboardShell>
@@ -28,9 +29,15 @@ export default async function SelectRepoPage() {
         text="Select the repository you want to integrate oss.gg with."
       />
       <div className="space-y-2">
-        {repos.map((repo) => (
-          <RepoSelector key={repo.id} repo={repo} selectRepoAction={selectRepoActions} />
-        ))}
+        {repos.length > 0 ? (
+          <>
+            {repos.map((repo) => (
+              <RepoSelector key={repo.id} repo={repo} selectRepoAction={selectRepoActions} />
+            ))}
+          </>
+        ) : (
+          <p>No repos loaded from GitHub 🤷</p>
+        )}
       </div>
     </DashboardShell>
   );
