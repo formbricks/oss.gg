@@ -15,9 +15,15 @@ export const getEnrolledRepositoriesAction = async (): Promise<TRepository[]> =>
       throw new Error("User must be authenticated to perform this action.");
     }
 
-    return await getEnrolledRepositories(user.id);
+    const enrolledRepositories = await getEnrolledRepositories(user.id);
+
+    if (enrolledRepositories.length === 0) {
+      console.error("User is not enrolled in any repositories.");
+    }
+
+    return enrolledRepositories;
   } catch (error) {
     console.error("Error checking enrollment:", error.message);
-    throw new Error("Failed to check enrollment.");
+    throw new Error(`Failed to check enrollment: ${error.message}`);
   }
 };

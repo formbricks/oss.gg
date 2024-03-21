@@ -76,6 +76,7 @@ export const getOpenPullRequestsByGithubLogin = (repo: string, githubLogin: stri
 export const getAllOssGgIssuesOfRepo = (repo: string) =>
   unstable_cache(
     async () => {
+      console.log("repostring", repo);
       const url = `https://api.github.com/search/issues?q=repo:${repo}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`;
 
       const headers = {
