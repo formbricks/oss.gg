@@ -8,7 +8,11 @@ import { Prisma } from "@prisma/client";
  */
 export const getAllRepositories = async (): Promise<TRepository[]> => {
   try {
-    const repositories = await db.repository.findMany();
+    const repositories = await db.repository.findMany({
+      where: {
+        configured: true,
+      },
+    });
     return repositories as TRepository[];
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
