@@ -12,8 +12,12 @@ export const metadata = {
 };
 
 export default async function IssuesPage() {
-  const openPRs = await getAllOssGgIssuesOfRepo("formbricks/formbricks");
   const enrolledRepos = await getEnrolledRepositoriesAction();
+  const openPRs = await enrolledRepos.reduce(async (accPromise, repo) => {
+    const acc = await accPromise;
+    const prs = await getAllOssGgIssuesOfRepo(repo.githubId);
+    return [...acc, ...prs];
+  }, Promise.resolve([]));
 
   return (
     <DashboardShell>
