@@ -1,6 +1,6 @@
 "use client";
 
-import LevelsTagInput from "@/components/levels-tag-input";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,9 +12,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Tag, TagInput } from "@/components/ui/tag-input";
+import { Tag } from "@/components/ui/tag";
+import { TagInput, Tag as TagType } from "@/components/ui/tag-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -41,12 +41,11 @@ const formSchema = z.object({
 });
 
 interface LevelsFormProps {
-  // 3. Define your form props.
   levelName?: string;
   pointThreshold?: number;
   description?: string;
   icon?: string;
-  topics?: Tag[];
+  topics?: TagType[];
   limitIssues?: boolean;
   canReportBugs?: boolean;
   canHuntBounties?: boolean;
@@ -77,8 +76,9 @@ export function LevelsForm({
     },
   });
 
-  const [tags, setTags] = React.useState<Tag[]>([]);
+  const [tags, setTags] = React.useState<TagType[]>([]);
   const [isEditMode, setIsEditMode] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const { setValue } = form;
 
@@ -90,6 +90,48 @@ export function LevelsForm({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+  }
+  function handleButtonClick() {
+    fileInputRef.current?.click();
+  }
+
+  // const chigala: TagType[] = [
+  //   {
+  //     id: "1",
+  //     text: "chigala",
+  //   },
+  //   {
+  //     id: "2",
+  //     text: "chigala",
+  //   },
+  //   {
+  //     id: "3",
+  //     text: "chigala",
+  //   },
+  //   {
+  //     id: "4",
+  //     text: "chigala",
+  //   },
+  //   {
+  //     id: "5",
+  //     text: "chigala",
+  //   },
+  //   {
+  //     id: "6",
+  //     text: "chigala",
+  //   },
+  // ];
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) {
+      // const reader = new FileReader();
+      // reader.onload = (e) => {
+      //   setValue("icon", e.target?.result);
+      // };
+      // reader.readAsDataURL(file);
+      //call the s3 upload function to upload the image
+    }
   }
   return (
     <Form {...form}>
@@ -133,20 +175,40 @@ export function LevelsForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="icon"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>icon</FormLabel>
-                <FormControl>
-                  <Input type="file" placeholder="Do whatever" {...field} />
-                </FormControl>
-                <FormDescription>500 x 500 recommended</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {isEditMode ? (
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>icon</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      placeholder="Picture"
+                      type="file"
+                      accept="image/*, application/pdf"
+                      onChange={(event) => onChange(event.target.files && event.target.files[0])}
+                    />
+                  </FormControl>
+                  <FormDescription>500 x 500 recommended</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            <div>
+              <Avatar className="h-56 w-56">
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              </Avatar>
+              <div className="relative flex flex-col space-y-5">
+                <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                <Button variant="secondary" className="w-fit" onClick={handleButtonClick}>
+                  Replace icon
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
         <div className="w-2/5 space-y-4">
           <p className="text-lg font-bold">Powers</p>
@@ -191,32 +253,47 @@ export function LevelsForm({
             )}
           />
 
-          <div className="flex items-end gap-2 rounded-lg bg-zinc-100 p-3">
-            <FormField
-              control={form.control}
-              name="topics"
-              render={({ field }) => (
-                <FormItem className="flex flex-col items-start">
-                  <FormControl>
-                    <TagInput
-                      {...field}
-                      placeholder="Enter a topic"
-                      tags={tags}
-                      shape="pill"
-                      variant="primary"
-                      className="w-full"
-                      setTags={(newTags) => {
-                        setTags(newTags);
-                        setValue("topics", newTags as [Tag, ...Tag[]]);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button>Add Label</Button>
-          </div>
+          {isEditMode ? (
+            <div className="flex items-end gap-2 rounded-lg bg-zinc-100 p-3">
+              <FormField
+                control={form.control}
+                name="topics"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col items-start">
+                    <FormControl>
+                      <TagInput
+                        {...field}
+                        placeholder="Enter a topic"
+                        tags={tags}
+                        shape="pill"
+                        variant="primary"
+                        className="w-full"
+                        setTags={(newTags) => {
+                          setTags(newTags);
+                          setValue("topics", newTags as [TagType, ...TagType[]]);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button>Add Label</Button>
+            </div>
+          ) : (
+            tags.length > 0 && (
+              <div className="flex w-full flex-wrap items-end gap-2 rounded-lg bg-zinc-100 p-3">
+                {tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="rounded-full bg-zinc-700 px-2 py-1 text-xs text-primary-foreground">
+                    {tag.text}
+                  </span>
+                ))}
+              </div>
+            )
+          )}
+
           {/* <div className="flex items-center space-x-2">
             <Switch id="can-report-bugs" />
             <Label htmlFor="can-report-bugs">Can report bugs</Label>
@@ -261,12 +338,23 @@ export function LevelsForm({
             )}
           />
         </div>
-        <div className="flex gap-2">
-          <Button variant="destructive" type="submit">
-            Delete
+        {isEditMode ? (
+          <div className="flex gap-2">
+            <Button variant="destructive" type="submit">
+              Delete
+            </Button>
+
+            <Button type="submit">Save</Button>
+          </div>
+        ) : (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setIsEditMode(true);
+            }}>
+            Edit
           </Button>
-          <Button type="submit">Save</Button>
-        </div>
+        )}
       </form>
     </Form>
   );

@@ -120,7 +120,7 @@ export const Tag: React.FC<TagProps> = ({
           e.stopPropagation(); // Prevent event from bubbling up to the tag span
           onRemoveTag(tagObj.id);
         }}
-        className={cn("mx-1 h-6 w-6 rounded-full bg-gray-400 p-2 ")}>
+        className={cn("mx-1 h-6 w-6 rounded-full bg-gray-400 p-1 ")}>
         <X size={16} />
       </Button>
     </span>
