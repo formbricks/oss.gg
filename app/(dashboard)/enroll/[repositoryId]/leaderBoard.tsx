@@ -111,11 +111,15 @@ const userProfiles = [
   },
 ];
 
+interface pointRangesInterface {
+  label: string;
+  value: string;
+  description: string;
+}
 export default function LeaderBoard() {
-  const [selectedPointsRange, setSelectedPointsRange] = useState("");
-  const [selectedDescription, setSelectedDescription] = useState("");
+  const [selectedPointsRange, setSelectedPointsRange] = useState<pointRangesInterface | null>(null);
 
-  const pointsRanges = [
+  const pointsRanges: pointRangesInterface[] = [
     { label: "All", value: "all", description: "" },
     {
       label: "Repository Rookie",
@@ -136,7 +140,7 @@ export default function LeaderBoard() {
   ];
 
   const filteredProfiles = [...userProfiles].filter((profile) => {
-    switch (selectedPointsRange) {
+    switch (selectedPointsRange?.value) {
       case "all":
         return true;
       case "lessThan500":
@@ -159,16 +163,15 @@ export default function LeaderBoard() {
           <TabsList>
             {pointsRanges.map((range) => (
               <div
+                key={range.value}
                 onClick={() => {
-                  setSelectedPointsRange(range.value);
-                  setSelectedDescription(range.description);
+                  setSelectedPointsRange(range);
                 }}>
                 <TabsTrigger value={range.value}>{range.label}</TabsTrigger>
               </div>
             ))}
           </TabsList>
-
-          <TabsContent value={selectedPointsRange}>{selectedDescription}</TabsContent>
+          <div>{selectedPointsRange ? selectedPointsRange.description : ""}</div>
         </>
       </Tabs>
 
