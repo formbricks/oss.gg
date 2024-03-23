@@ -135,24 +135,22 @@ export default function LeaderBoard() {
     { label: "Legend", value: "moreThan5000", description: "Contributors with more than 5000 points." },
   ];
 
-  const filteredProfiles = [...userProfiles]
-    .filter((profile) => {
-      switch (selectedPointsRange) {
-        case "all":
-          return true;
-        case "lessThan500":
-          return profile.points < 500;
-        case "between500and1000":
-          return profile.points >= 500 && profile.points < 1000;
-        case "between1000and5000":
-          return profile.points >= 1000 && profile.points < 5000;
-        case "moreThan5000":
-          return profile.points >= 5000;
-        default:
-          return true;
-      }
-    })
-    .sort((a, b) => b.points - a.points);
+  const filteredProfiles = [...userProfiles].filter((profile) => {
+    switch (selectedPointsRange) {
+      case "all":
+        return true;
+      case "lessThan500":
+        return profile.points < 500;
+      case "between500and1000":
+        return profile.points >= 500 && profile.points < 1000;
+      case "between1000and5000":
+        return profile.points >= 1000 && profile.points < 5000;
+      case "moreThan5000":
+        return profile.points >= 5000;
+      default:
+        return true;
+    }
+  });
 
   return (
     <>
