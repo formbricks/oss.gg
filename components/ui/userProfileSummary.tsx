@@ -29,7 +29,7 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = ({
   };
   return (
     <div className=" flex h-auto min-h-[4.5rem] w-full justify-between border-b    py-[var(--md)] text-[#09090B]">
-      <Link className="" key={userGitHubId} href={`/${userGitHubId}`} target="_blank">
+      <Link className="" key={userGitHubId} href={`https://github.com/${userGitHubId}`} target="_blank">
         <div className="flex  w-fit  items-center gap-[0.85rem] text-[1rem] font-[500]  dark:text-white ">
           <div className="h-[1.5rem] w-[1.2rem]  ">#{index}</div>
           <div>
