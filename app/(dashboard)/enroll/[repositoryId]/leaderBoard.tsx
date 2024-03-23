@@ -158,7 +158,7 @@ export default function LeaderBoard() {
 
   return (
     <>
-      <Tabs className="w-full">
+      <Tabs className="w-full" defaultValue={pointsRanges[0].value}>
         <>
           <TabsList>
             {pointsRanges.map((range) => (
