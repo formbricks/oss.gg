@@ -13,11 +13,10 @@ export const metadata = {
 
 export default async function IssuesPage() {
   const enrolledRepos = await getEnrolledRepositoriesAction();
-  const allOpenIssues = await enrolledRepos.reduce(async (accPromise, repo) => {
-    const acc = await accPromise;
-    const prs = await getAllOssGgIssuesOfRepo(repo.githubId);
-    return [...acc, ...prs];
-  }, Promise.resolve([]));
+
+  const issuesPromises = enrolledRepos.map((repo) => getAllOssGgIssuesOfRepo(repo.githubId));
+  const issuesResults = await Promise.all(issuesPromises);
+  const allOpenIssues = issuesResults.flat();
 
   return (
     <DashboardShell>

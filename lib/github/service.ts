@@ -97,7 +97,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
         // Map the points label as number
         const pointsLabel = pr.labels.find((label) => label.name.includes("points"));
 
-        let points = 0;
+        let points: number | null = null;
         if (pointsLabel) {
           const match = pointsLabel.name.match(/(\d+)/); // This regex matches any sequence of digits
           if (match) {

@@ -9,6 +9,6 @@ export const ZInstallation = z
     id: z.string(),
     githubId: z.number().int(),
     type: InstallationTypeEnum,
-    memberships: z.array(ZMembership),
+    memberships: z.array(ZMembership).optional(),
   })
   .strict();

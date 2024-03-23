@@ -31,8 +31,6 @@ export default function RepositoryDetailPage({ params }) {
     return <div>Loading repository details...</div>;
   }
 
-  console.log("repository", repository);
-
   return (
     <DashboardShell>
       <DashboardHeader heading={repository.name} text={repository.description} />
