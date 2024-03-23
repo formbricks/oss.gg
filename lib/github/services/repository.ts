@@ -1,8 +1,32 @@
 import { db } from "@/lib/db";
 
-// Activate a single repository
-export const activateRepository = async (id: string) => {
+// Activate a single repository - Only if the user is an owner
+export const activateRepository = async (id: string, userId: string) => {
   try {
+    const repository = await db.repository.findUnique({
+      where: { id },
+      include: {
+        installation: {
+          include: {
+            memberships: true,
+          },
+        },
+      },
+    });
+
+    // Check if repository exists
+    if (!repository) {
+      throw new Error("Repository not found.");
+    }
+
+    const userIsOwner = repository.installation.memberships.some(
+      (membership) => membership.userId === userId && membership.role === "owner"
+    );
+
+    if (!userIsOwner) {
+      throw new Error("User does not have permission to activate this repository.");
+    }
+
     return await db.repository.update({
       where: { id },
       data: { configured: true },
@@ -12,9 +36,33 @@ export const activateRepository = async (id: string) => {
   }
 };
 
-// Deactivate a single repository
-export const deactivateRepository = async (id: string) => {
+// Deactivate a single repository - Only if the user is an owner
+export const deactivateRepository = async (id: string, userId: string) => {
   try {
+    const repository = await db.repository.findUnique({
+      where: { id },
+      include: {
+        installation: {
+          include: {
+            memberships: true,
+          },
+        },
+      },
+    });
+
+    // Check if repository exists
+    if (!repository) {
+      throw new Error("Repository not found.");
+    }
+
+    const userIsOwner = repository.installation.memberships.some(
+      (membership) => membership.userId === userId && membership.role === "owner"
+    );
+
+    if (!userIsOwner) {
+      throw new Error("User does not have permission to deactivate this repository.");
+    }
+
     return await db.repository.update({
       where: { id },
       data: { configured: false },

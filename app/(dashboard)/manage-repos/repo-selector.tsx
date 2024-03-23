@@ -9,9 +9,10 @@ import { activateRepoAction, deactivateRepoAction, fetchRepoDetailsAction } from
 
 interface RepoSelectorProps {
   repo: TRepository;
+  userId: string;
 }
 
-export const RepoSelector: React.FC<RepoSelectorProps> = ({ repo: initialRepo }) => {
+export const RepoSelector: React.FC<RepoSelectorProps> = ({ repo: initialRepo, userId }) => {
   const { toast } = useToast();
   const [repo, setRepo] = useState<TRepository>(initialRepo);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,13 +45,13 @@ export const RepoSelector: React.FC<RepoSelectorProps> = ({ repo: initialRepo })
     setIsLoading(true);
     try {
       if (repo.configured) {
-        await deactivateRepoAction(repo.id);
+        await deactivateRepoAction(repo.id, userId);
         toast({
           title: `${repo.name} deactivated`,
           description: "Players cannot play anymore ❌",
         });
       } else {
-        await activateRepoAction(repo.id);
+        await activateRepoAction(repo.id, userId);
         toast({
           title: `${repo.name} activated`,
           description: "Players can sign up to play now ✅",

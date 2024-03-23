@@ -29,7 +29,7 @@ export default async function SelectRepoPage() {
         {repos.length > 0 ? (
           <>
             {repos.map((repo) => (
-              <RepoSelector key={repo.id} repo={repo} />
+              <RepoSelector key={repo.id} repo={repo} userId={user.id} />
             ))}
           </>
         ) : (
