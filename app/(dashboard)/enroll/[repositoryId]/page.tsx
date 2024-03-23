@@ -7,6 +7,7 @@ import Link from "next/link";
 import EnrollmentStatusBar from "./enrollmentStatusBar";
 import FB1 from "./fb-view-1.webp";
 import FB2 from "./fb-view-2.webp";
+import LeaderBoard from "./leaderBoard";
 
 const frombricksFeatures = [
   {
@@ -95,7 +96,10 @@ export default function RepositoryDetailPage({ params }) {
         <TabsContent value="project-details">
           <ProjectDetailsSection />
         </TabsContent>
-        <TabsContent value="leaderboard">Coming soon: A new adventure awaits!</TabsContent>
+        <TabsContent value="leaderboard">
+          <LeaderBoard />
+        </TabsContent>
+
         <TabsContent value="open-issues">Coming soon: A new adventure awaits!</TabsContent>
       </Tabs>
     </DashboardShell>
