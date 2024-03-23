@@ -180,7 +180,7 @@ export default function LeaderBoard() {
           key={profile.userGitHubId}
           name={profile.name}
           points={profile.points}
-          avatarUrl=""
+          avatarUrl={profile.avatarUrl}
           userGitHubId={profile.userGitHubId}
           index={idx + 1}
         />
