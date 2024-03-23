@@ -19,7 +19,7 @@ export const ZRepository = z
     projectDescription: z.union([z.string(), z.null()]).optional(),
     levels: z.any(),
     pointTransactions: z.array(ZPointTransaction).optional(),
-    installation: ZInstallation,
+    installation: ZInstallation.optional(),
     Enrollment: z.array(ZEnrollment).optional(),
   })
   .strict();

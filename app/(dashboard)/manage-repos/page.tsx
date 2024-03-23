@@ -1,16 +1,14 @@
+import { RepoSelector } from "@/app/(dashboard)/manage-repos/repo-selector";
 import { DashboardHeader } from "@/components/header";
-import { RepoSelector } from "@/components/repo-selecor";
 import { DashboardShell } from "@/components/shell";
 import { authOptions } from "@/lib/auth";
 import { getRepositoriesForUser } from "@/lib/github/services/repository";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-import { selectRepoActions } from "./actions";
-
 export const metadata = {
-  title: "Connect a Repository",
-  description: "Select the repository you want to integrate oss.gg with.",
+  title: "Manage Repositories",
+  description: "Manage repositories you want to integrate oss.gg with.",
 };
 
 export default async function SelectRepoPage() {
@@ -20,19 +18,18 @@ export default async function SelectRepoPage() {
   }
 
   const repos = await getRepositoriesForUser(user.id);
-  console.log("repos", repos);
 
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="Connect a Repository"
-        text="Select the repository you want to integrate oss.gg with."
+        heading="Manage Repositories"
+        text="Manage repositories you want to integrate oss.gg with."
       />
       <div className="space-y-2">
         {repos.length > 0 ? (
           <>
             {repos.map((repo) => (
-              <RepoSelector key={repo.id} repo={repo} selectRepoAction={selectRepoActions} />
+              <RepoSelector key={repo.id} repo={repo} />
             ))}
           </>
         ) : (

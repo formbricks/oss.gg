@@ -122,7 +122,6 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
           closedAt: pr.closed_at,
         };
       });
-      console.log(openPRs);
       return openPRs;
     },
     [`getOpenPullRequests-${repoGithubId}`],
