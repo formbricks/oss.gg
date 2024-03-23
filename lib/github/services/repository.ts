@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 
-// Activate a single repository - Only if the user is an owner
+// Activate a single repository with updated checks
 export const activateRepository = async (id: string, userId: string) => {
   try {
     const repository = await db.repository.findUnique({
@@ -14,16 +14,25 @@ export const activateRepository = async (id: string, userId: string) => {
       },
     });
 
-    // Check if repository exists
     if (!repository) {
       throw new Error("Repository not found.");
     }
 
-    const userIsOwner = repository.installation.memberships.some(
-      (membership) => membership.userId === userId && membership.role === "owner"
-    );
+    const { installation } = repository;
+    let userHasPermission = false;
 
-    if (!userIsOwner) {
+    // Check if the installation is of type 'organization'
+    if (installation.type === "organization") {
+      // Any member can change the configuration
+      userHasPermission = installation.memberships.some((membership) => membership.userId === userId);
+    } else {
+      // For user installations, only owners can change the configuration
+      userHasPermission = installation.memberships.some(
+        (membership) => membership.userId === userId && membership.role === "owner"
+      );
+    }
+
+    if (!userHasPermission) {
       throw new Error("User does not have permission to activate this repository.");
     }
 
@@ -36,7 +45,7 @@ export const activateRepository = async (id: string, userId: string) => {
   }
 };
 
-// Deactivate a single repository - Only if the user is an owner
+// Deactivate a single repository with updated checks
 export const deactivateRepository = async (id: string, userId: string) => {
   try {
     const repository = await db.repository.findUnique({
@@ -50,16 +59,24 @@ export const deactivateRepository = async (id: string, userId: string) => {
       },
     });
 
-    // Check if repository exists
     if (!repository) {
       throw new Error("Repository not found.");
     }
 
-    const userIsOwner = repository.installation.memberships.some(
-      (membership) => membership.userId === userId && membership.role === "owner"
-    );
+    const { installation } = repository;
+    let userHasPermission = false;
 
-    if (!userIsOwner) {
+    if (installation.type === "organization") {
+      // Any member can change the configuration
+      userHasPermission = installation.memberships.some((membership) => membership.userId === userId);
+    } else {
+      // For user installations, only owners can change the configuration
+      userHasPermission = installation.memberships.some(
+        (membership) => membership.userId === userId && membership.role === "owner"
+      );
+    }
+
+    if (!userHasPermission) {
       throw new Error("User does not have permission to deactivate this repository.");
     }
 

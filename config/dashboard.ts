@@ -6,7 +6,7 @@ export const dashboardConfig: DashboardConfig = {
     { title: "Enroll to play", href: "/enroll" },
   ],
   bottomNav: [
-    { title: "Repo Settings", href: "/manage-repos" },
+    /*     { title: "Repo Settings", href: "/manage-repos" }, */
     { title: "What is oss.gg?", href: "/", external: true },
     { title: "Help build oss.gg", href: "/contribute" },
   ],
