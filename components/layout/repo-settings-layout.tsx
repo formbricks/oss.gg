@@ -14,8 +14,8 @@ export default function NavTabs() {
     { name: "Players", href: `/repo-setting/${repositoryId}` },
     { name: "Project Description", href: `/repo-setting/${repositoryId}/project-description` },
     { name: "Levels Settings", href: `/repo-setting/${repositoryId}/levels` },
-    { name: "Email Content", href: `/${repositoryId}/settings` },
-    { name: "Bounty Settings", href: `/${repositoryId}/settings` },
+    { name: "Email Content", href: `/repo-setting/${repositoryId}/emails` },
+    { name: "Bounty Settings", href: `/repo-setting/${repositoryId}/bounty-setting` },
   ];
 
   return (
