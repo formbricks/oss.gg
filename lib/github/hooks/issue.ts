@@ -12,7 +12,7 @@ import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
 import { triggerDotDevClient } from "@/trigger";
 import { Webhooks } from "@octokit/webhooks";
 
-import { getOctokitInstance } from "../utils";
+import { extractIssueNumbers, getOctokitInstance } from "../utils";
 
 export const onIssueOpened = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_OPENED, async (context) => {
@@ -119,6 +119,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
             installationId: context.payload.installation?.id,
           },
         });
+
         await octokit.issues.createComment({
           owner,
           repo,
@@ -295,5 +296,14 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
       console.error(err);
       throw new Error(err);
     }
+  });
+};
+
+export const onPullRequestOpened = async (webhooks: Webhooks) => {
+  webhooks.on(EVENT_TRIGGERS.PULL_REQUEST_OPENED, async (context) => {
+    const pullRequestUser = context.payload.pull_request.user;
+    const body = context.payload.pull_request.body;
+    const issueNumber = extractIssueNumbers(body!);
+    // create a comment on the issue that a PR has been opened
   });
 };
