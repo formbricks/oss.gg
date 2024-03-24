@@ -90,6 +90,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
         { headers: githubHeaders }
       );
       const issuesData = await issuesResponse.json();
+      console.log("issuesData", issuesData);
       const validatedData = ZGithubApiResponseSchema.parse(issuesData);
 
       // Map the GitHub API response to issue format
