@@ -28,7 +28,7 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = ({
     return;
   };
   return (
-    <div className=" flex h-auto min-h-[4.5rem] w-full justify-between border-b    py-[var(--md)] text-[#09090B]">
+    <div className=" flex h-auto min-h-[4.5rem] w-full justify-between border-b    py-md text-[#09090B]">
       <Link className="" key={userGitHubId} href={`https://github.com/${userGitHubId}`} target="_blank">
         <div className="flex  w-fit  items-center gap-[0.85rem] text-[1rem] font-[500]  dark:text-white ">
           <div className="h-[1.5rem] w-[1.2rem]  ">#{index}</div>
@@ -41,23 +41,23 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = ({
           <div>{name}</div>
         </div>
       </Link>
-      <div className="flex w-auto items-center gap-[var(--md)]  ">
+      <div className="flex w-auto items-center gap-md  ">
         {showSettingButtons && (
-          <div className="flex gap-[var(--md)]">
+          <div className="flex gap-md">
             <Button
               variant={"destructive"}
-              className=" rounded-lg bg-[#EF4444] px-[var(--md)] font-[500]"
+              className=" rounded-lg bg-[#EF4444] px-md font-[500]"
               onClick={kickAndBlockHandler}>
               Kick and block
             </Button>
             <Button
-              className=" rounded-lg bg-[#F4F4F5] px-[var(--md)] font-[500] text-black"
+              className=" rounded-lg bg-[#F4F4F5] px-md font-[500] text-black"
               variant={"default"}
               onClick={kickAndBlockHandler}>
               Mute
             </Button>
             <Button
-              className=" rounded-lg bg-[#F4F4F5] px-[var(--md)] font-[500] text-black"
+              className=" rounded-lg bg-[#F4F4F5] px-md font-[500] text-black"
               variant={"default"}
               onClick={kickAndBlockHandler}>
               Change Points
