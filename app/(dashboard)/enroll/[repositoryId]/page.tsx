@@ -10,7 +10,10 @@ import EnrollmentStatusBar from "./enrollmentStatusBar";
 
 export default async function RepositoryDetailPage({ params }) {
   const repository = await getRepositoryById(params.repositoryId);
-  const openIssues = await getAllOssGgIssuesOfRepo(repository?.githubId);
+  if (!repository) {
+    throw new Error("Repository not found");
+  }
+  const openIssues = await getAllOssGgIssuesOfRepo(repository.githubId);
 
   return (
     <DashboardShell>
