@@ -30,7 +30,6 @@ export default async function EnrollPage() {
   }
 
   const repos: TRepository[] = repositoryResult;
-  console.log("repos on /enroll", repos);
 
   return (
     <DashboardShell>
