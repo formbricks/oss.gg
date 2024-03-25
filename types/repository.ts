@@ -15,7 +15,7 @@ export const ZRepository = z
     default_branch: z.string().nullable().optional(),
     installationId: z.string(),
     configured: z.boolean().default(false),
-    logoHref: z.union([z.string(), z.null()]).optional(),
+    logoUrl: z.union([z.string(), z.null()]).optional(),
     projectDescription: z.union([z.string(), z.null()]).optional(),
     levels: z.any(),
     pointTransactions: z.array(ZPointTransaction).optional(),

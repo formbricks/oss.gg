@@ -4,7 +4,7 @@ import Link from "next/link";
 
 interface Issue {
   href: string;
-  logoHref: string;
+  logoUrl: string;
   title: string;
   author: string;
   assignee?: string | null;
@@ -30,7 +30,7 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
           <GitMerge className="h-8 w-8 text-green-500" />
         </div>
       ) : (
-        <Image className="rounded-md" src={issue.logoHref} alt={issue.title} width={50} height={50} />
+        <Image className="rounded-md" src={issue.logoUrl} alt={issue.title} width={50} height={50} />
       )}
       <div className="flex w-full justify-between">
         <div>

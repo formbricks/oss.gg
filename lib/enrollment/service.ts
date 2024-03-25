@@ -111,7 +111,7 @@ export const getEnrolledRepositories = async (userId: string): Promise<TReposito
       installationId: true,
       pointTransactions: true,
       Enrollment: true,
-      logoHref: true,
+      logoUrl: true,
     },
   });
 

@@ -82,7 +82,7 @@ model Repository {
   default_branch     String?
   installationId     String
   configured         Boolean  @default(false)
-  logoHref           String?
+  logoUrl            String?
   projectDescription String?
 
   levels            Json               @default("[]")

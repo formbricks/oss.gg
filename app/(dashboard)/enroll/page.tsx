@@ -47,7 +47,7 @@ export default async function EnrollPage() {
                 <div className="flex items-center space-x-5">
                   <Image
                     className="rounded-md"
-                    src={repository.logoHref || "https://avatars.githubusercontent.com/u/105877416?s=200&v=4"}
+                    src={repository.logoUrl || "https://avatars.githubusercontent.com/u/105877416?s=200&v=4"}
                     alt={repository.name}
                     width={80}
                     height={80}

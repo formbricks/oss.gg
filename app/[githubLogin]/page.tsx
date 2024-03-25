@@ -15,7 +15,7 @@ export const metadata = {
 
 const dummyIssues = [
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     title: "[FEATURE] Share survey results publicly",
     author: "jobenjada",
@@ -24,7 +24,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
@@ -33,7 +33,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
@@ -42,7 +42,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
@@ -51,7 +51,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
