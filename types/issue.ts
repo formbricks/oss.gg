@@ -33,7 +33,7 @@ export const ZGithubApiResponseSchema = z.object({
 });
 
 export const ZMappedDataSchema = z.object({
-  logoHref: z.string(),
+  logoUrl: z.string(),
   href: z.string(),
   title: z.string(),
   author: z.string(),

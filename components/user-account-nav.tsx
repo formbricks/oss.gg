@@ -20,7 +20,7 @@ interface UserAccountNavProps {
 
 const topNavigation = [
   { label: "Open issues", url: "/issues" },
-  { label: "Enroll to play", url: "/enroll" },
+  { label: "Repositories", url: "/enroll" },
   { label: "Settings", url: "/settings" },
   { label: "Your profile", url: "/", target: "_blank" },
 ];
