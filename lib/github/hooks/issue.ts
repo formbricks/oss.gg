@@ -120,15 +120,15 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       if (identifier === CREATE_IDENTIFIER) {
         //check if the user is a member of the repository in our database
         const isMember = await isMemberOfRepository(commenter, installationId);
-        // if (!isMember) {
-        //   await octokit.issues.createComment({
-        //     owner,
-        //     repo,
-        //     issue_number: issueNumber,
-        //     body: `@${commenter}, ${ON_USER_NOT_REGISTERED}`,
-        //   });
-        //   return;
-        // }
+        if (!isMember) {
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: `@${commenter}, ${ON_USER_NOT_REGISTERED}`,
+          });
+          return;
+        }
         if (isOssGgLabel) {
           return;
         } else {
