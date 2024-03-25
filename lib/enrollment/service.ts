@@ -26,7 +26,6 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
       },
     });
 
-    console.log("existing enrollment", existingEnrollment);
 
     if (existingEnrollment) {
       throw new Error("Enrollment already exists.");
