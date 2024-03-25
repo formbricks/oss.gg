@@ -11,17 +11,18 @@ import { redirect } from "next/navigation";
 import { getAllRepositoriesAction } from "../actions";
 
 export const metadata = {
-  title: "Enroll to play",
+  title: "Repositories",
   description: "Choose open source repositories you want to contribute to - and gather points!",
 };
 
 export default async function EnrollPage() {
   const user = await getCurrentUser();
-  const repositoryResult = await getAllRepositoriesAction();
 
   if (!user) {
     redirect(authOptions?.pages?.signIn || "/login");
   }
+
+  const repositoryResult = await getAllRepositoriesAction();
 
   if ("error" in repositoryResult) {
     console.error(repositoryResult.error);
@@ -29,6 +30,7 @@ export default async function EnrollPage() {
   }
 
   const repos: TRepository[] = repositoryResult;
+  console.log("repos on /enroll", repos);
 
   return (
     <DashboardShell>

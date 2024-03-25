@@ -3,7 +3,7 @@ import { DashboardConfig } from "types";
 export const dashboardConfig: DashboardConfig = {
   mainNav: [
     { title: "Open issues", href: "/issues" },
-    { title: "Enroll to play", href: "/enroll" },
+    { title: "Repositories", href: "/enroll" },
   ],
   bottomNav: [
     /*     { title: "Repo Settings", href: "/manage-repos" }, */

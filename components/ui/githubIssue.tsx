@@ -39,18 +39,18 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
         </div>
         <div className="flex gap-2">
           {issue.assignee && issue.isIssue ? (
-            <div className="flex items-center justify-center rounded-full bg-card px-6 py-1 text-sm font-medium">
+            <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
               {issue.assignee} 🚧
             </div>
           ) : (
             issue.isIssue && (
-              <div className="flex items-center justify-center rounded-full bg-card px-6 py-1 text-sm font-medium">
+              <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
                 Assign yourself 🫵
               </div>
             )
           )}
           {issue.points && issue.points !== null && (
-            <div className="flex items-center justify-center rounded-full bg-card px-6 py-1 text-sm font-medium">
+            <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
               {issue.points} Points 🔥
             </div>
           )}
