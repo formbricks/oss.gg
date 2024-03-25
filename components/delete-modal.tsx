@@ -1,6 +1,8 @@
+import { deleteUserAction } from "@/app/(dashboard)/settings/actions";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/use-toast";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 
@@ -16,7 +18,30 @@ function DeleteAccountModal({
   const { toast } = useToast();
 
   async function deleteAccount() {
-    setDeleting(true);
+    try {
+      console.log("deleting");
+      setDeleting(true);
+      await deleteUserAction();
+      signOut({
+        callbackUrl: `${window.location.origin}/login`,
+      });
+    } catch (error) {
+      toast({
+        title: `Error deleting account`,
+        description: error.message,
+      });
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handleSubmit() {
+    console.log("deleting");
+    toast({
+      title: `Deleting account`,
+      variant: "destructive", 
+    });
+    await deleteAccount();
   }
 
   return (
@@ -29,21 +54,13 @@ function DeleteAccountModal({
         </p>
       </div>
 
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          toast({
-            title: `deleting`,
-            description: "Next steps to be built",
-          });
-          await deleteAccount();
-        }}
+      <div
         className="flex flex-col space-y-6 bg-gray-50 px-4 py-8 text-left sm:px-16">
-        <Button variant="destructive" loading={deleting}>
+        <Button onClick={handleSubmit} variant="destructive" loading={deleting}>
           {" "}
           Delete
         </Button>
-      </form>
+      </div>
     </Modal>
   );
 }

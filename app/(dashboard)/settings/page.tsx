@@ -41,7 +41,7 @@ export default async function SettingsPage() {
           </div>
         ))}
       </div>
-      <DeleteAccountCard />
+      <DeleteAccountCard  />
     </DashboardShell>
   );
 }
