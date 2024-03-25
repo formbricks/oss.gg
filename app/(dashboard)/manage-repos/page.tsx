@@ -1,4 +1,4 @@
-import { RepoSelector } from "@/app/(dashboard)/manage-repos/repo-selector";
+import { RepoSelector } from "@/app/(dashboard)/manage-repos/repoSelector";
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import { authOptions } from "@/lib/auth";
@@ -29,7 +29,7 @@ export default async function SelectRepoPage() {
         {repos.length > 0 ? (
           <>
             {repos.map((repo) => (
-              <RepoSelector key={repo.id} repo={repo} userId={user.id} />
+              <RepoSelector key={repo.id} repo={repo} />
             ))}
           </>
         ) : (
