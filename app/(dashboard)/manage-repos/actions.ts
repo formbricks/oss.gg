@@ -1,6 +1,7 @@
 "use server";
 
-import { activateRepository, deactivateRepository, fetchRepoDetails } from "@/lib/github/services/repository";
+import { userHasPermissionForRepository } from "@/lib/repository/auth";
+import { fetchRepoDetails, updateRepository } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
 
 async function getUserId() {
@@ -14,13 +15,17 @@ async function getUserId() {
 // Activates a single repository
 export const activateRepoAction = async (id: string) => {
   const userId = await getUserId();
-  return await activateRepository(id, userId);
+  const userHasPermission = userHasPermissionForRepository(id, userId);
+  if (!userHasPermission) throw new Error("Not authorized");
+  return await updateRepository(id, true);
 };
 
 // Deactivates a single repository
 export const deactivateRepoAction = async (id: string) => {
   const userId = await getUserId();
-  return await deactivateRepository(id, userId);
+  const userHasPermission = userHasPermissionForRepository(id, userId);
+  if (!userHasPermission) throw new Error("Not authorized");
+  return await updateRepository(id, false);
 };
 
 // Fetches repository details

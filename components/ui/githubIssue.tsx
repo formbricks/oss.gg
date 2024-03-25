@@ -49,7 +49,7 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
               </div>
             )
           )}
-          {issue.points !== null && (
+          {issue.points && issue.points !== null && (
             <div className="flex items-center justify-center rounded-full bg-card px-6 py-1 text-sm font-medium">
               {issue.points} Points 🔥
             </div>
