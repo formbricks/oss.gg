@@ -113,6 +113,7 @@ export const sendInstallationDetails = async (
                 githubId: repo.id,
                 name: repo.name,
                 installationId: installationPrisma.id,
+                logoUrl: `https://avatars.githubusercontent.com/u/${installation.account.id}?s=200&v=4`,
               },
             });
           })
