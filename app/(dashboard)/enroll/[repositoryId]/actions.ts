@@ -1,7 +1,6 @@
 "use server";
 
 import { createEnrollment, deleteEnrollment, hasEnrollmentForRepository } from "@/lib/enrollment/service";
-import { getRepositoryById } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
 
 /**
@@ -60,25 +59,5 @@ export const hasEnrollmentForRepositoryAction = async (repositoryId: string): Pr
   } catch (error) {
     console.error("Error checking enrollment:", error.message);
     throw new Error("Failed to check enrollment.");
-  }
-};
-
-/**
- * Retrieves repository data for a given repository ID.
- * @param repoId - The ID of the repository to retrieve.
- * @returns The repository object.
- */
-export const getRepositoryDataAction = async (repoId: string) => {
-  try {
-    const repository = await getRepositoryById(repoId);
-
-    if (!repository) {
-      throw new Error("Repository not found.");
-    }
-
-    return repository;
-  } catch (error) {
-    console.error("Error retrieving repository data:", error.message);
-    throw new Error(`Failed to retrieve repository data: ${error}`);
   }
 };
