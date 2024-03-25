@@ -55,11 +55,6 @@ export default async function EnrollPage() {
                   <div>
                     <p className="text-xl font-medium">{repository.name}</p>
                     <p className="my-1 text-sm">{repository.description}</p>
-                    <div className="mt-1 flex space-x-1 text-xs">
-                      {/* <div className="mt-1 rounded-full bg-accent px-2 py-1">5k ⭐</div>
-                       <div className="rounded-full bg-accent px-2 py-1">{repository.bountiesPaid} ✅</div>
-                  <div className="rounded-full bg-accent px-2 py-1">{repository.bountiesOpen} 💰</div> */}
-                    </div>
                   </div>
                 </div>
               </Link>
