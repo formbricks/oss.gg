@@ -26,6 +26,12 @@ const members = [
     twitterHandle: "@aryanagarwal28",
     imageUrl: "https://pbs.twimg.com/profile_images/1339379000662056962/_5jcc_DU_400x400.jpg",
   },
+  {
+    name: "Manish",
+    role: "Full Stack Engineer",
+    twitterHandle: "@manishthef",
+    imageUrl: "https://pbs.twimg.com/profile_images/1581603479277432832/nRwmMYGL_200x200.jpg",
+  },
 ];
 
 export default function FoundingMembersPage() {
