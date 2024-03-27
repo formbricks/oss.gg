@@ -17,6 +17,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
+    "@aws-sdk/s3-presigned-post": "^3.540.0",
+    "@aws-sdk/s3-request-presigner": "^3.540.0",
     "@hookform/resolvers": "^3.3.4",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@octokit/auth-app": "^6.0.3",
@@ -46,6 +49,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
+    "date-fns": "^3.6.0",
     "framer-motion": "^11.0.3",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.323.0",
