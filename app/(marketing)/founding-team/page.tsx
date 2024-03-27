@@ -44,6 +44,12 @@ const members = [
     twitterHandle: "@AfolabiRahmot",
     imageUrl: "https://pbs.twimg.com/profile_images/1723259443209498624/bleo_fwb_400x400.jpg",
   },
+  {
+    name: "Shubham",
+    role: "Front-end Engineer",
+    twitterHandle: "@subhamray_",
+    imageUrl: "https://pbs.twimg.com/profile_images/1682836429343432705/tiqivo2r_400x400.jpg",
+  },
 ];
 
 export default function FoundingMembersPage() {
