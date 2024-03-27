@@ -29,7 +29,7 @@ model User {
   account           Account?
   pointTransactions PointTransaction[]
   memberships       Membership[]
-  Enrollment        Enrollment[]
+  enrollment        Enrollment[]
 
   @@map(name: "users")
 }
@@ -73,20 +73,19 @@ model Installation {
 }
 
 model Repository {
-  id             String   @id @default(cuid())
-  githubId       Int      @unique
-  name           String
-  description    String?
-  homepage       String?
-  topics         String[]
-  default_branch String?
-  installationId String
-  configured     Boolean  @default(false)
-
-  levels            Json               @default("[]")
+  id                String             @id @default(cuid())
+  githubId          Int                @unique
+  name              String
+  description       String?
+  homepage          String?
+  topics            String[]
+  default_branch    String?
+  installationId    String
+  configured        Boolean            @default(false)
   pointTransactions PointTransaction[]
   installation      Installation       @relation(fields: [installationId], references: [id])
   Enrollment        Enrollment[]
+  levels            Level[]
 
   @@map(name: "repositories")
 }
@@ -110,13 +109,15 @@ model Membership {
 }
 
 model Enrollment {
-  id           String   @id @default(cuid())
-  userId       String
-  repositoryId String
-  enrolledAt   DateTime @default(now())
-
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  id             String     @id @default(cuid())
+  userId         String
+  repositoryId   String
+  enrolledAt     DateTime   @default(now())
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repository     Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  currentLevel   Level?     @relation(fields: [currentLevelId], references: [id])
+  currentLevelId String?
+  totalPoints    Int        @default(0)
 
   @@unique([userId, repositoryId])
   @@map(name: "enrollments")
@@ -146,4 +147,19 @@ model PointTransaction {
 
   @@unique([userId, repositoryId, url])
   @@map(name: "point_transactions")
+}
+
+model Level {
+  id             String       @id @default(cuid())
+  name           String
+  pointThreshold Int
+  description    String
+  icon           String
+  permissions    Json 
+  tags          String[]
+  repositoryId   String       @unique
+  repository     Repository   @relation(fields: [repositoryId], references: [id])
+  enrollment     Enrollment[]
+
+  @@map(name: "levels")
 }
