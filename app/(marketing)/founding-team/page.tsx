@@ -33,6 +33,12 @@ const members = [
     imageUrl: "https://pbs.twimg.com/profile_images/1581603479277432832/nRwmMYGL_200x200.jpg",
   },
   {
+    name: "Aanuoluwapo",
+    role: "PM",
+    twitterHandle: "@Amalaloverr",
+    imageUrl: "https://pbs.twimg.com/profile_images/1666933038477987843/42wMSRiW_400x400.jpg",
+  },
+  {
     name: "Rahma",
     role: "PM",
     twitterHandle: "@AfolabiRahmot",
