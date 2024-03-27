@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  createLevelAction,
+  updateLevelIconAction,
+} from "@/app/(dashboard)/repo-setting/[repositoryId]/levels/action";
+import { handleFileUpload } from "@/app/(dashboard)/repo-setting/[repositoryId]/levels/lib";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,12 +18,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Tag } from "@/components/ui/tag";
 import { TagInput, Tag as TagType } from "@/components/ui/tag-input";
+import { updateLevelIcon } from "@/lib/levels/service";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { useToast } from "../ui/use-toast";
+
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const formSchema = z.object({
   levelName: z.string().min(3, {
@@ -28,7 +38,12 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "description must be at least 10 characters.",
   }),
-  icon: z.string(),
+  icon: z
+    .array(z.instanceof(File))
+    .max(1, { message: "Only one image file is allowed" })
+    .refine((files) => files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)), {
+      message: "Only .jpg, .jpeg, .png and .webp files are allowed",
+    }),
   topics: z.array(
     z.object({
       id: z.string(),
@@ -44,7 +59,7 @@ interface LevelsFormProps {
   levelName?: string;
   pointThreshold?: number;
   description?: string;
-  icon?: string;
+  icon?: File[];
   topics?: TagType[];
   limitIssues?: boolean;
   canReportBugs?: boolean;
@@ -78,7 +93,11 @@ export function LevelsForm({
 
   const [tags, setTags] = React.useState<TagType[]>([]);
   const [isEditMode, setIsEditMode] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const router = useRouter();
+  const { repositoryId } = useParams() as { repositoryId: string };
 
   const { setValue } = form;
 
@@ -86,16 +105,57 @@ export function LevelsForm({
     return !isEditMode && defaultValue !== undefined && defaultValue !== "";
   };
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    // handle the file upload and meake suere you return back a url for it
+    setIsLoading(true);
+    try {
+      const { url, error } = await handleFileUpload(values.icon[0], repositoryId);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error,
+        });
+
+        setIsLoading(false);
+        return;
+      }
+
+      const pictureUrl = url;
+      //call the function to upload all the data to the server
+
+      await createLevelAction({
+        name: values.levelName,
+        description: values.description,
+        pointThreshold: values.pointThreshold,
+        icon: pictureUrl,
+        repositoryId: repositoryId,
+        permissions: {
+          canWorkOnIssues: values.limitIssues,
+          issueLabels: tags.map((tag) => tag.text),
+          canWorkOnBugs: values.canReportBugs,
+          canHuntBounties: values.canHuntBounties,
+        },
+        tags: values.topics.map((tag) => tag.text),
+      });
+      router.refresh();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Avatar update failed. Please try again.",
+      });
+      setIsLoading(false);
+    }
+
+    setIsLoading(false);
   }
   function handleButtonClick() {
     fileInputRef.current?.click();
   }
 
-  // const chigala: TagType[] = [
+  // const testing: TagType[] = [
   //   {
   //     id: "1",
   //     text: "chigala",
@@ -122,15 +182,48 @@ export function LevelsForm({
   //   },
   // ];
 
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
-      // const reader = new FileReader();
-      // reader.onload = (e) => {
-      //   setValue("icon", e.target?.result);
-      // };
-      // reader.readAsDataURL(file);
       //call the s3 upload function to upload the image
+      setIsLoading(true);
+      try {
+        const { url, error } = await handleFileUpload(file, repositoryId);
+
+        if (error) {
+          toast({
+            title: "Error",
+            description: error,
+          });
+
+          setIsLoading(false);
+          return;
+        }
+        //call the update file action
+        if(!levelName) {
+          toast({
+            title: "Error",
+            description: "Level name is required",
+          });
+
+          setIsLoading(false);
+          return;
+        }
+
+        await updateLevelIconAction({
+          name: levelName,
+          repositoryId: repositoryId,
+          iconUrl: url,
+        });
+
+        router.refresh();
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: "Avatar update failed. Please try again.",
+        });
+        setIsLoading(false);
+      }
     }
   }
   return (
@@ -187,7 +280,7 @@ export function LevelsForm({
                       {...fieldProps}
                       placeholder="Picture"
                       type="file"
-                      accept="image/*, application/pdf"
+                      accept="image/*"
                       onChange={(event) => onChange(event.target.files && event.target.files[0])}
                     />
                   </FormControl>
@@ -203,7 +296,7 @@ export function LevelsForm({
               </Avatar>
               <div className="relative flex flex-col space-y-5">
                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
-                <Button variant="secondary" className="w-fit" onClick={handleButtonClick}>
+                <Button variant="secondary" className="w-fit" onClick={() => fileInputRef.current?.click()}>
                   Replace icon
                 </Button>
               </div>
