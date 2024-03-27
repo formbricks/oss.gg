@@ -34,6 +34,8 @@
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;
+
+    --md: 16px;
   }
 
   .dark {
@@ -67,6 +69,8 @@
     --ring: 216 34% 17%;
 
     --radius: 0.5rem;
+
+    --md: 16px;
   }
 }
 
@@ -76,6 +80,8 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 }

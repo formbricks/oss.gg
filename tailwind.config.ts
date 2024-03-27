@@ -66,6 +66,12 @@ const config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      padding: {
+        md: "var(--md)",
+      },
+      gap: {
+        md: "var(--md)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
