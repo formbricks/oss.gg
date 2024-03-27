@@ -21,12 +21,18 @@ export const env = createEnv({
     GITHUB_APP_PRIVATE_KEY: z.string().min(1).optional(),
     GITHUB_APP_SLUG: z.string().min(1),
     GITHUB_APP_ACCESS_TOKEN: z.string().min(1),
-    TRIGGER_API_KEY: z.string().min(1),
-    TRIGGER_API_URL: z.string().min(1),
+    // TRIGGER_API_KEY: z.string().min(1),
+    // TRIGGER_API_URL: z.string().min(1).optional(),
+    S3_BUCKET_NAME: z.string(), 
+    S3_REGION: z.string(),
+    S3_ACCESS_KEY: z.string(),
+    S3_SECRET_KEY: z.string(),
+    S3_ENDPOINT_URL: z.string(),
+    
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
-    NEXT_PUBLIC_TRIGGER_PUBLIC_API_KEY: z.string().min(1).optional(),
+    // NEXT_PUBLIC_TRIGGER_PUBLIC_API_KEY: z.string().min(1).optional(),
   },
   runtimeEnv: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
@@ -46,5 +52,10 @@ export const env = createEnv({
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
     GITHUB_APP_SLUG: process.env.GITHUB_APP_SLUG,
     GITHUB_APP_ACCESS_TOKEN: process.env.GITHUB_APP_ACCESS_TOKEN,
+    S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
+    S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+    S3_REGION: process.env.S3_REGION,
+    S3_SECRET_KEY: process.env.S3_SECRET_KEY,
+    S3_ENDPOINT_URL: process.env.S3_ENDPOINT_URL,
   },
 });
