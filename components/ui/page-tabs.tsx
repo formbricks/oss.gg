@@ -19,7 +19,7 @@ export function PageTabs({ tabs, className }: PageTabsProps) {
   const pathName = usePathname();
 
   return (
-    <div className={cn(`flex flex-row rounded-lg bg-muted p-1`, className)}>
+    <div className={cn(`flex w-fit flex-row rounded-lg bg-muted p-1`, className)}>
       {tabs.map((tab, index) => (
         <Button
           asChild
