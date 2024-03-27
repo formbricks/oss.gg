@@ -16,7 +16,7 @@ const members = [
   },
   {
     name: "Blessing",
-    role: "PM",
+    role: "Lead PM",
     twitterHandle: "@uxfoodie_",
     imageUrl: "https://pbs.twimg.com/profile_images/1728349073898340352/kC1syoNg_400x400.jpg",
   },
@@ -31,6 +31,24 @@ const members = [
     role: "Full Stack Engineer",
     twitterHandle: "@manishthef",
     imageUrl: "https://pbs.twimg.com/profile_images/1581603479277432832/nRwmMYGL_200x200.jpg",
+  },
+  {
+    name: "Aanuoluwapo",
+    role: "PM",
+    twitterHandle: "@Amalaloverr",
+    imageUrl: "https://pbs.twimg.com/profile_images/1666933038477987843/42wMSRiW_400x400.jpg",
+  },
+  {
+    name: "Rahma",
+    role: "PM",
+    twitterHandle: "@AfolabiRahmot",
+    imageUrl: "https://pbs.twimg.com/profile_images/1723259443209498624/bleo_fwb_400x400.jpg",
+  },
+  {
+    name: "Shubham",
+    role: "Front-end Engineer",
+    twitterHandle: "@subhamray_",
+    imageUrl: "https://pbs.twimg.com/profile_images/1682836429343432705/tiqivo2r_400x400.jpg",
   },
 ];
 
