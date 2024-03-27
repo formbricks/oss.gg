@@ -29,3 +29,5 @@ export const GITHUB_APP_SLUG = env.GITHUB_APP_SLUG as string;
 export const GITHUB_APP_ACCESS_TOKEN = env.GITHUB_APP_ACCESS_TOKEN as string;
 
 export const OSS_GG_LABEL = "🕹️ oss.gg" as const;
+
+export const ITEMS_PER_PAGE = 50;

@@ -2,11 +2,14 @@ import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import GitHubIssue from "@/components/ui/githubIssue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ITEMS_PER_PAGE } from "@/lib/constants";
 import { getAllOssGgIssuesOfRepo } from "@/lib/github/service";
+import { getPointsOfUsersInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryById } from "@/lib/repository/service";
 import { TRepository } from "@/types/repository";
 
 import EnrollmentStatusBar from "./enrollmentStatusBar";
+import LeaderBoard from "./leaderBoard";
 
 export default async function RepositoryDetailPage({ params }) {
   const repository = await getRepositoryById(params.repositoryId);
@@ -14,6 +17,7 @@ export default async function RepositoryDetailPage({ params }) {
     throw new Error("Repository not found");
   }
   const openIssues = await getAllOssGgIssuesOfRepo(repository.githubId);
+  const leaderboardProfiles = await getPointsOfUsersInRepoByRepositoryId(repository.id, 1);
 
   return (
     <DashboardShell>
@@ -29,7 +33,13 @@ export default async function RepositoryDetailPage({ params }) {
           {/* Pass repository as prop or use context/provider if deeper nesting is involved */}
           <ProjectDetailsSection projectDescription={repository?.projectDescription} />
         </TabsContent>
-        <TabsContent value="leaderboard">Coming soon: A new adventure awaits!</TabsContent>
+        <TabsContent value="leaderboard">
+          <LeaderBoard
+            leaderboardProfiles={leaderboardProfiles}
+            repositoryId={repository.id}
+            itemPerPage={ITEMS_PER_PAGE}
+          />
+        </TabsContent>
         <TabsContent value="open-issues">
           <OpenIssuesSection openIssues={openIssues} />
         </TabsContent>
