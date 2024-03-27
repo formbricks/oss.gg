@@ -1,9 +1,7 @@
 "use server";
 
 import { createEnrollment, deleteEnrollment, hasEnrollmentForRepository } from "@/lib/enrollment/service";
-import { getPointsOfUsersInRepoByRepositoryId } from "@/lib/points/service";
 import { getCurrentUser } from "@/lib/session";
-import { TPointTransactionWithUser } from "@/types/pointTransaction";
 
 /**
  * Creates an enrollment for the authenticated user in a specific repository.
@@ -61,21 +59,5 @@ export const hasEnrollmentForRepositoryAction = async (repositoryId: string): Pr
   } catch (error) {
     console.error("Error checking enrollment:", error.message);
     throw new Error("Failed to check enrollment.");
-  }
-};
-
-export const getPointsOfUsersInRepoByRepositoryIdAction = async (
-  repositoryId: string,
-  page: number
-): Promise<TPointTransactionWithUser[]> => {
-  try {
-    const user = await getCurrentUser();
-    if (!user || !user.id) {
-      throw new Error("User must be authenticated to perform this action.");
-    }
-    return await getPointsOfUsersInRepoByRepositoryId(repositoryId, page);
-  } catch (error) {
-    console.error("Error getting users and their points:", error.message);
-    throw new Error("Error getting users and their points.");
   }
 };

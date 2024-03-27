@@ -4,7 +4,7 @@ import UserProfileSummary from "@/components/ui/userProfileSummary";
 import { TPointTransactionWithUser } from "@/types/pointTransaction";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { getPointsOfUsersInRepoByRepositoryIdAction } from "./actions";
+import { getPointsOfUsersInRepoByRepositoryIdAction } from "../actions";
 
 interface LeaderBoardProps {
   leaderboardProfiles: TPointTransactionWithUser[];
