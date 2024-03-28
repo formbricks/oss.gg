@@ -2,7 +2,13 @@ import { Webhooks, createNodeMiddleware } from "@octokit/webhooks";
 
 import { GITHUB_APP_WEBHOOK_SECRET } from "../constants";
 import { onInstallationCreated } from "./hooks/installation";
-import { onAssignCommented, onAwardPoints, onIssueOpened, onUnassignCommented } from "./hooks/issue";
+import {
+  onAssignCommented,
+  onAwardPoints,
+  onIssueOpened,
+  onPullRequestOpened,
+  onUnassignCommented,
+} from "./hooks/issue";
 
 const webhooks = new Webhooks({
   secret: GITHUB_APP_WEBHOOK_SECRET,
@@ -18,4 +24,5 @@ export const registerHooks = async () => {
   onAssignCommented(webhooks);
   onUnassignCommented(webhooks);
   onAwardPoints(webhooks);
+  onPullRequestOpened(webhooks);
 };
