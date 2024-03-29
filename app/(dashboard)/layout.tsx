@@ -42,11 +42,11 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
             />
           </div> */}
           <DashboardNav items={dashboardConfig.bottomNav} />
-          <p className="mb-3 ml-3 mt-5 text-xs">
-            <a href="https://formbricks.com/github">Built by Formbricks</a>
+          <p className="mb-3 ml-3 mt-5  text-xs">
+            <a href="https://github.com/formbricks/oss.gg">Built by the community</a>
           </p>
           <p className="ml-3 text-xs">
-            <a href="https://github.com/formbricks/oss.gg">View Source Code</a>
+            <a href="https://formbricks.com/github">Powered by Formbricks</a>
           </p>
         </div>
       </aside>

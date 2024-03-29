@@ -4,8 +4,6 @@ import { DatabaseError } from "@/types/errors";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
 
-import { getRepositoryById } from "../repository/service";
-import { getUser } from "../user/service";
 import { validateInputs } from "../utils/validate";
 
 /**
@@ -26,6 +24,7 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
       },
     });
 
+    console.log("existing enrollment", existingEnrollment);
 
     if (existingEnrollment) {
       throw new Error("Enrollment already exists.");
@@ -114,6 +113,7 @@ export const getEnrolledRepositories = async (userId: string): Promise<TReposito
       installationId: true,
       pointTransactions: true,
       Enrollment: true,
+      logoUrl: true,
     },
   });
 
