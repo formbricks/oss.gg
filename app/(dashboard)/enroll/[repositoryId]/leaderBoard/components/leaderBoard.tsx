@@ -12,7 +12,7 @@ interface LeaderBoardProps {
   itemPerPage: number;
 }
 
-export default function LeaderBoard({
+export default function Leaderboard({
   leaderboardProfiles,
   repositoryId,
   itemPerPage,

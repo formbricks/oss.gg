@@ -2,7 +2,7 @@ import { ITEMS_PER_PAGE } from "@/lib/constants";
 import { getPointsOfUsersInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryById } from "@/lib/repository/service";
 
-import LeaderBoard from "./components/leaderBoard";
+import Leaderboard from "./components/Leaderboard";
 
 export default async function LeaderBoardPage({ params }) {
   const repository = await getRepositoryById(params.repositoryId);
@@ -14,7 +14,7 @@ export default async function LeaderBoardPage({ params }) {
 
   return (
     <>
-      <LeaderBoard
+      <Leaderboard
         leaderboardProfiles={leaderboardProfiles}
         itemPerPage={ITEMS_PER_PAGE}
         repositoryId={repository.id}

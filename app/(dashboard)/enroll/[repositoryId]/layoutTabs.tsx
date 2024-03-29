@@ -21,8 +21,8 @@ export default function LayoutTabs({ repository }) {
           <Link href={`/enroll/${repository.id}/projectDetails`}>
             <TabsTrigger value="projectDetails">Project Details</TabsTrigger>
           </Link>
-          <Link href={`/enroll/${repository.id}/leaderBoard`}>
-            <TabsTrigger value="leaderBoard">Leaderboard</TabsTrigger>
+          <Link href={`/enroll/${repository.id}/leaderboard`}>
+            <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </Link>
           <Link href={`/enroll/${repository.id}/openIssues`}>
             <TabsTrigger value="openIssues">Open Issues</TabsTrigger>
