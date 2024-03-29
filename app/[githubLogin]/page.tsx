@@ -15,7 +15,7 @@ export const metadata = {
 
 const dummyIssues = [
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     title: "[FEATURE] Share survey results publicly",
     author: "jobenjada",
@@ -24,7 +24,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
@@ -33,7 +33,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
@@ -42,7 +42,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
@@ -51,7 +51,7 @@ const dummyIssues = [
     isIssue: true,
   },
   {
-    logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+    logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
     title: "[FEATURE] Share survey results publicly",
     href: "https://github.com/formbricks/formbricks/issues/1916",
     author: "jobenjada",
@@ -99,7 +99,7 @@ export default async function ProfilePage({ params }) {
   if (user) {
     const [githubUserData, mergedIssues, openPRs] = await Promise.all([
       getGithubUserByLogin(githubLogin).then(
-        (data) => data || { name: "Unknown", avatar_url: Rick, bio: "No bio available" }
+        (data) => data || { name: "Rick", avatar_url: Rick, bio: "is never gonna give you up 🕺" }
       ),
       getMergedPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
       getOpenPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
@@ -115,34 +115,34 @@ export default async function ProfilePage({ params }) {
             {/* <h2 className="text-7xl text-gray-800">#3</h2> <p className="text-sm text-gray-500">of 727</p> */}
           </div>
           <div className="col-span-4 space-y-12">
-            <div>
-              {openPRs.length > 1 && (
-                <div>
-                  <h3 className="mb-2 text-xl font-medium">
-                    Open PRs @ Formbricks by {githubUserData.name}{" "}
-                  </h3>
-                  {openPRs.map((pr) => (
-                    <GitHubIssue issue={pr} key={pr.title} />
-                  ))}
-                </div>
-              )}
-            </div>
-            <div>
-              {userEnrollments.some((item) => item.name === "formbricks") && (
-                <>
-                  <h3 className="mb-2 text-xl font-medium">Congrats! </h3>
-                  <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
-                    <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
-                    <div>
-                      <p className="font-medium">
-                        {githubUserData?.name} enrolled to contribute to Formbricks
-                      </p>
-                      <p className="mt-0.5 text-xs">Let the games begin!</p>
+            {openPRs.length > 1 && (
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Open PRs @ Formbricks by {githubUserData.name} </h3>
+                {openPRs.map((pr) => (
+                  <GitHubIssue issue={pr} key={pr.title} />
+                ))}
+              </div>
+            )}
+
+            {userEnrollments && (
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Congrats! </h3>
+                {userEnrollments.map((item) => (
+                  <div key={item.id}>
+                    <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
+                      <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
+                      <div>
+                        <p className="font-medium">
+                          {githubUserData?.name} enrolled to contribute to {item.name}
+                        </p>
+                        <p className="mt-0.5 text-xs">Let the games begin!</p>
+                      </div>
                     </div>
                   </div>
-                </>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
+
             <div>
               {mergedIssues.length > 1 ? (
                 <>

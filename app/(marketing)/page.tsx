@@ -16,7 +16,7 @@ import Problems from "../../public/problems-with-contributions.webp";
 import WebApp1 from "../../public/webapp-0.webp";
 import WebApp2 from "../../public/webapp-1.webp";
 
-export default async function IndexPage() {
+export default function IndexPage() {
   return (
     <>
       <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">

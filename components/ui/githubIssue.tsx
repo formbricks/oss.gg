@@ -4,14 +4,14 @@ import Link from "next/link";
 
 interface Issue {
   href: string;
-  logoHref: string;
+  logoUrl: string;
   title: string;
   author: string;
   assignee?: string | null;
   state?: string;
   draft?: boolean;
   isIssue: boolean;
-  points?: number;
+  points?: null | number;
 }
 
 const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
@@ -30,7 +30,7 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
           <GitMerge className="h-8 w-8 text-green-500" />
         </div>
       ) : (
-        <Image className="rounded-md" src={issue.logoHref} alt={issue.title} width={50} height={50} />
+        <Image className="rounded-md" src={issue.logoUrl} alt={issue.title} width={50} height={50} />
       )}
       <div className="flex w-full justify-between">
         <div>
@@ -39,18 +39,18 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
         </div>
         <div className="flex gap-2">
           {issue.assignee && issue.isIssue ? (
-            <div className="flex items-center justify-center rounded-full bg-card px-6 py-1 font-medium">
+            <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
               {issue.assignee} 🚧
             </div>
           ) : (
             issue.isIssue && (
-              <div className="flex items-center justify-center rounded-full bg-card px-6 py-1 font-medium">
+              <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
                 Assign yourself 🫵
               </div>
             )
           )}
-          {issue.points && (
-            <div className="flex items-center justify-center rounded-full bg-card px-6 py-1 font-medium">
+          {issue.points && issue.points !== null && (
+            <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
               {issue.points} Points 🔥
             </div>
           )}

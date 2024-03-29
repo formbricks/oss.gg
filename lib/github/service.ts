@@ -22,7 +22,7 @@ export const getMergedPullRequestsByGithubLogin = (repo: string, githubLogin: st
 
       // Map the GitHub API response to  issue format
       const mergedPRs = validatedData.items.map((pr) => ({
-        logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+        logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
         href: pr.html_url,
         title: pr.title,
         author: pr.user.login,
@@ -55,7 +55,7 @@ export const getOpenPullRequestsByGithubLogin = (repo: string, githubLogin: stri
 
       // Map the GitHub API response to  issue format
       const openPRs = validatedData.items.map((pr) => ({
-        logoHref: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+        logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
         href: pr.html_url,
         title: pr.title,
         author: pr.user.login,
@@ -97,7 +97,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
         // Map the points label as number
         const pointsLabel = pr.labels.find((label) => label.name.includes("points"));
 
-        let points = 0;
+        let points: number | null = null;
         if (pointsLabel) {
           const match = pointsLabel.name.match(/(\d+)/); // This regex matches any sequence of digits
           if (match) {
@@ -106,7 +106,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
         }
 
         return {
-          logoHref: `https://avatars.githubusercontent.com/u/${repoData.owner.id}?s=200&v=4`,
+          logoUrl: `https://avatars.githubusercontent.com/u/${repoData.owner.id}?s=200&v=4`,
           href: pr.html_url,
           title: pr.title,
           author: pr.user.login,
@@ -122,7 +122,6 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
           closedAt: pr.closed_at,
         };
       });
-      console.log(openPRs);
       return openPRs;
     },
     [`getOpenPullRequests-${repoGithubId}`],
