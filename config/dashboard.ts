@@ -4,6 +4,7 @@ export const dashboardConfig: DashboardConfig = {
   mainNav: [
     { title: "Open issues", href: "/issues" },
     { title: "Repositories", href: "/enroll" },
+    { title: "Settings", href: "/settings" },
   ],
   bottomNav: [
     /*     { title: "Repo Settings", href: "/manage-repos" }, */
