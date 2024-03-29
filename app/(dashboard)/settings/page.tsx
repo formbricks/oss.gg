@@ -1,8 +1,6 @@
 import DeleteAccountCard from "@/components/delete-account-card";
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 
 export const metadata = {
   title: "Settings",
@@ -23,12 +21,10 @@ const emailSettingItems = [
 ];
 
 export default async function SettingsPage() {
-  const handleDeleteAccount = () => {
-  };
   return (
     <DashboardShell>
       <DashboardHeader heading="Settings" text="Your account settings" />
-      <div className="h-fit w-full space-y-3 rounded-lg bg-zinc-50 p-5 ">
+      {/*       <div className="h-fit w-full space-y-3 rounded-lg bg-zinc-50 p-5 ">
         <p className="text-md font-bold">Email Settings </p>
         {emailSettingItems.map((item) => (
           <div key={item.id} className="flex items-center space-x-2">
@@ -40,8 +36,8 @@ export default async function SettingsPage() {
             </label>
           </div>
         ))}
-      </div>
-      <DeleteAccountCard  />
+      </div> */}
+      <DeleteAccountCard />
     </DashboardShell>
   );
 }

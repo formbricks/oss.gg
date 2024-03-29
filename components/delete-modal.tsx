@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/use-toast";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 
 function DeleteAccountModal({
@@ -13,13 +12,11 @@ function DeleteAccountModal({
   showDeleteAccountModal: boolean;
   setShowDeleteAccountModal: Dispatch<SetStateAction<boolean>>;
 }) {
-  const router = useRouter();
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   async function deleteAccount() {
     try {
-      console.log("deleting");
       setDeleting(true);
       await deleteUserAction();
       signOut({
@@ -36,10 +33,9 @@ function DeleteAccountModal({
   }
 
   async function handleSubmit() {
-    console.log("deleting");
     toast({
       title: `Deleting account`,
-      variant: "destructive", 
+      variant: "destructive",
     });
     await deleteAccount();
   }
@@ -54,8 +50,7 @@ function DeleteAccountModal({
         </p>
       </div>
 
-      <div
-        className="flex flex-col space-y-6 bg-gray-50 px-4 py-8 text-left sm:px-16">
+      <div className="flex flex-col space-y-6 bg-gray-50 px-4 py-8 text-left sm:px-16">
         <Button onClick={handleSubmit} variant="destructive" loading={deleting}>
           {" "}
           Delete
