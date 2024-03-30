@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getPointsOfUsersInRepoByRepositoryIdAction } from "../actions";
 
-interface LeaderBoardProps {
+interface LeaderboardProps {
   leaderboardProfiles: TPointTransactionWithUser[];
   repositoryId: string;
   itemPerPage: number;
@@ -16,7 +16,7 @@ export default function Leaderboard({
   leaderboardProfiles,
   repositoryId,
   itemPerPage,
-}: LeaderBoardProps): JSX.Element {
+}: LeaderboardProps): JSX.Element {
   const loadingRef = useRef(null);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(leaderboardProfiles.length < itemPerPage ? false : true);

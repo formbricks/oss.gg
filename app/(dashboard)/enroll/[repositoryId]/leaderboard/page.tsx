@@ -4,7 +4,7 @@ import { getRepositoryById } from "@/lib/repository/service";
 
 import Leaderboard from "./components/Leaderboard";
 
-export default async function LeaderBoardPage({ params }) {
+export default async function LeaderboardPage({ params }) {
   const repository = await getRepositoryById(params.repositoryId);
   if (!repository) {
     throw new Error("Repository not found");
