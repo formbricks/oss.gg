@@ -2,6 +2,7 @@
 
 import {
   createLevelAction,
+  deleteLevelAction,
   updateLevelIconAction,
 } from "@/app/(dashboard)/repo-setting/[repositoryId]/levels/action";
 import { handleFileUpload } from "@/app/(dashboard)/repo-setting/[repositoryId]/levels/lib";
@@ -28,22 +29,18 @@ import { z } from "zod";
 
 import { useToast } from "../ui/use-toast";
 
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
 const formSchema = z.object({
   levelName: z.string().min(3, {
     message: "level name must be at least 3 characters.",
   }),
-  pointThreshold: z.number(),
+  pointThreshold: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
+    message: "Expected number, received a string",
+  }),
   description: z.string().min(10, {
     message: "description must be at least 10 characters.",
   }),
-  icon: z
-    .array(z.instanceof(File))
-    .max(1, { message: "Only one image file is allowed" })
-    .refine((files) => files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)), {
-      message: "Only .jpg, .jpeg, .png and .webp files are allowed",
-    }),
+  icon: z.custom(),
+
   topics: z.array(
     z.object({
       id: z.string(),
@@ -55,15 +52,16 @@ const formSchema = z.object({
   canHuntBounties: z.boolean(),
 });
 
-interface LevelsFormProps {
+export interface LevelsFormProps {
   levelName?: string;
   pointThreshold?: number;
   description?: string;
-  icon?: File[];
   topics?: TagType[];
   limitIssues?: boolean;
+  iconUrl?: string;
   canReportBugs?: boolean;
   canHuntBounties?: boolean;
+  isForm?: boolean;
 }
 
 export function LevelsForm({
@@ -71,24 +69,25 @@ export function LevelsForm({
   canHuntBounties,
   canReportBugs,
   description,
-  icon,
+  iconUrl,
   limitIssues,
   pointThreshold,
   topics,
+  isForm,
 }: LevelsFormProps) {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      levelName,
-      description,
-      icon,
-      limitIssues,
-      pointThreshold,
-      topics,
-      canHuntBounties,
-      canReportBugs,
+      levelName: levelName || "",
+      description: description || "",
+      limitIssues: limitIssues ?? false,
+      pointThreshold: (pointThreshold ?? 0).toString(),
+      topics: topics || [],
+      canHuntBounties: canHuntBounties ?? false,
+      canReportBugs: canReportBugs ?? false,
     },
+    mode: "onChange",
   });
 
   const [tags, setTags] = React.useState<TagType[]>([]);
@@ -101,36 +100,32 @@ export function LevelsForm({
 
   const { setValue } = form;
 
-  const isFieldDisabled = (fieldName: keyof LevelsFormProps, defaultValue: any) => {
+  const isFieldDisabled = (defaultValue: any) => {
     return !isEditMode && defaultValue !== undefined && defaultValue !== "";
   };
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    // handle the file upload and meake suere you return back a url for it
+    console.log("these are the values: ", values);
     setIsLoading(true);
     try {
-      const { url, error } = await handleFileUpload(values.icon[0], repositoryId);
-
+      const icon = values.icon;
+      console.log("this is the icon:  ", icon);
+      const { url, error } = await handleFileUpload(icon, repositoryId);
+      console.log("this is the url: ", url);
       if (error) {
         toast({
           title: "Error",
           description: error,
         });
-
         setIsLoading(false);
         return;
       }
-
-      const pictureUrl = url;
-      //call the function to upload all the data to the server
-
+      // call the function to upload all the data to the server
       await createLevelAction({
         name: values.levelName,
         description: values.description,
-        pointThreshold: values.pointThreshold,
-        icon: pictureUrl,
+        pointThreshold: parseInt(values.pointThreshold, 10),
+        icon: url,
         repositoryId: repositoryId,
         permissions: {
           canWorkOnIssues: values.limitIssues,
@@ -151,36 +146,27 @@ export function LevelsForm({
 
     setIsLoading(false);
   }
-  function handleButtonClick() {
-    fileInputRef.current?.click();
-  }
 
-  // const testing: TagType[] = [
-  //   {
-  //     id: "1",
-  //     text: "chigala",
-  //   },
-  //   {
-  //     id: "2",
-  //     text: "chigala",
-  //   },
-  //   {
-  //     id: "3",
-  //     text: "chigala",
-  //   },
-  //   {
-  //     id: "4",
-  //     text: "chigala",
-  //   },
-  //   {
-  //     id: "5",
-  //     text: "chigala",
-  //   },
-  //   {
-  //     id: "6",
-  //     text: "chigala",
-  //   },
-  // ];
+  const handleDeleteLevel = async () => {
+    // delete level action here
+
+    setIsLoading(true);
+    try {
+      //call the delete level action
+      await deleteLevelAction({
+        name: levelName!,
+        repositoryId: repositoryId,
+      });
+
+      setIsLoading(false);
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Level Update failed. Please try again.",
+      });
+      setIsLoading(false);
+    }
+  };
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -200,7 +186,7 @@ export function LevelsForm({
           return;
         }
         //call the update file action
-        if(!levelName) {
+        if (!levelName) {
           toast({
             title: "Error",
             description: "Level name is required",
@@ -232,7 +218,7 @@ export function LevelsForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex w-full gap-4 rounded-lg border border-gray-200 p-7 ">
         <div className="w-2/5 space-y-4">
-          <p className="text-lg font-bold">Level 1</p>
+          <p className="text-lg font-bold">Level</p>
           <FormField
             control={form.control}
             name="levelName"
@@ -240,11 +226,7 @@ export function LevelsForm({
               <FormItem>
                 <FormLabel>Level Name</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Code cub"
-                    {...field}
-                    disabled={isFieldDisabled("levelName", levelName)}
-                  />
+                  <Input placeholder="Code cub" {...field} disabled={isFieldDisabled(levelName)} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -258,9 +240,10 @@ export function LevelsForm({
                 <FormLabel>Point Threshold</FormLabel>
                 <FormControl>
                   <Input
+                    type="number"
                     placeholder="300"
                     {...field}
-                    disabled={isFieldDisabled("levelName", pointThreshold)}
+                    disabled={isFieldDisabled(pointThreshold)}
                   />
                 </FormControl>
                 <FormDescription>How many points to reach this level?</FormDescription>
@@ -268,7 +251,7 @@ export function LevelsForm({
               </FormItem>
             )}
           />
-          {isEditMode ? (
+          {!isFieldDisabled(iconUrl) ? (
             <FormField
               control={form.control}
               name="icon"
@@ -281,6 +264,7 @@ export function LevelsForm({
                       placeholder="Picture"
                       type="file"
                       accept="image/*"
+                      multiple={true}
                       onChange={(event) => onChange(event.target.files && event.target.files[0])}
                     />
                   </FormControl>
@@ -315,7 +299,7 @@ export function LevelsForm({
                   <Input
                     placeholder="This is a description"
                     {...field}
-                    disabled={isFieldDisabled("levelName", description)}
+                    disabled={isFieldDisabled(description)}
                   />
                 </FormControl>
                 <FormDescription>Keep it short and sweet</FormDescription>
@@ -324,10 +308,6 @@ export function LevelsForm({
             )}
           />
 
-          {/* <div className="flex items-center space-x-2">
-            <Switch id="limit-issues" />
-            <Label htmlFor="limit-issues">Limit issues this level can work on</Label>
-          </div> */}
           <FormField
             control={form.control}
             name="limitIssues"
@@ -338,7 +318,7 @@ export function LevelsForm({
                     id="limit-issues"
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={isFieldDisabled("levelName", limitIssues)}
+                    disabled={isFieldDisabled(limitIssues)}
                   />
                 </FormControl>
                 <FormLabel htmlFor="limit-issues">Limit issues this level can work on</FormLabel>
@@ -346,7 +326,7 @@ export function LevelsForm({
             )}
           />
 
-          {isEditMode ? (
+          {!isFieldDisabled(topics) ? (
             <div className="flex items-end gap-2 rounded-lg bg-zinc-100 p-3">
               <FormField
                 control={form.control}
@@ -374,9 +354,9 @@ export function LevelsForm({
               <Button>Add Label</Button>
             </div>
           ) : (
-            tags.length > 0 && (
+            (topics ?? []).length > 0 && (
               <div className="flex w-full flex-wrap items-end gap-2 rounded-lg bg-zinc-100 p-3">
-                {tags.map((tag) => (
+                {(topics ?? []).map((tag) => (
                   <span
                     key={tag.id}
                     className="rounded-full bg-zinc-700 px-2 py-1 text-xs text-primary-foreground">
@@ -387,10 +367,6 @@ export function LevelsForm({
             )
           )}
 
-          {/* <div className="flex items-center space-x-2">
-            <Switch id="can-report-bugs" />
-            <Label htmlFor="can-report-bugs">Can report bugs</Label>
-          </div> */}
           <FormField
             control={form.control}
             name="canReportBugs"
@@ -401,18 +377,15 @@ export function LevelsForm({
                     id="can-report-bugs"
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={isFieldDisabled("levelName", canReportBugs)}
+                    disabled={isFieldDisabled(canReportBugs)}
                   />
                 </FormControl>
                 <FormLabel htmlFor="can-report-bugs">Can report bugs</FormLabel>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* <div className="flex items-center space-x-2">
-            <Switch id="can-hunt-bounties" />
-            <Label htmlFor="can-hunt-bounties">Can hunt bounties</Label>
-          </div> */}
           <FormField
             control={form.control}
             name="canHuntBounties"
@@ -423,30 +396,41 @@ export function LevelsForm({
                     id="can-hunt-bounties"
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={isFieldDisabled("levelName", canHuntBounties)}
+                    disabled={isFieldDisabled(canHuntBounties)}
                   />
                 </FormControl>
                 <FormLabel htmlFor="can-hunt-bounties">Can hunt bounties</FormLabel>
+                <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        {isEditMode ? (
-          <div className="flex gap-2">
-            <Button variant="destructive" type="submit">
-              Delete
-            </Button>
-
-            <Button type="submit">Save</Button>
-          </div>
-        ) : (
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setIsEditMode(true);
-            }}>
-            Edit
+        {isForm ? (
+          <Button loading={isLoading} type="submit">
+            save
           </Button>
+        ) : (
+          <>
+            {isEditMode ? (
+              <div className="flex gap-2">
+                <Button loading={isLoading} variant="destructive">
+                  Delete
+                </Button>
+
+                <Button loading={isLoading} type="submit">
+                  Save
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setIsEditMode(true);
+                }}>
+                Edit
+              </Button>
+            )}
+          </>
         )}
       </form>
     </Form>

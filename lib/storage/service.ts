@@ -196,6 +196,7 @@ export const getUploadSignedUrl = async (
       fileUrl: new URL(`${WEBAPP_URL}/storage/${environmentId}/${accessType}/${updatedFileName}`).href,
     };
   } catch (err) {
+    console.log("this is the error: ", err)
     throw err;
   }
 };
@@ -226,6 +227,7 @@ export const getS3UploadSignedUrl = async (
       presignedFields: fields,
     };
   } catch (err) {
+    console.log("this is the error: ", err)
     throw err;
   }
 };
