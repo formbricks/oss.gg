@@ -27,7 +27,6 @@ export const env = createEnv({
     S3_REGION: z.string(),
     S3_ACCESS_KEY: z.string(),
     S3_SECRET_KEY: z.string(),
-    S3_ENDPOINT_URL: z.string(),
     
   },
   client: {
@@ -56,6 +55,5 @@ export const env = createEnv({
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
     S3_REGION: process.env.S3_REGION,
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
-    S3_ENDPOINT_URL: process.env.S3_ENDPOINT_URL,
   },
 });
