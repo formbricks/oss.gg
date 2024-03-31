@@ -1,6 +1,6 @@
 "use server";
 
-import { createLevel, updateLevel, updateLevelIcon } from "@/lib/levels/service";
+import { createLevel, deleteLevel, updateLevel, updateLevelIcon } from "@/lib/levels/service";
 import { getCurrentUser } from "@/lib/session";
 import { TLevelInput } from "@/types/level";
 
@@ -25,4 +25,16 @@ export async function updateLevelIconAction(updateData: {
   // update level icon
 
   await updateLevelIcon(updateData.name, updateData.repositoryId, updateData.iconUrl);
+}
+
+
+export async function deleteLevelAction(levelData: {
+  repositoryId: string;
+  name: string;
+}) {
+  const user = await getCurrentUser();
+  if (!user || !user.id) {
+    return { error: "User must be authenticated to perform this action." };
+  }
+  await deleteLevel(levelData.name, levelData.repositoryId);
 }

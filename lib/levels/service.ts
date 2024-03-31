@@ -51,6 +51,7 @@ export const createLevel = async (LevelData: TLevelInput) => {
       },
     });
   } catch (error) {
+    console.log("this was the error faced while creating a level : ", error);
     throw error;
   }
 };
@@ -86,6 +87,19 @@ export const updateLevelIcon = async (name: string, repositoryId: string, iconUr
       },
       data: {
         icon: iconUrl,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteLevel = async (name: string, repositoryId: string ) => {
+  try {
+    await db.level.delete({
+      where: {
+        repositoryId: repositoryId,
+        name: name,
       },
     });
   } catch (error) {
