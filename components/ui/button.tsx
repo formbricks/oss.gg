@@ -50,6 +50,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
       openInNewTab = false,
       loading = false,
       disabled = false,
+      type = "button",
       ...props
     },
     ref
@@ -72,7 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
         {...props}
         disabled={isDisabled}
         {...(href && openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        {...(href ? {} : { type: "button" })}
+        {...(href ? {} : { type })}
         {...(loading && { "aria-busy": true })}>
         {loading ? (
           <>
