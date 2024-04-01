@@ -51,7 +51,7 @@ export default function EnrollmentStatusBar({ repositoryId }) {
         console.error("Error changing enrollment status", error);
         toast({
           title: "Error",
-          description: "Failed to change enrollment status. Please try again.",
+          description: `Failed to change enrollment status due to: ${error.message}`,
         });
       } finally {
         setIsLoading(false);

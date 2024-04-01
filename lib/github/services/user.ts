@@ -113,6 +113,7 @@ export const sendInstallationDetails = async (
                 githubId: repo.id,
                 name: repo.name,
                 installationId: installationPrisma.id,
+                logoUrl: `https://avatars.githubusercontent.com/u/${installation.account.id}?s=200&v=4`,
               },
             });
           })
@@ -122,5 +123,36 @@ export const sendInstallationDetails = async (
   } catch (error) {
     console.error(`Failed to post installation details: ${error}`);
     throw new Error(`Failed to post installation details: ${error}`);
+  }
+};
+
+export const isMemberOfRepository = async (githubUsername: string, installationId: number) => {
+  try {
+    const user = await db.user.findFirst({
+      where: {
+        login: githubUsername,
+      },
+      select: {
+        id: true,
+      },
+    });
+    console.log("this is the Id: ", user?.id);
+    if (!user) {
+      return false;
+    }
+
+    const membership = await db.membership.findFirst({
+      where: {
+        userId: user.id,
+        installation: {
+          githubId: installationId,
+        },
+      },
+    });
+
+    return !!membership;
+  } catch (error) {
+    console.error(`Failed to check if user is member of installation: ${error}`);
+    throw new Error(`Failed to check if user is member of installation: ${error}`);
   }
 };

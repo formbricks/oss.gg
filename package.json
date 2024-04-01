@@ -25,9 +25,12 @@
     "@prisma/client": "5.9.1",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
+    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@t3-oss/env-nextjs": "^0.8.0",
     "@trigger.dev/nextjs": "^2.3.18",
@@ -72,6 +75,7 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
+  "packageManager": "pnpm@8.11.0",
   "trigger.dev": {
     "endpointId": "testing-bHhV"
   }
