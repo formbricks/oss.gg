@@ -16,6 +16,7 @@ export enum EVENT_TRIGGERS {
   ISSUE_OPENED = "issues.opened",
   INSTALLATION_CREATED = "installation.created",
   ISSUE_COMMENTED = "issue_comment.created",
+  PULL_REQUEST_OPENED = "pull_request.opened",
 }
 export const AWARD_POINTS_IDENTIFIER = "/award" as const;
 
@@ -33,4 +34,7 @@ export const GITHUB_APP_ACCESS_TOKEN = env.GITHUB_APP_ACCESS_TOKEN as string;
 
 export const OSS_GG_LABEL = "🕹️ oss.gg" as const;
 
+// Trigger.dev
+export const TRIGGER_API_KEY = env.TRIGGER_API_KEY as string;
+export const TRIGGER_API_URL = env.TRIGGER_API_URL as string;
 export const ITEMS_PER_PAGE = 50;
