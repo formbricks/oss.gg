@@ -10,7 +10,7 @@ import EnrollmentStatusBar from "./enrollmentStatusBar";
 
 export default function LayoutTabs({ repository }) {
   const path = usePathname();
-  const activeTab = path?.split("/")[3] || "projectDetails";
+  const activeTab = path?.split("/")[3] || "details";
 
   return (
     <DashboardShell>
@@ -18,14 +18,14 @@ export default function LayoutTabs({ repository }) {
       <EnrollmentStatusBar repositoryId={repository.id} />
       <Tabs defaultValue={`${activeTab}`} className="w-full">
         <TabsList>
-          <Link href={`/enroll/${repository.id}/projectDetails`}>
-            <TabsTrigger value="projectDetails">Project Details</TabsTrigger>
+          <Link href={`/enroll/${repository.id}/details`}>
+            <TabsTrigger value="details">Project Details</TabsTrigger>
           </Link>
           <Link href={`/enroll/${repository.id}/leaderboard`}>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </Link>
-          <Link href={`/enroll/${repository.id}/openIssues`}>
-            <TabsTrigger value="openIssues">Open Issues</TabsTrigger>
+          <Link href={`/enroll/${repository.id}/issues`}>
+            <TabsTrigger value="issues">Open Issues</TabsTrigger>
           </Link>
         </TabsList>
       </Tabs>

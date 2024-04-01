@@ -5,7 +5,6 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 
-
 //inspired by dub.co
 
 export function Modal({
@@ -42,7 +41,6 @@ export function Modal({
       router.back();
     }
   };
-
 
   return (
     <Dialog.Root

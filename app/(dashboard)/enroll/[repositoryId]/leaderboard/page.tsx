@@ -14,6 +14,7 @@ export default async function LeaderboardPage({ params }) {
 
   return (
     <>
+      {leaderboardProfiles.length === 0 && <p>No users found in the leaderboard.</p>}
       <Leaderboard
         leaderboardProfiles={leaderboardProfiles}
         itemPerPage={ITEMS_PER_PAGE}

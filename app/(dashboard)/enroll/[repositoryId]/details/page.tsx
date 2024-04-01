@@ -7,7 +7,7 @@ export default async function ProjectDetailsPage({ params }) {
   }
   return (
     <>
-      <p>{repository?.projectDescription}</p>
+      <p>{repository?.projectDescription || "No details added yet."}</p>
     </>
   );
 }

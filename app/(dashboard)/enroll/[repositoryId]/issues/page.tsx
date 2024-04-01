@@ -8,15 +8,15 @@ export default async function OpenIssuesPage({ params }) {
     throw new Error("Repository not found");
   }
 
-  const openIssues = await getAllOssGgIssuesOfRepo(repository.githubId);
+  const issues = await getAllOssGgIssuesOfRepo(repository.githubId);
 
   return (
     <>
       <div className="space-y-2">
-        {openIssues.length === 0 ? (
+        {issues.length === 0 ? (
           <p>Currently, there are no open oss.gg issues available.</p>
         ) : (
-          openIssues.map((issue) => <GitHubIssue issue={issue} key={issue.title} />)
+          issues.map((issue) => <GitHubIssue issue={issue} key={issue.title} />)
         )}
       </div>
     </>
