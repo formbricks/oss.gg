@@ -33,6 +33,9 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@t3-oss/env-nextjs": "^0.8.0",
+    "@trigger.dev/nextjs": "^2.3.18",
+    "@trigger.dev/react": "^2.3.18",
+    "@trigger.dev/sdk": "^2.3.18",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -72,5 +75,8 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@8.11.0"
+  "packageManager": "pnpm@8.11.0",
+  "trigger.dev": {
+    "endpointId": "testing-bHhV"
+  }
 }
