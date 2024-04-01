@@ -1,7 +1,8 @@
 import { TriggerClient } from "@trigger.dev/sdk";
+import { TRIGGER_API_KEY, TRIGGER_API_URL } from "@/lib/constants";
 
-export const client = new TriggerClient({
+export const triggerDotDevClient = new TriggerClient({
   id: "testing-bHhV",
-  apiKey: process.env.TRIGGER_API_KEY,
-  apiUrl: process.env.TRIGGER_API_URL,
+  apiKey: TRIGGER_API_KEY,
+  apiUrl: TRIGGER_API_URL,
 });

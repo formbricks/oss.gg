@@ -33,3 +33,13 @@ export const getOctokitInstance = (installationId: number) => {
 
   return octokit;
 };
+
+export const extractIssueNumbers = (body: string): number[] => {
+  const regex = /#(\d+)/g;
+  const matches = body.match(regex);
+  if (matches) {
+    return matches.map((match) => parseInt(match.substring(1)));
+  } else {
+    return [];
+  }
+};

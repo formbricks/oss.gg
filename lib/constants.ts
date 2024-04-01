@@ -11,16 +11,20 @@ export const GITHUB_APP_CLIENT_SECRET = env.GITHUB_APP_CLIENT_SECRET;
 // Github
 export const LEVEL_LABEL = "level";
 export const ASSIGN_IDENTIFIER = "/assign" as const;
+export const CREATE_IDENTIFIER = "/oss.gg" as const;
 export const UNASSIGN_IDENTIFIER = "/unassign" as const;
 export enum EVENT_TRIGGERS {
   ISSUE_OPENED = "issues.opened",
   INSTALLATION_CREATED = "installation.created",
   ISSUE_COMMENTED = "issue_comment.created",
+  PULL_REQUEST_OPENED = "pull_request.opened",
 }
 export const AWARD_POINTS_IDENTIFIER = "/award" as const;
 
 export const ON_NEW_ISSUE = "Thanks for opening an issue! It's live on oss.gg!";
-export const ON_REPO_NOT_REGISTERED = `This repository is not registered with oss.gg. Please register it at https://oss.gg.`;
+export const ON_REPO_NOT_REGISTERED = `This repository is not registered with oss.gg. Please register it at [oss.gg](https://oss.gg).`;
+export const ON_USER_NOT_REGISTERED = `you are not registered as a member of this repository, so you can't post oss.gg issues. Please register at [oss.gg](https://oss.gg).`;
+export const POINT_IS_NOT_A_NUMBER = "please provide a valid number of points to assign.";
 export const GITHUB_APP_ID = env.GITHUB_APP_ID as string;
 export const GITHUB_APP_PRIVATE_KEY = env.GITHUB_APP_PRIVATE_KEY as string;
 
@@ -31,11 +35,15 @@ export const GITHUB_APP_ACCESS_TOKEN = env.GITHUB_APP_ACCESS_TOKEN as string;
 
 export const OSS_GG_LABEL = "🕹️ oss.gg" as const;
 
+// Trigger.dev
+export const TRIGGER_API_KEY = env.TRIGGER_API_KEY as string;
+export const TRIGGER_API_URL = env.TRIGGER_API_URL as string;
+export const ITEMS_PER_PAGE = 50;
+
 // Storage constants
 export const S3_ACCESS_KEY = env.S3_ACCESS_KEY;
 export const S3_SECRET_KEY = env.S3_SECRET_KEY;
 export const S3_REGION = env.S3_REGION;
-export const S3_ENDPOINT_URL = env.S3_ENDPOINT_URL;
 export const S3_BUCKET_NAME = env.S3_BUCKET_NAME;
 export const MAX_SIZE = 1024 * 1024 * 10 
 

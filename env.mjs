@@ -21,8 +21,8 @@ export const env = createEnv({
     GITHUB_APP_PRIVATE_KEY: z.string().min(1).optional(),
     GITHUB_APP_SLUG: z.string().min(1),
     GITHUB_APP_ACCESS_TOKEN: z.string().min(1),
-    // TRIGGER_API_KEY: z.string().min(1),
-    // TRIGGER_API_URL: z.string().min(1).optional(),
+    TRIGGER_API_KEY: z.string().min(1),
+    TRIGGER_API_URL: z.string().min(1),
     S3_BUCKET_NAME: z.string(), 
     S3_REGION: z.string(),
     S3_ACCESS_KEY: z.string(),
@@ -55,5 +55,7 @@ export const env = createEnv({
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
     S3_REGION: process.env.S3_REGION,
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
+    TRIGGER_API_KEY: process.env.TRIGGER_API_KEY,
+    TRIGGER_API_URL: process.env.TRIGGER_API_URL,
   },
 });

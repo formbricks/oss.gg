@@ -6,7 +6,7 @@ export const siteConfig: SiteConfig = {
   url: "https://oss.gg",
   ogImage: "https://oss.gg/og.jpg",
   links: {
-    twitter: "https://twitter.com/formbricks",
+    twitter: "https://formbricks.com",
     github: "https://github.com/formbricks/oss.gg",
   },
 };

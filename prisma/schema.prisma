@@ -73,15 +73,18 @@ model Installation {
 }
 
 model Repository {
-  id                String             @id @default(cuid())
-  githubId          Int                @unique
-  name              String
-  description       String?
-  homepage          String?
-  topics            String[]
-  default_branch    String?
-  installationId    String
-  configured        Boolean            @default(false)
+  id                 String   @id @default(cuid())
+  githubId           Int      @unique
+  name               String
+  description        String?
+  homepage           String?
+  topics             String[]
+  default_branch     String?
+  installationId     String
+  configured         Boolean  @default(false)
+  logoUrl            String?
+  projectDescription String?
+
   pointTransactions PointTransaction[]
   installation      Installation       @relation(fields: [installationId], references: [id])
   Enrollment        Enrollment[]

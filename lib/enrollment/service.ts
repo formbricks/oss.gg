@@ -3,6 +3,7 @@ import { TEnrollment, TEnrollmentInput, ZEnrollmentInput } from "@/types/enrollm
 import { DatabaseError } from "@/types/errors";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
+
 import { validateInputs } from "../utils/validate";
 
 /**
@@ -12,7 +13,6 @@ import { validateInputs } from "../utils/validate";
  */
 
 export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promise<TEnrollment> => {
-
   validateInputs([enrollmentData, ZEnrollmentInput]);
 
   try {
@@ -24,6 +24,8 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
       },
     });
 
+    console.log("existing enrollment", existingEnrollment);
+
     if (existingEnrollment) {
       throw new Error("Enrollment already exists.");
     }
@@ -31,6 +33,7 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
     const enrollment = await db.enrollment.create({
       data: enrollmentData,
     });
+
     return enrollment;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -87,7 +90,7 @@ export const hasEnrollmentForRepository = async (userId: string, repositoryId: s
  * @param userId - The ID of the user for whom enrolled repositories are being queried.
  * @returns A Promise that resolves to an array of TRepository objects, each representing
  * a repository the user is enrolled in. The array is empty if the user has no enrollments.
-*/
+ */
 
 export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> => {
   const enrolledRepositories = await db.repository.findMany({
@@ -110,6 +113,7 @@ export const getEnrolledRepositories = async (userId: string): Promise<TReposito
       installationId: true,
       pointTransactions: true,
       Enrollment: true,
+      logoUrl: true,
     },
   });
 
