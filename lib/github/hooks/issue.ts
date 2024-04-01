@@ -61,7 +61,7 @@ export const onIssueOpened = async (webhooks: Webhooks) => {
 export const onAssignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
-      const issueCommentBody = context.payload.comment.body;
+      const issueCommentBody = context.payload.comment.body.trim();
       const [identifier, points] = issueCommentBody.split(" ");
       const issueNumber = context.payload.issue.number;
       const repo = context.payload.repository.name;
@@ -71,7 +71,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
-      if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
+      if (issueCommentBody === ASSIGN_IDENTIFIER) {
         if (!isOssGgLabel) return;
 
         const isAssigned = context.payload.issue.assignees.length > 0;
@@ -182,7 +182,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
 export const onUnassignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
-      const issueCommentBody = context.payload.comment.body;
+      const issueCommentBody = context.payload.comment.body.trim();
       if (issueCommentBody !== UNASSIGN_IDENTIFIER) {
         return;
       }
@@ -268,7 +268,7 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
     try {
       const octokit = getOctokitInstance(context.payload.installation?.id!);
       const repo = context.payload.repository.name;
-      const issueCommentBody = context.payload.comment.body;
+      const issueCommentBody = context.payload.comment.body.trim();
       const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
       const match = issueCommentBody.match(awardPointsRegex);
       const isPR = !!context.payload.issue.pull_request;
