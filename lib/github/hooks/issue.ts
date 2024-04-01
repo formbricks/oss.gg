@@ -66,7 +66,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
-      if (issueCommentBody === ASSIGN_IDENTIFIER) {
+      if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
         if (!isOssGgLabel) return;
 
         const isAssigned = context.payload.issue.assignees.length > 0;
