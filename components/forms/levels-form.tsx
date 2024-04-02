@@ -27,6 +27,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { useDeleteLevelModal } from "../delete-level-modal";
 import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
@@ -73,6 +74,7 @@ export function LevelsForm({
   limitIssues,
   pointThreshold,
   topics,
+  // pass the isForm when you want the levelForm to be used as a form
   isForm,
 }: LevelsFormProps) {
   // 1. Define your form.
@@ -87,13 +89,13 @@ export function LevelsForm({
       canHuntBounties: canHuntBounties ?? false,
       canReportBugs: canReportBugs ?? false,
     },
-    mode: "onChange",
   });
 
   const [tags, setTags] = React.useState<TagType[]>([]);
   const [isEditMode, setIsEditMode] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const {setShowDeleteLevelModal, DeleteLevelModal} = useDeleteLevelModal();
   const { toast } = useToast();
   const router = useRouter();
   const { repositoryId } = useParams() as { repositoryId: string };
@@ -105,13 +107,10 @@ export function LevelsForm({
   };
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("these are the values: ", values);
     setIsLoading(true);
     try {
       const icon = values.icon;
-      console.log("this is the icon:  ", icon);
       const { url, error } = await handleFileUpload(icon, repositoryId);
-      console.log("this is the url: ", url);
       if (error) {
         toast({
           title: "Error",
@@ -120,7 +119,7 @@ export function LevelsForm({
         setIsLoading(false);
         return;
       }
-      // call the function to upload all the data to the server
+      // call the server action to create a new level for the repository
       await createLevelAction({
         name: values.levelName,
         description: values.description,
@@ -139,7 +138,7 @@ export function LevelsForm({
     } catch (err) {
       toast({
         title: "Error",
-        description: "Avatar update failed. Please try again.",
+        description: "Failed to create level. Please try ",
       });
       setIsLoading(false);
     }
@@ -214,6 +213,7 @@ export function LevelsForm({
   }
   return (
     <Form {...form}>
+      <DeleteLevelModal />
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex w-full gap-4 rounded-lg border border-gray-200 p-7 ">
@@ -251,7 +251,19 @@ export function LevelsForm({
               </FormItem>
             )}
           />
-          {!isFieldDisabled(iconUrl) ? (
+          {isFieldDisabled(iconUrl) ? (
+            <div>
+              <Avatar className="h-56 w-56">
+                <AvatarImage src={iconUrl} alt="level icon" />
+              </Avatar>
+              <div className="relative flex flex-col space-y-5">
+                <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                <Button variant="secondary" className="w-fit" onClick={() => fileInputRef.current?.click()}>
+                  Replace icon
+                </Button>
+              </div>
+            </div>
+          ) : (
             <FormField
               control={form.control}
               name="icon"
@@ -273,18 +285,6 @@ export function LevelsForm({
                 </FormItem>
               )}
             />
-          ) : (
-            <div>
-              <Avatar className="h-56 w-56">
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              </Avatar>
-              <div className="relative flex flex-col space-y-5">
-                <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
-                <Button variant="secondary" className="w-fit" onClick={() => fileInputRef.current?.click()}>
-                  Replace icon
-                </Button>
-              </div>
-            </div>
           )}
         </div>
         <div className="w-2/5 space-y-4">
@@ -326,7 +326,19 @@ export function LevelsForm({
             )}
           />
 
-          {!isFieldDisabled(topics) ? (
+          {isFieldDisabled(topics) ? (
+            (topics ?? []).length > 0 && (
+              <div className="flex w-full flex-wrap items-end gap-2 rounded-lg bg-zinc-100 p-3">
+                {(topics ?? []).map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="rounded-full bg-zinc-700 px-2 py-1 text-xs text-primary-foreground">
+                    {tag.text}
+                  </span>
+                ))}
+              </div>
+            )
+          ) : (
             <div className="flex items-end gap-2 rounded-lg bg-zinc-100 p-3">
               <FormField
                 control={form.control}
@@ -353,18 +365,6 @@ export function LevelsForm({
               />
               <Button>Add Label</Button>
             </div>
-          ) : (
-            (topics ?? []).length > 0 && (
-              <div className="flex w-full flex-wrap items-end gap-2 rounded-lg bg-zinc-100 p-3">
-                {(topics ?? []).map((tag) => (
-                  <span
-                    key={tag.id}
-                    className="rounded-full bg-zinc-700 px-2 py-1 text-xs text-primary-foreground">
-                    {tag.text}
-                  </span>
-                ))}
-              </div>
-            )
           )}
 
           <FormField
@@ -413,7 +413,9 @@ export function LevelsForm({
           <>
             {isEditMode ? (
               <div className="flex gap-2">
-                <Button loading={isLoading} variant="destructive">
+                <Button onClick={() => {
+                  setShowDeleteLevelModal(true);
+                }} loading={isLoading} variant="destructive">
                   Delete
                 </Button>
 
