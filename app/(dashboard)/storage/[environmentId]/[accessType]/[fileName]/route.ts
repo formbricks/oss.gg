@@ -11,9 +11,6 @@ export async function GET(
 ) {
   const paramValidation = ZStorageRetrievalParams.safeParse(params);
 
-  console.log("fileName: ", params.fileName);
-  console.log("environmentalId: ", params.environmentId);
-  console.log("accessType: ", params.accessType);
 
   if (!paramValidation.success) {
     return new Response("Fields are missing or incorrectly formatted", { status: 400 });

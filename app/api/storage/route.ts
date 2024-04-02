@@ -46,7 +46,6 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   try {
     const signedUrlResponse = await getUploadSignedUrl(fileName, environmentId, fileType, accessType);
-    console.log("signedUrlResponse", signedUrlResponse);
     return new Response(JSON.stringify({ data: signedUrlResponse }), {
       status: 200,
     });

@@ -136,7 +136,6 @@ export const isMemberOfRepository = async (githubUsername: string, installationI
         id: true,
       },
     });
-    console.log("this is the Id: ", user?.id);
     if (!user) {
       return false;
     }

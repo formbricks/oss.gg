@@ -51,7 +51,6 @@ export const createLevel = async (LevelData: TLevelInput) => {
       },
     });
   } catch (error) {
-    console.log("this was the error faced while creating a level : ", error);
     throw error;
   }
 };

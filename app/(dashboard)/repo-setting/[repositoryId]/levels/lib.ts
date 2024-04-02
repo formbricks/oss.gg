@@ -6,7 +6,6 @@ export const handleFileUpload = async (
   url: string;
 }> => {
   if (!file) return { error: "No file provided", url: "" };
-  console.log("testing testing testing");
 
   if (!file.type.startsWith("image/")) {
     return { error: "Please upload an image file.", url: "" };
@@ -24,8 +23,6 @@ export const handleFileUpload = async (
     fileType: file.type,
     environmentId,
   };
-  console.log("handling the upload");
-  console.log("this is the payload: ", payload);
 
   const response = await fetch("/api/storage", {
     method: "POST",
@@ -46,7 +43,6 @@ export const handleFileUpload = async (
   const json = await response.json();
 
   const { data } = json;
-  console.log("this is the data; ", data);
   const { signedUrl, fileUrl, signingData, presignedFields, updatedFileName } = data;
 
   let requestHeaders: Record<string, string> = {};
@@ -81,7 +77,6 @@ export const handleFileUpload = async (
     body: formData,
   });
 
-  console.log("this is the upload response: ", uploadResponse);
 
   if (!uploadResponse.ok) {
     return {
