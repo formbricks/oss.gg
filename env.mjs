@@ -21,6 +21,8 @@ export const env = createEnv({
     GITHUB_APP_PRIVATE_KEY: z.string().min(1).optional(),
     GITHUB_APP_SLUG: z.string().min(1),
     GITHUB_APP_ACCESS_TOKEN: z.string().min(1),
+    TRIGGER_API_KEY: z.string().min(1),
+    TRIGGER_API_URL: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -43,5 +45,7 @@ export const env = createEnv({
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
     GITHUB_APP_SLUG: process.env.GITHUB_APP_SLUG,
     GITHUB_APP_ACCESS_TOKEN: process.env.GITHUB_APP_ACCESS_TOKEN,
+    TRIGGER_API_KEY: process.env.TRIGGER_API_KEY,
+    TRIGGER_API_URL: process.env.TRIGGER_API_URL,
   },
 });

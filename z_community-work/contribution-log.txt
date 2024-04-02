@@ -1,0 +1,29 @@
+In this file, we will keep track of the different community tasks performed for the oss.gg community.
+
+This serves a few purposes:
+
+1. We can handle points awarding via a MERGE
+2. We document the work we do for new people to join
+3. Non technical people get familiarized with how Git works
+
+At a later stage we will make this available either on oss.gg or the oss.gg app.
+
+For now, it's a simple txt file :)
+
+Please follow the following schema:
+
+» DATE by CONTRIBUTOR
+
+NOTE
+-------------------
+
+I'll start 👇
+
+» April 1st, 2024 by Johannes
+
+Created a community-work.txt file for the reasons mentioned above
+-------------------
+» April 2nd, 2024 by Doreen
+
+Setup Discord channels (please elaborate more on what you did and why)
+-------------------

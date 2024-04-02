@@ -13,14 +13,19 @@ import {
 import { assignUserPoints } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
+import { triggerDotDevClient } from "@/trigger";
 import { Webhooks } from "@octokit/webhooks";
 
 import { isMemberOfRepository } from "../services/user";
-import { getOctokitInstance } from "../utils";
+import { extractIssueNumbers, getOctokitInstance } from "../utils";
 
 export const onIssueOpened = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_OPENED, async (context) => {
     const projectId = context.payload.repository.id;
+
+    //TODO:
+    //1. check if the issue has the oss label
+    //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
 
     // const isProjectRegistered = await getProject(projectId)
     // if (!isProjectRegistered) {
@@ -66,7 +71,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
-      if (issueCommentBody === ASSIGN_IDENTIFIER) {
+      if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
         if (!isOssGgLabel) return;
 
         const isAssigned = context.payload.issue.assignees.length > 0;
@@ -109,6 +114,19 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           issue_number: issueNumber,
           assignees: [commenter],
         });
+
+        //send trigger event to wait for 36hrs then send a reminder if the user has not created a pull request
+        await triggerDotDevClient.sendEvent({
+          name: "issue.reminder",
+          payload: {
+            issueNumber,
+            repo,
+            owner,
+            commenter,
+            installationId: context.payload.installation?.id,
+          },
+        });
+
         await octokit.issues.createComment({
           owner,
           repo,
@@ -165,7 +183,7 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
       const issueCommentBody = context.payload.comment.body;
-      if (issueCommentBody !== UNASSIGN_IDENTIFIER) {
+      if (issueCommentBody.trim() !== UNASSIGN_IDENTIFIER) {
         return;
       }
 
@@ -324,5 +342,14 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
       console.error(err);
       throw new Error(err);
     }
+  });
+};
+
+export const onPullRequestOpened = async (webhooks: Webhooks) => {
+  webhooks.on(EVENT_TRIGGERS.PULL_REQUEST_OPENED, async (context) => {
+    const pullRequestUser = context.payload.pull_request.user;
+    const body = context.payload.pull_request.body;
+    const issueNumber = extractIssueNumbers(body!);
+    // create a comment on the issue that a PR has been opened
   });
 };
