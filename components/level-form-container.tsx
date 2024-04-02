@@ -23,6 +23,8 @@ export default function LevelsFormContainer({ data }: { data: LevelsFormProps[] 
         />
       ))}
 
+      {/* shows an empty levels form when you click the add level */}
+
       {showForm && <LevelsForm isForm={true} />}
 
       <div>

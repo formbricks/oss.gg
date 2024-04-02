@@ -106,3 +106,16 @@ export const deleteLevel = async (name: string, repositoryId: string ) => {
     throw error;
   }
 };
+
+export const getLevels = async (repositoryId: string) => {
+  try {
+    const levels = await db.level.findMany({
+      where: {
+        repositoryId,
+      },
+    });
+    return levels;
+  } catch (error) {
+    throw error;
+  }
+}
