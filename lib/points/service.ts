@@ -52,7 +52,7 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
     async () => {
       validateInputs([repositoryId, ZId], [page, ZOptionalNumber]);
       try {
-        //currently prisma doesn't support using "include" inside of "GroupBy",thus a raw query. Change it when prisma starts supportinh "include" inside of "GroupBy".
+        //currently prisma doesn't support using "include" inside of "GroupBy",thus a raw query. Change it when prisma starts supporting "include" inside of "GroupBy".
         const points = (await db.$queryRaw`
         SELECT
           pt."userId",
