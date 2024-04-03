@@ -1,5 +1,6 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
+import PointsCard from "@/components/ui/pointsCard";
 import { authOptions } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/session";
 import Link from "next/link";
@@ -25,12 +26,12 @@ const cards = [
     href: "/contribute",
     title: "Help build oss.gg",
     description:
-      "oss.gg is a community project! We’re all building this together. Join our Discord to help deliver it.",
+      "oss.gg is a community project! We're all building this together. Join our Discord to help deliver it.",
   },
   {
     href: "/",
     title: "What is oss.gg?",
-    description: "Find out why we’re building this - and how you can become a part of it!",
+    description: "Find out why we're building this - and how you can become a part of it!",
   },
 ];
 
@@ -44,6 +45,7 @@ export default async function DashboardPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Shall we play a game?"></DashboardHeader>
+      <PointsCard repositoryName="Formbricks" points={480} rank={100} />
       <div className="grid gap-4 md:grid-cols-2">
         {cards.map((card) => (
           <Link
