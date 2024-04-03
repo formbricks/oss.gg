@@ -60,11 +60,11 @@ export default function Leaderboard({
     <>
       {profiles.map((profile, idx) => (
         <UserProfileSummary
-          key={profile.user.login}
-          name={profile.user.name || ""}
+          key={profile.login}
+          name={profile.name || profile.login}
           points={profile.points}
-          avatarUrl={profile.user.avatarUrl || ""}
-          userGitHubId={profile.user.login}
+          avatarUrl={profile.avatarUrl || ""}
+          userGitHubId={profile.login}
           index={idx + 1}
         />
       ))}

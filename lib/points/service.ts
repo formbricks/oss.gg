@@ -52,26 +52,31 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
     async () => {
       validateInputs([repositoryId, ZId], [page, ZOptionalNumber]);
       try {
-        const points = await db.pointTransaction.findMany({
-          where: {
-            repositoryId: repositoryId,
-          },
+        //currently prisma doesn't support using "include" inside of "GroupBy",thus a raw query. Change it when prisma starts supporting "include" inside of "GroupBy".
+        const points = (await db.$queryRaw`
+        SELECT
+          pt."userId",
+          u.name,
+          u."avatarUrl",
+          u.login,
+          SUM(pt.points)::int AS points
+        FROM 
+          point_transactions pt 
+        JOIN 
+          users u ON pt."userId" = u.id 
+        WHERE 
+          pt."repositoryId" = ${repositoryId}
+        GROUP BY
+          pt."userId",
+          u.name,
+          u."avatarUrl",
+          u.login
+        ORDER BY 
+          points DESC
+        LIMIT ${page ? ITEMS_PER_PAGE : 0}
+        OFFSET ${page ? ITEMS_PER_PAGE * (page - 1) : 0}
+      `) as TPointTransactionWithUser[];
 
-          take: page ? ITEMS_PER_PAGE : undefined,
-          skip: page ? ITEMS_PER_PAGE * (page - 1) : undefined,
-          orderBy: {
-            points: "desc",
-          },
-          include: {
-            user: {
-              select: {
-                name: true,
-                avatarUrl: true,
-                login: true,
-              },
-            },
-          },
-        });
         return points;
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -87,10 +92,5 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
       revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
     }
   )();
-  return points.map((point: TPointTransactionWithUser) => {
-    return {
-      ...formatDateFields(point, ZPointTransaction),
-      user: point.user,
-    };
-  });
+  return points;
 };
