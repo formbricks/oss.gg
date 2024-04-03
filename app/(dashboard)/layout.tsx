@@ -18,7 +18,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
   return (
     <div className="relative flex min-h-screen">
-      <div className="absolute right-12 top-10 z-40">
+      <div className="absolute top-10 z-40 sm:absolute sm:right-12 sm:top-10 sm:z-40 right-4">
         <Logo />
       </div>
 
@@ -50,7 +50,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           </p>
         </div>
       </aside>
-      <main className="ml-[250px] flex w-full flex-1 flex-col overflow-auto p-12">{children}</main>
+      <main className="sm:ml-[250px] mt-8 flex w-full flex-1 flex-col overflow-auto p-12">{children}</main>
     </div>
   );
 }

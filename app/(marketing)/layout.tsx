@@ -72,9 +72,9 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
       <meta name="theme-color" content="#00C4B8" />
       <div className="flex min-h-screen flex-col">
         <header className="container z-40 bg-background">
-          <nav className="flex h-20 items-center justify-between py-6">
+        <nav className="grid grid-cols-1 sm:flex sm:h-20 sm:items-center gap-4 justify-between py-6 px-4 sm:px-6 lg:px-8 flex">
             <Logo />
-            <ul className="flex space-x-12">
+            <ul className="flex flex-wrap sm:flex-nowrap justify-center sm:justify-end gap-4 mt-4 sm:mt-0 sm:col-span-2">
               {topNav.map((item) => (
                 <li key={item.name}>
                   <Link
@@ -87,7 +87,7 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
                 </li>
               ))}
             </ul>
-            <Link href="/login" className={cn(buttonVariants({ variant: "secondary", size: "sm" }), "px-4")}>
+            <Link href="/login" className={cn(buttonVariants({ variant: "secondary", size: "sm" }), "px-4 mt-4 sm:mt-0")}>
               Let&apos;s play
             </Link>
           </nav>
