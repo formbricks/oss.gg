@@ -46,7 +46,7 @@ export default async function DashboardPage() {
 
   const repositoriesUserIsEnrolledIn = await getEnrolledRepositories(user.id);
 
-  const calculateRankOfCurrentUser = (userId: string, pointTransactions: TPointTransaction[]) => {
+  const calculateRankOfCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
     // Create an object to store the total points for each user enrolled in the repositories that the current user is in.
     const totalPointsOfAllUsersInTheRepo = {};
 
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
     const sortedUserPoints = usersPointsArray.sort((a, b) => b[1] - a[1]);
 
     // Find the index of the current user's entry in the sorted array. user[0] is userId.
-    const userIndex = sortedUserPoints.findIndex((user) => user[0] === userId);
+    const userIndex = sortedUserPoints.findIndex((user) => user[0] === currentUserId);
 
     const userRank = userIndex !== -1 ? userIndex + 1 : null;
 
@@ -101,16 +101,20 @@ export default async function DashboardPage() {
     <DashboardShell>
       <DashboardHeader heading="Shall we play a game?"></DashboardHeader>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {pointsPerRepository.map((point) => {
+      <div className=" grid gap-4 md:grid-cols-2">
+        {pointsPerRepository.map((point, index) => {
+          const isLastItem = index === pointsPerRepository.length - 1;
+          const isSingleItemInLastRow = pointsPerRepository.length % 2 !== 0 && isLastItem;
           return (
-            <PointsCard
-              key={point.id}
-              repositoryName={point.repositoryName}
-              points={point.points || 0}
-              rank={point.rank || 0}
-              repositoryLogo={point.repositoryLogo || ""}
-            />
+            <div key={point.id} className={`${isSingleItemInLastRow ? "md:col-span-2" : "md:col-span-1"}`}>
+              <PointsCard
+                key={point.id}
+                repositoryName={point.repositoryName}
+                points={point.points || 0}
+                rank={point.rank || 0}
+                repositoryLogo={point.repositoryLogo || ""}
+              />
+            </div>
           );
         })}
       </div>
