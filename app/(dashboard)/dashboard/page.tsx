@@ -46,6 +46,14 @@ export default async function DashboardPage() {
 
   const repositoriesUserIsEnrolledIn = await getEnrolledRepositories(user.id);
 
+  function calculateTotalPointsForCurrentUser(currentUserId: string, pointTransactions: TPointTransaction[]) {
+    return pointTransactions.reduce((acc, transaction) => {
+      if (transaction.userId === currentUserId) {
+        return acc + transaction.points;
+      }
+      return acc;
+    }, 0);
+  }
   const calculateRankOfCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
     // Create an object to store the total points for each user enrolled in the repositories that the current user is in.
     const totalPointsOfAllUsersInTheRepo = {};
@@ -78,15 +86,10 @@ export default async function DashboardPage() {
 
   // Calculate total points and rank for the current user in repositories they are enrolled in.
   const pointsPerRepository = repositoriesUserIsEnrolledIn.map((repository) => {
-    const totalPoints =
-      repository.pointTransactions &&
-      repository.pointTransactions.reduce((acc, transaction) => {
-        if (transaction.userId === user.id) {
-          return acc + transaction.points;
-        }
-        return acc;
-      }, 0);
-    const rank = calculateRankOfCurrentUser(user.id, repository.pointTransactions as TPointTransaction[]);
+    const pointTransactions = repository.pointTransactions || [];
+
+    const totalPoints = calculateTotalPointsForCurrentUser(user.id, pointTransactions);
+    const rank = calculateRankOfCurrentUser(user.id, pointTransactions);
 
     return {
       id: repository.id,
@@ -110,9 +113,9 @@ export default async function DashboardPage() {
               <PointsCard
                 key={point.id}
                 repositoryName={point.repositoryName}
-                points={point.points || 0}
-                rank={point.rank || 0}
-                repositoryLogo={point.repositoryLogo || ""}
+                points={point.points}
+                rank={point.rank}
+                repositoryLogo={point.repositoryLogo}
               />
             </div>
           );

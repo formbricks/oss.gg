@@ -4,9 +4,9 @@ import Image from "next/image";
 
 interface PointsCardProps {
   repositoryName: string;
-  repositoryLogo?: string;
+  repositoryLogo?: string | null;
   points: number;
-  rank: number;
+  rank: number | null;
 }
 
 const PointsCard: React.FC<PointsCardProps> = ({
@@ -21,12 +21,10 @@ const PointsCard: React.FC<PointsCardProps> = ({
         <div className="m-6 flex w-full flex-col items-center   rounded-lg bg-popover p-4 font-semibold">
           <div className="flex items-center gap-2">
             <div className="text-3xl">{repositoryName}</div>
-            {repositoryLogo && (
-              <Image src={repositoryLogo || ""} height={50} width={50} alt="repository-logo" />
-            )}
+            {repositoryLogo && <Image src={repositoryLogo} height={50} width={50} alt="repository-logo" />}
           </div>
           <div className="text-8xl font-bold">{points}</div>
-          <div>{rank === 0 ? "Earn points to see rankings" : `# Rank ${rank}`}</div>
+          <div>{rank === null ? "Earn points to see rankings" : `# Rank ${rank}`}</div>
         </div>
       </div>
     </>
