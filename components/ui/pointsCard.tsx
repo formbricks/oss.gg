@@ -9,12 +9,7 @@ interface PointsCardProps {
   rank: number | null;
 }
 
-const PointsCard: React.FC<PointsCardProps> = ({
-  repositoryName,
-  repositoryLogo,
-  points,
-  rank,
-}: PointsCardProps): JSX.Element => {
+const PointsCard = ({ repositoryName, repositoryLogo, points, rank }: PointsCardProps) => {
   return (
     <>
       <div className="flex items-center justify-center rounded-lg bg-secondary">
