@@ -16,7 +16,7 @@ const PointsCard = ({ repositoryName, repositoryLogo, points, rank }: PointsCard
         <div className="m-6 flex w-full flex-col items-center   rounded-lg bg-popover p-4 font-semibold">
           <div className="flex items-center gap-1">
             <div className="text-3xl">{repositoryName}</div>
-            {repositoryLogo && <Image src={repositoryLogo} height={30} width={30} alt="repository-logo" className="rounded-lg" />}
+            {repositoryLogo && <Image src={repositoryLogo} height={40} width={40} alt="repository-logo" className="rounded-lg" />}
           </div>
           <div className="text-8xl font-bold">{points}</div>
           <div>{rank === null ? "Earn points to see rankings" : `# Rank ${rank}`}</div>
