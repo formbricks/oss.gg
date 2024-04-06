@@ -46,7 +46,7 @@ export default async function DashboardPage() {
 
   const repositoriesUserIsEnrolledIn = await getEnrolledRepositories(user.id);
 
-  function calculateTotalPointsForCurrentUser(currentUserId: string, pointTransactions: TPointTransaction[]) {
+  const calculateTotalPointsForCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
     return pointTransactions.reduce((acc, transaction) => {
       if (transaction.userId === currentUserId) {
         return acc + transaction.points;
