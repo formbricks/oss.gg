@@ -53,7 +53,7 @@ export default function IndexPage() {
           <div className="h-4 w-4 rounded-full bg-white"></div>
           <div className="h-4 w-4 rounded-full bg-white"></div>
         </div>
-        <div className="mx-auto max-w-4xl rounded-b-lg bg-slate-50 p-12 text-slate-800">
+        <div className="mx-auto max-w-4xl rounded-b-lg bg-slate-50 sm:p-12 p-8 text-slate-800">
           <h2 className="mb-4 text-3xl font-medium">
             What&apos;s oss.gg 🕹️, why we need it and how you can become a part of it
           </h2>

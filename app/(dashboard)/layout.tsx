@@ -50,7 +50,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           </p>
         </div>
       </aside>
-      <main className="sm:ml-[250px] mt-8 flex w-full flex-1 flex-col overflow-auto p-12">{children}</main>
+      <main className="sm:ml-[250px] mt-8 flex w-full flex-1 flex-col overflow-auto sm:p-12 pt-12 pr-4 pl-4 pb-8">{children}</main>
     </div>
   );
 }

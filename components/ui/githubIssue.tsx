@@ -37,7 +37,7 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
           <p className="font-medium">{issue.title}</p>
           <p className="mt-0.5 text-xs">opened by {issue.author}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           {issue.assignee && issue.isIssue ? (
             <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
               {issue.assignee} 🚧
