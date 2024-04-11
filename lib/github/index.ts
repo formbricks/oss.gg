@@ -7,6 +7,7 @@ import {
   onAwardPoints,
   onIssueOpened,
   onPullRequestOpened,
+  onRejectCommented,
   onUnassignCommented,
 } from "./hooks/issue";
 
@@ -25,4 +26,5 @@ export const registerHooks = async () => {
   onUnassignCommented(webhooks);
   onAwardPoints(webhooks);
   onPullRequestOpened(webhooks);
+  onRejectCommented(webhooks);
 };

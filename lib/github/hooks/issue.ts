@@ -8,6 +8,8 @@ import {
   ON_USER_NOT_REGISTERED,
   OSS_GG_LABEL,
   POINT_IS_NOT_A_NUMBER,
+  REJECTION_MESSAGE_TEMPLATE,
+  REJECT_IDENTIFIER,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
 import { assignUserPoints } from "@/lib/points/service";
@@ -245,17 +247,19 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
         });
         return;
       }
-      await octokit.issues.removeAssignees({
-        owner,
-        repo,
-        issue_number: issueNumber,
-        assignees: [assignee],
-      });
+
       await octokit.issues.createComment({
         owner,
         repo,
         issue_number: issueNumber,
         body: "Issue unassigned.",
+      });
+
+      await octokit.issues.removeAssignees({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        assignees: [assignee],
       });
     } catch (err) {
       console.error(err);
@@ -351,5 +355,201 @@ export const onPullRequestOpened = async (webhooks: Webhooks) => {
     const body = context.payload.pull_request.body;
     const issueNumber = extractIssueNumbers(body!);
     // create a comment on the issue that a PR has been opened
+
+    return;
+  });
+};
+
+export const onRejectCommented = async (webhooks: Webhooks) => {
+  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
+    try {
+      const issueCommentBody = context.payload.comment.body;
+      const issueNumber = context.payload.issue.number;
+      const repo = context.payload.repository.name;
+      const owner = context.payload.repository.owner.login;
+      const octokit = getOctokitInstance(context.payload.installation?.id!);
+      const rejectRegex = new RegExp(`${REJECT_IDENTIFIER}\\s*pr #(\\d+)\\s*(.*)`, "i");
+      const match = issueCommentBody.match(rejectRegex);
+      const isCommentOnPullRequest = context.payload.issue.pull_request;
+      const isAssigned = context.payload.issue.assignees.length > 0;
+      let comment: string = "";
+
+      if (!match) {
+        return;
+      }
+
+      const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
+      if (!isOssGgLabel) {
+        return;
+      }
+
+      if (!isAssigned) {
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: `No user is assigned.Assign the user who created the pr.`,
+        });
+        return;
+      }
+
+      if (isCommentOnPullRequest) {
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: `${REJECT_IDENTIFIER} works on an issue.`,
+        });
+        return;
+      }
+
+      const prNumber = Number(match[1]);
+      const message = match[2];
+      const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
+
+      let usersThatCanRejectPr = ossGgRepo?.installation.memberships.map((m) => m.userId);
+      if (!usersThatCanRejectPr) {
+        throw new Error("No admins for the given repo in oss.gg!");
+      }
+      const ossGgUsers = await Promise.all(
+        usersThatCanRejectPr.map(async (userId) => {
+          const user = await getUser(userId);
+          return user?.githubId;
+        })
+      );
+      const isUserAllowedToRejectPr = ossGgUsers?.includes(context.payload.comment.user.id);
+      if (!isUserAllowedToRejectPr) {
+        comment = "You are not allowed to reject a pull request.";
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: comment,
+        });
+        return;
+      } else {
+        const assignee = context.payload.issue.assignees[0].login;
+        const rejectionMessage = REJECTION_MESSAGE_TEMPLATE(assignee, message);
+
+        //assumption: taking onlt first 100 comments because first rejection will happen in first 100 comments.If comments are more than 100 then such heavy discussed issue mostly would be given to a core team member.Even if it is given to a non core team member, our requirements would fulfill within 100 comments.
+        const allCommentsInTheIssue = await octokit.issues.listComments({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          per_page: 100,
+        });
+
+        const matchExpressionToFindFirstRejectionHappenedOrNot =
+          "Hey\\s+(?:\\w+\\s+)?(.*),\\s+Thanks a lot for the time and effort you put into shipping this! Unfortunately,\\s+we cannot accept your contribution for the following reason:(.*)";
+
+        const matchRegex = new RegExp(matchExpressionToFindFirstRejectionHappenedOrNot.trim(), "g");
+        let hasFirstRejectionOccurred = false;
+        let indexOfFirstRejectionCommentWithMessage: number | null = null;
+
+        allCommentsInTheIssue.data.forEach((comment, index) => {
+          if (hasFirstRejectionOccurred) return; //Exit loop if first rejection occurred.
+
+          const commentBody = comment.body || "";
+          const isMatch = commentBody.match(matchRegex);
+          if (isMatch) {
+            hasFirstRejectionOccurred = true;
+            indexOfFirstRejectionCommentWithMessage = index;
+          }
+        });
+
+        if (!hasFirstRejectionOccurred) {
+          //this has to be above rejection message,will make it easier to prevent same user from assigning in the onAssignCommented function.
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: `Attempted:${assignee}`,
+          });
+        } else {
+          //-----------------------------------------------------------------------------------
+          //Remove this once the multiple messages problem is solved and make changes accordingly or keep it as it is.
+
+          let hasFirstRejectCommandComment;
+          let indexHasFirstRejectCommandComment;
+
+          allCommentsInTheIssue.data.forEach((comment, index) => {
+            if (hasFirstRejectCommandComment) return;
+            const commentBody = comment.body || "";
+            const isMatch = commentBody.match(rejectRegex);
+            if (isMatch) {
+              hasFirstRejectCommandComment = true;
+              indexHasFirstRejectCommandComment = index;
+            }
+          });
+
+          const commentContainingUserNamesWhosePrIsRejected =
+            indexHasFirstRejectCommandComment + 1 > 0
+              ? allCommentsInTheIssue.data[indexHasFirstRejectCommandComment + 1]
+              : null;
+          //-----------------------------------------------------------------------------------
+
+          //uncomment this after the multiple message problem is solved and remove the above one.
+          // const indexOfCommentContainingUserNamesWhosePrIsRejected =
+          //   indexOfFirstRejectionCommentWithMessage && indexOfFirstRejectionCommentWithMessage > 1
+          //     ? indexOfFirstRejectionCommentWithMessage - 1
+          //     : null;
+
+          // const commentContainingUserNamesWhosePrIsRejected =
+          //   indexOfCommentContainingUserNamesWhosePrIsRejected
+          //     ? allCommentsInTheIssue.data[indexOfCommentContainingUserNamesWhosePrIsRejected]
+          //     : null;
+
+          let extractedUserNames: string[] = [];
+          const namesRegex = /Attempted:(.*)/;
+          const match = commentContainingUserNamesWhosePrIsRejected?.body?.match(namesRegex);
+
+          if (match && match[1]) {
+            const namesString = match[1];
+            extractedUserNames = namesString.split(" ");
+          }
+
+          const commentId = Number(commentContainingUserNamesWhosePrIsRejected?.id);
+
+          extractedUserNames.push(assignee);
+
+          await octokit.issues.updateComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            comment_id: commentId,
+            body: `Attempted:${extractedUserNames}`,
+          });
+        }
+
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: rejectionMessage,
+        });
+
+        await octokit.issues.removeAssignees({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          assignees: [assignee],
+        });
+
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: "Issue up for grabs.",
+        });
+        await octokit.pulls.update({
+          owner,
+          repo,
+          pull_number: prNumber,
+          state: "closed",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
   });
 };
