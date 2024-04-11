@@ -560,7 +560,7 @@ const extractUserNamesFromCommentsForRejectCommand = async (allCommentsInTheIssu
   }
 };
 
-function checkFirstOccurence(comments, regex: string, otherRegexOption: string) {
+const checkFirstOccurence = (comments, regex: string, otherRegexOption: string) => {
   let hasFirstOccurred: boolean = false;
   let indexOfFirstOccurred: number | null = null;
 
@@ -576,4 +576,4 @@ function checkFirstOccurence(comments, regex: string, otherRegexOption: string) 
   });
 
   return { hasFirstOccurred, indexOfFirstOccurred };
-}
+};
