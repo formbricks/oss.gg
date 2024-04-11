@@ -92,6 +92,24 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           return;
         }
 
+        let { extractedUserNames } = await extractUserNamesFromCommentsForRejectCommand(
+          octokit,
+          owner,
+          repo,
+          issueNumber
+        );
+
+        const isUserPrRejectedBefore = extractedUserNames?.includes(context.payload.comment.user.login);
+        if (isUserPrRejectedBefore) {
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: "You have already attempted this issue.We will open the issue up for a different contributor to work on. Feel free to stick around in the community and pick up a different issue.",
+          });
+          return;
+        }
+
         const { data: userIssues } = await octokit.issues.listForRepo({
           owner,
           repo,
@@ -444,7 +462,6 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
 
         const matchRegex = new RegExp(matchExpressionToFindFirstRejectionHappenedOrNot.trim(), "g");
         let hasFirstRejectionOccurred = false;
-        let indexOfFirstRejectionCommentWithMessage: number | null = null;
 
         allCommentsInTheIssue.data.forEach((comment, index) => {
           if (hasFirstRejectionOccurred) return; //Exit loop if first rejection occurred.
@@ -453,7 +470,6 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
           const isMatch = commentBody.match(matchRegex);
           if (isMatch) {
             hasFirstRejectionOccurred = true;
-            indexOfFirstRejectionCommentWithMessage = index;
           }
         });
 
@@ -466,59 +482,23 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
             body: `Attempted:${assignee}`,
           });
         } else {
-          //-----------------------------------------------------------------------------------
-          //Remove this once the multiple messages problem is solved and make changes accordingly or keep it as it is.
-
-          let hasFirstRejectCommandComment;
-          let indexHasFirstRejectCommandComment;
-
-          allCommentsInTheIssue.data.forEach((comment, index) => {
-            if (hasFirstRejectCommandComment) return;
-            const commentBody = comment.body || "";
-            const isMatch = commentBody.match(rejectRegex);
-            if (isMatch) {
-              hasFirstRejectCommandComment = true;
-              indexHasFirstRejectCommandComment = index;
-            }
-          });
-
-          const commentContainingUserNamesWhosePrIsRejected =
-            indexHasFirstRejectCommandComment + 1 > 0
-              ? allCommentsInTheIssue.data[indexHasFirstRejectCommandComment + 1]
-              : null;
-          //-----------------------------------------------------------------------------------
-
-          //uncomment this after the multiple message problem is solved and remove the above one.
-          // const indexOfCommentContainingUserNamesWhosePrIsRejected =
-          //   indexOfFirstRejectionCommentWithMessage && indexOfFirstRejectionCommentWithMessage > 1
-          //     ? indexOfFirstRejectionCommentWithMessage - 1
-          //     : null;
-
-          // const commentContainingUserNamesWhosePrIsRejected =
-          //   indexOfCommentContainingUserNamesWhosePrIsRejected
-          //     ? allCommentsInTheIssue.data[indexOfCommentContainingUserNamesWhosePrIsRejected]
-          //     : null;
-
-          let extractedUserNames: string[] = [];
-          const namesRegex = /Attempted:(.*)/;
-          const match = commentContainingUserNamesWhosePrIsRejected?.body?.match(namesRegex);
-
-          if (match && match[1]) {
-            const namesString = match[1];
-            extractedUserNames = namesString.split(" ");
-          }
-
-          const commentId = Number(commentContainingUserNamesWhosePrIsRejected?.id);
+          const { extractedUserNames, commentId } = await extractUserNamesFromCommentsForRejectCommand(
+            octokit,
+            owner,
+            repo,
+            issueNumber
+          );
 
           extractedUserNames.push(assignee);
 
-          await octokit.issues.updateComment({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            comment_id: commentId,
-            body: `Attempted:${extractedUserNames}`,
-          });
+          commentId &&
+            (await octokit.issues.updateComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              comment_id: commentId,
+              body: `Attempted:${extractedUserNames}`,
+            }));
         }
 
         await octokit.issues.createComment({
@@ -552,4 +532,53 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
       console.error(err);
     }
   });
+};
+const extractUserNamesFromCommentsForRejectCommand = async (
+  octokit,
+  owner: string,
+  repo: string,
+  issueNumber: number
+) => {
+  const allCommentsInTheIssue = await octokit.issues.listComments({
+    owner,
+    repo,
+    issue_number: issueNumber,
+    per_page: 100,
+  });
+
+  let hasFirstRejectCommandComment: boolean = false;
+  let indexHasFirstRejectCommandComment: number | null = null;
+
+  allCommentsInTheIssue.data.forEach((comment, index: number) => {
+    if (hasFirstRejectCommandComment) return;
+    const commentBody = comment.body || "";
+    const isMatch = commentBody.match(`${REJECT_IDENTIFIER}\\s*pr #(\\d+)\\s*(.*)`, "i");
+    if (isMatch) {
+      hasFirstRejectCommandComment = true;
+      indexHasFirstRejectCommandComment = index;
+    }
+  });
+
+  if (
+    indexHasFirstRejectCommandComment !== null &&
+    hasFirstRejectCommandComment &&
+    indexHasFirstRejectCommandComment + 1 > 0
+  ) {
+    const commentContainingUserNamesWhosePrIsRejected =
+      allCommentsInTheIssue.data[indexHasFirstRejectCommandComment + 1];
+
+    let extractedUserNames: string[] = [];
+    const namesRegex = /Attempted:(.*)/;
+    const match = commentContainingUserNamesWhosePrIsRejected?.body?.match(namesRegex);
+
+    if (match && match[1]) {
+      const namesString = match[1];
+      extractedUserNames = namesString.split(" ");
+    }
+    const commentId = Number(commentContainingUserNamesWhosePrIsRejected?.id);
+
+    return { extractedUserNames, commentId };
+  } else {
+    return { extractedUserNames: [] as string[], commentId: null };
+  }
 };
