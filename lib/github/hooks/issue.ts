@@ -92,12 +92,14 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           return;
         }
 
-        let { extractedUserNames } = await extractUserNamesFromCommentsForRejectCommand(
-          octokit,
+        const allCommentsInTheIssue = await octokit.issues.listComments({
           owner,
           repo,
-          issueNumber
-        );
+          issue_number: issueNumber,
+          per_page: 100,
+        });
+        let { extractedUserNames } =
+          await extractUserNamesFromCommentsForRejectCommand(allCommentsInTheIssue);
 
         const isUserPrRejectedBefore = extractedUserNames?.includes(context.payload.comment.user.login);
         if (isUserPrRejectedBefore) {
@@ -457,21 +459,14 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
           per_page: 100,
         });
 
-        const matchExpressionToFindFirstRejectionHappenedOrNot =
-          "Hey\\s+(?:\\w+\\s+)?(.*),\\s+Thanks a lot for the time and effort you put into shipping this! Unfortunately,\\s+we cannot accept your contribution for the following reason:(.*)";
-
-        const matchRegex = new RegExp(matchExpressionToFindFirstRejectionHappenedOrNot.trim(), "g");
         let hasFirstRejectionOccurred = false;
 
-        allCommentsInTheIssue.data.forEach((comment, index) => {
-          if (hasFirstRejectionOccurred) return; //Exit loop if first rejection occurred.
-
-          const commentBody = comment.body || "";
-          const isMatch = commentBody.match(matchRegex);
-          if (isMatch) {
-            hasFirstRejectionOccurred = true;
-          }
-        });
+        const { hasFirstOccurred } = checkFirstOccurence(
+          allCommentsInTheIssue.data,
+          "Hey\\s+(?:\\w+\\s+)?(.*),\\s+Thanks a lot for the time and effort you put into shipping this! Unfortunately,\\s+we cannot accept your contribution for the following reason:(.*)",
+          "g"
+        );
+        hasFirstRejectionOccurred = hasFirstOccurred;
 
         if (!hasFirstRejectionOccurred) {
           //this has to be above rejection message,will make it easier to prevent same user from assigning in the onAssignCommented function.
@@ -482,12 +477,8 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
             body: `Attempted:${assignee}`,
           });
         } else {
-          const { extractedUserNames, commentId } = await extractUserNamesFromCommentsForRejectCommand(
-            octokit,
-            owner,
-            repo,
-            issueNumber
-          );
+          const { extractedUserNames, commentId } =
+            await extractUserNamesFromCommentsForRejectCommand(allCommentsInTheIssue);
 
           extractedUserNames.push(assignee);
 
@@ -533,39 +524,25 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
     }
   });
 };
-const extractUserNamesFromCommentsForRejectCommand = async (
-  octokit,
-  owner: string,
-  repo: string,
-  issueNumber: number
-) => {
-  const allCommentsInTheIssue = await octokit.issues.listComments({
-    owner,
-    repo,
-    issue_number: issueNumber,
-    per_page: 100,
-  });
-
+const extractUserNamesFromCommentsForRejectCommand = async (allCommentsInTheIssue) => {
   let hasFirstRejectCommandComment: boolean = false;
-  let indexHasFirstRejectCommandComment: number | null = null;
+  let indexFirstRejectCommandComment: number | null = null;
 
-  allCommentsInTheIssue.data.forEach((comment, index: number) => {
-    if (hasFirstRejectCommandComment) return;
-    const commentBody = comment.body || "";
-    const isMatch = commentBody.match(`${REJECT_IDENTIFIER}\\s*pr #(\\d+)\\s*(.*)`, "i");
-    if (isMatch) {
-      hasFirstRejectCommandComment = true;
-      indexHasFirstRejectCommandComment = index;
-    }
-  });
+  const { hasFirstOccurred, indexOfFirstOccurred } = checkFirstOccurence(
+    allCommentsInTheIssue.data,
+    `${REJECT_IDENTIFIER}\\s*pr #(\\d+)\\s*(.*)`,
+    "i"
+  );
+  hasFirstRejectCommandComment = hasFirstOccurred;
+  indexFirstRejectCommandComment = indexOfFirstOccurred;
 
   if (
-    indexHasFirstRejectCommandComment !== null &&
+    indexFirstRejectCommandComment !== null &&
     hasFirstRejectCommandComment &&
-    indexHasFirstRejectCommandComment + 1 > 0
+    indexFirstRejectCommandComment + 1 > 0
   ) {
     const commentContainingUserNamesWhosePrIsRejected =
-      allCommentsInTheIssue.data[indexHasFirstRejectCommandComment + 1];
+      allCommentsInTheIssue.data[indexFirstRejectCommandComment + 1];
 
     let extractedUserNames: string[] = [];
     const namesRegex = /Attempted:(.*)/;
@@ -582,3 +559,21 @@ const extractUserNamesFromCommentsForRejectCommand = async (
     return { extractedUserNames: [] as string[], commentId: null };
   }
 };
+
+function checkFirstOccurence(comments, regex: string, otherRegexOption: string) {
+  let hasFirstOccurred: boolean = false;
+  let indexOfFirstOccurred: number | null = null;
+
+  comments.forEach((comment, index) => {
+    if (hasFirstOccurred) return; // stop the loop after first occurrence is found.
+
+    const commentBody = comment.body || "";
+    const isMatch = commentBody.match(regex, otherRegexOption);
+    if (isMatch) {
+      hasFirstOccurred = true;
+      indexOfFirstOccurred = index;
+    }
+  });
+
+  return { hasFirstOccurred, indexOfFirstOccurred };
+}
