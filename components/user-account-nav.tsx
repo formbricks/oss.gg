@@ -9,6 +9,7 @@ import {
 import { UserAvatar } from "@/components/user-avatar";
 import { User } from "next-auth";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface UserAccountNavProps {
   user: {
@@ -31,6 +32,7 @@ const bottomNavigation = [
 ];
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -46,6 +48,13 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             {user.email && <p className="w-[200px] truncate text-sm text-muted-foreground">{user.email}</p>}
           </div>
         </div>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onSelect={() => {
+            router.push("/dashboard");
+          }}>
+          Dashboard
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={(event) => {

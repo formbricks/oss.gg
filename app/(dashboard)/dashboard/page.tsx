@@ -1,7 +1,10 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
+import PointsCard from "@/components/ui/pointsCard";
 import { authOptions } from "@/lib/auth";
+import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getCurrentUser } from "@/lib/session";
+import { TPointTransaction } from "@/types/pointTransaction";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -25,12 +28,12 @@ const cards = [
     href: "/contribute",
     title: "Help build oss.gg",
     description:
-      "oss.gg is a community project! We’re all building this together. Join our Discord to help deliver it.",
+      "oss.gg is a community project! We're all building this together. Join our Discord to help deliver it.",
   },
   {
     href: "/",
     title: "What is oss.gg?",
-    description: "Find out why we’re building this - and how you can become a part of it!",
+    description: "Find out why we're building this - and how you can become a part of it!",
   },
 ];
 
@@ -41,9 +44,83 @@ export default async function DashboardPage() {
     redirect(authOptions?.pages?.signIn || "/login");
   }
 
+  const repositoriesUserIsEnrolledIn = await getEnrolledRepositories(user.id);
+
+  const calculateTotalPointsForCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
+    return pointTransactions.reduce((acc, transaction) => {
+      if (transaction.userId === currentUserId) {
+        return acc + transaction.points;
+      }
+      return acc;
+    }, 0);
+  }
+  const calculateRankOfCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
+    // Create an object to store the total points for each user enrolled in the repositories that the current user is in.
+    const totalPointsOfAllUsersInTheRepo = {};
+
+    // Calculate total points for each user in the repositories that current user is enrolled in.
+    pointTransactions.forEach((pointTransaction) => {
+      const userId = pointTransaction.userId;
+      const points = pointTransaction.points;
+
+      if (!totalPointsOfAllUsersInTheRepo[userId]) {
+        totalPointsOfAllUsersInTheRepo[userId] = points;
+      } else {
+        totalPointsOfAllUsersInTheRepo[userId] += points;
+      }
+    });
+
+    // Convert the totalPointsOfAllUsersInTheRepo object into an array for sorting.
+    const usersPointsArray: [string, number][] = Object.entries(totalPointsOfAllUsersInTheRepo);
+
+    // Sort the userPointsArray array in descending order based on points.
+    const sortedUserPoints = usersPointsArray.sort((a, b) => b[1] - a[1]);
+
+    // Find the index of the current user's entry in the sorted array. user[0] is userId.
+    const userIndex = sortedUserPoints.findIndex((user) => user[0] === currentUserId);
+
+    const userRank = userIndex !== -1 ? userIndex + 1 : null;
+
+    return userRank;
+  };
+
+  // Calculate total points and rank for the current user in repositories they are enrolled in.
+  const pointsPerRepository = repositoriesUserIsEnrolledIn.map((repository) => {
+    const pointTransactions = repository.pointTransactions || [];
+
+    const totalPoints = calculateTotalPointsForCurrentUser(user.id, pointTransactions);
+    const rank = calculateRankOfCurrentUser(user.id, pointTransactions);
+
+    return {
+      id: repository.id,
+      repositoryName: repository.name,
+      points: totalPoints,
+      repositoryLogo: repository.logoUrl,
+      rank: rank,
+    };
+  });
+
   return (
     <DashboardShell>
       <DashboardHeader heading="Shall we play a game?"></DashboardHeader>
+
+      <div className=" grid gap-4 md:grid-cols-2">
+        {pointsPerRepository.map((point, index) => {
+          const isLastItem = index === pointsPerRepository.length - 1;
+          const isSingleItemInLastRow = pointsPerRepository.length % 2 !== 0 && isLastItem;
+          return (
+            <div key={point.id} className={`${isSingleItemInLastRow ? "md:col-span-2" : "md:col-span-1"}`}>
+              <PointsCard
+                key={point.id}
+                repositoryName={point.repositoryName}
+                points={point.points}
+                rank={point.rank}
+                repositoryLogo={point.repositoryLogo}
+              />
+            </div>
+          );
+        })}
+      </div>
       <div className="grid gap-4 md:grid-cols-2">
         {cards.map((card) => (
           <Link
