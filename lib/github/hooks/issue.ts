@@ -408,7 +408,7 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
           owner,
           repo,
           issue_number: issueNumber,
-          body: `No user is assigned.Assign the user who created the pr.`,
+          body: `No user assigned. Please assign the user who created the PR.`,
         });
         return;
       }
