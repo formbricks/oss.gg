@@ -7,6 +7,7 @@ interface Issue {
   logoUrl: string;
   title: string;
   author: string;
+  repository?: string;
   assignee?: string | null;
   state?: string;
   draft?: boolean;
@@ -35,7 +36,9 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
       <div className="flex w-full justify-between">
         <div>
           <p className="font-medium">{issue.title}</p>
-          <p className="mt-0.5 text-xs">opened by {issue.author}</p>
+          <p className="mt-0.5 text-xs">
+            opened by {issue.author} {issue.repository && <span>in {issue.repository}</span>}
+          </p>
         </div>
         <div className="flex gap-2">
           {issue.assignee && issue.isIssue ? (
