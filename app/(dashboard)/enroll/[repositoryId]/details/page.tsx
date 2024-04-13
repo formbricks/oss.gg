@@ -1,3 +1,4 @@
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { getRepositoryById } from "@/lib/repository/service";
 
 export default async function ProjectDetailsPage({ params }) {
@@ -6,8 +7,12 @@ export default async function ProjectDetailsPage({ params }) {
     throw new Error("Repository not found");
   }
   return (
-    <>
-      <p>{repository?.projectDescription || "No details added yet."}</p>
-    </>
+    <div className="mt-4">
+      {repository?.projectDescription ? (
+        <MarkdownRenderer content={repository?.projectDescription} />
+      ) : (
+        <p>No details added yet.</p>
+      )}
+    </div>
   );
 }
