@@ -12,9 +12,13 @@ For now, it's a simple txt file :)
 
 Please follow the following schema:
 
-» DATE by CONTRIBUTOR
-
-NOTE
 -------------------
 
-Let's go :) 👇
+» 05-April-2024 by Blessing Ojediran
+
+Work Done: Worked with Rahmot and Aanu on the Unified Bounties Concept (Issue #36) 
+[Link to Bounties Concept](https://blessingojediran.notion.site/Bounty-System-A-Unified-Concept-98036ce70e954d78a76f2afb76fec88e?pvs=4). 
+
+-------------------
+
+Add your contributions below :) 👇
