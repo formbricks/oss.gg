@@ -56,7 +56,7 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
     ),
     li: ({ children, ...props }) => (
       <li className="mb-2 mt-4" {...props}>
-        {/* if children is p tag, then render it as a span */}
+        {/* if children is a p tag, then render it as a span */}
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child) && child?.props?.node?.tagName === "p") {
             return <span>{child.props.children}</span>;
@@ -66,11 +66,11 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
       </li>
     ),
     blockquote: ({ children, ...props }) => (
-      <blockquote className="mb-2 mt-4 border-l-4 border-slate-300 pl-2" {...props}>
+      <blockquote className="mb-2 mt-4 border-l-4 border-gray-200 pl-2" {...props}>
         {children}
       </blockquote>
     ),
-    hr: ({ ...props }) => <hr className="my-4 border-slate-300" {...props} />,
+    hr: ({ ...props }) => <hr className="my-4 border-gray-200" {...props} />,
     br: ({ ...props }) => <br {...props} />,
     a: ({ children, ...props }) => (
       <a className="inline-block text-current underline" {...props} target="_blank">
