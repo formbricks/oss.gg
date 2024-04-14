@@ -110,6 +110,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
           href: pr.html_url,
           title: pr.title,
           author: pr.user.login,
+          repository: repoData.name,
           key: pr.id.toString(),
           state: pr.state,
           draft: pr.draft,
