@@ -34,12 +34,13 @@ export function DashboardNav({ items, userGitHubId }: DashboardNavProps) {
             &#9776;
           </button>
         </div>
-        <nav className={`grid items-start gap-2 ${menuOpen ? '' : 'hidden'} sm:grid-cols-1`}>
+      <nav className={`grid items-start gap-2 ${menuOpen ? 'pt-4' : 'max-[640px]:hidden'} sm:grid-cols-1`}>
       {items.map((item, index) => {
         return (
           item.href && (
             <Link key={index} href={item.disabled ? "/" : item.href}>
               <span
+                onClick={() => setMenuOpen(false)}
                 className={cn(
                   "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
                   path === item.href ? "bg-accent" : "transparent",
