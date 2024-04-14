@@ -1,9 +1,11 @@
+'use client'
 import { SiteFooter } from "@/components/site-footer";
 import { buttonVariants } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { useState } from 'react';
 
 interface MarketingLayoutProps {
   children: React.ReactNode;
@@ -34,7 +36,12 @@ const topNav = [
   },
 ];
 
-export default async function MarketingLayout({ children }: MarketingLayoutProps) {
+export default function MarketingLayout({ children }: MarketingLayoutProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
   return (
     <div>
       <title>oss.gg - Gamify Open Source Contributions</title>
@@ -73,14 +80,25 @@ export default async function MarketingLayout({ children }: MarketingLayoutProps
       <div className="flex min-h-screen flex-col">
         <header className="container z-40 bg-background">
         <nav className="grid grid-cols-1 sm:flex sm:h-20 sm:items-center gap-4 justify-between py-6 px-4 sm:px-6 lg:px-8 flex">
+            <div className="flex flex-row justify-between">
             <Logo />
-            <ul className="flex flex-wrap sm:flex-nowrap justify-center sm:justify-end gap-4 mt-4 sm:mt-0 sm:col-span-2">
+            <div className="flex sm:hidden">
+              <button
+                onClick={toggleMenu}
+                className="text-text-primary hover:text-text-secondary text-xl focus:outline-none"
+                >
+                &#9776;
+              </button>
+            </div>
+            </div>
+            <ul className={`flex justify-center gap-4 mt-4 sm:mt-0 ${menuOpen ? 'sm:hidden flex-col' : 'flex-wrap max-[640px]:hidden sm:flex-nowrap sm:col-span-2'}`}>
               {topNav.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    target={item.outbound ? "_blank" : undefined}
-                    className="text-text-primary hover:text-text-secondary text-sm font-medium text-muted-foreground hover:text-foreground">
+                    target={item.outbound ? '_blank' : undefined}
+                    className="text-text-primary hover:text-text-secondary text-sm font-medium text-muted-foreground hover:text-foreground"
+                  >
                     {item.name}
                     {item.outbound && <ArrowUpRight size={16} className="ml-1 inline" />}
                   </Link>

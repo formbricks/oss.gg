@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { BottomNavItem } from "types";
 
 interface DashboardNavProps {
@@ -13,12 +14,27 @@ interface DashboardNavProps {
 export function DashboardNav({ items, userGitHubId }: DashboardNavProps) {
   const path = usePathname();
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   if (!items?.length) {
     return null;
   }
 
   return (
-    <nav className="grid items-start gap-2">
+    <div>
+       <div className="flex sm:hidden">
+          <button
+            onClick={toggleMenu}
+            className="text-text-primary hover:text-text-secondary text-xl focus:outline-none"
+            >
+            &#9776;
+          </button>
+        </div>
+        <nav className={`grid items-start gap-2 ${menuOpen ? '' : 'hidden'} sm:grid-cols-1`}>
       {items.map((item, index) => {
         return (
           item.href && (
@@ -46,5 +62,6 @@ export function DashboardNav({ items, userGitHubId }: DashboardNavProps) {
         </Link>
       )}
     </nav>
+    </div>
   );
 }
