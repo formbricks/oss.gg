@@ -1,5 +1,6 @@
 import { GITHUB_APP_PRIVATE_KEY, GITHUB_APP_WEBHOOK_SECRET } from "@/lib/constants";
 import { db } from "@/lib/db";
+import { getRepositoryDefaultBranch, getRepositoryReadme } from "@/lib/github/services/repo";
 import { App } from "octokit";
 
 export const sendInstallationDetails = async (
@@ -106,6 +107,9 @@ export const sendInstallationDetails = async (
       if (repos) {
         await Promise.all(
           repos.map(async (repo) => {
+            const defaultBranch = await getRepositoryDefaultBranch(installation.account.login, repo.name);
+            const readme = await getRepositoryReadme(installation.account.login, repo.name, defaultBranch);
+
             await tx.repository.upsert({
               where: { githubId: repo.id },
               update: {},
@@ -114,6 +118,8 @@ export const sendInstallationDetails = async (
                 name: repo.name,
                 installationId: installationPrisma.id,
                 logoUrl: `https://avatars.githubusercontent.com/u/${installation.account.id}?s=200&v=4`,
+                default_branch: defaultBranch,
+                projectDescription: readme,
               },
             });
           })
