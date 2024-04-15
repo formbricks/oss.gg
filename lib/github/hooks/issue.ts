@@ -398,11 +398,6 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
         return;
       }
 
-      const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
-      if (!isOssGgLabel) {
-        return;
-      }
-
       if (!isCommentOnPullRequest) {
         await octokit.issues.createComment({
           owner,
