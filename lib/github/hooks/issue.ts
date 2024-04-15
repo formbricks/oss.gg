@@ -403,7 +403,7 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
           owner,
           repo,
           issue_number: prNumber,
-          body: `${REJECT_IDENTIFIER} works on a PR.`,
+          body: `The command ${REJECT_IDENTIFIER} only works in PRs, not on issues. Please use it in a Pull Request.`,
         });
         return;
       }
