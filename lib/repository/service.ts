@@ -137,3 +137,27 @@ export const getRepositoriesForUser = async (userId: string) => {
     throw new Error(`Failed to get repositories for user: ${error}`);
   }
 };
+
+/**
+ * Fetches all users who are enrolled to a specific repository
+ * @param repositoryId The unique identifier for the repository
+ * @returns An array of users enrolled to the given repository.
+ */
+
+export const getUsersForRepository = async (repositoryId: string) => {
+  try {
+    const users = await db.user.findMany({
+      where: {
+        enrollment: {
+          some: {
+            repositoryId: repositoryId,
+          },
+        },
+      },
+    });
+
+    return users;
+  } catch (error) {
+    throw new Error(`Failed to get users for repository: ${error.message}`);
+  }
+};

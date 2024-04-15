@@ -8,8 +8,8 @@ import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Formbricks",
-  description: "Contribute to the worlds fastest growing survey infrastructure.",
+  title: "Repo settings",
+  description: "Set up oss.gg to work well with your repo and community",
 };
 
 export default async function RepoSettingsLayout({ children, params }) {
@@ -24,13 +24,12 @@ export default async function RepoSettingsLayout({ children, params }) {
   }
 
   const repository = await getRepositoryById(params.repositoryId);
-  console.log(repository);
 
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="Repo settings"
-        text="Set up oss.gg to work well with your repo and community "
+        heading={`${repository?.name} settings`}
+        text="Set up oss.gg to work well with your repo and community."
       />
       <EnrollPlayerSwitch />
       <NavTabs />
