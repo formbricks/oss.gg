@@ -1,10 +1,11 @@
 import EnrollPlayerSwitch from "@/components/enroll-player-switch";
 import { DashboardHeader } from "@/components/header";
-import NavTabs from "@/components/layout/repo-settings-layout";
 import { DashboardShell } from "@/components/shell";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { userHasPermissionForRepository } from "@/lib/repository/auth";
 import { getRepositoryById } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -32,7 +33,19 @@ export default async function RepoSettingsLayout({ children, params }) {
         text="Set up oss.gg to work well with your repo and community."
       />
       <EnrollPlayerSwitch />
-      <NavTabs />
+      <Tabs defaultValue="players" className="w-full">
+        <TabsList>
+          <Link href={`/repo-settings/${params.repositoryId}/players`}>
+            <TabsTrigger value="players">Players</TabsTrigger>
+          </Link>
+          {/*           <Link href={`/repo-settings/${params.repositoryId}/description`}>
+            <TabsTrigger value="description">Project Description</TabsTrigger>
+          </Link> */}
+          <Link href={`/repo-settings/${params.repositoryId}/levels`}>
+            <TabsTrigger value="levels">Levels</TabsTrigger>
+          </Link>
+        </TabsList>
+      </Tabs>
       {children}
     </DashboardShell>
   );

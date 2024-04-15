@@ -4,8 +4,8 @@ import {
   createLevelAction,
   deleteLevelAction,
   updateLevelIconAction,
-} from "@/app/(dashboard)/repo-setting/[repositoryId]/levels/action";
-import { handleFileUpload } from "@/app/(dashboard)/repo-setting/[repositoryId]/levels/lib";
+} from "@/app/(dashboard)/repo-settings/[repositoryId]/levels/action";
+import { handleFileUpload } from "@/app/(dashboard)/repo-settings/[repositoryId]/levels/lib";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { TagInput, Tag as TagType } from "@/components/ui/tag-input";
-import { updateLevelIcon } from "@/lib/levels/service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
@@ -95,7 +94,7 @@ export function LevelsForm({
   const [isEditMode, setIsEditMode] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const {setShowDeleteLevelModal, DeleteLevelModal} = useDeleteLevelModal();
+  const { setShowDeleteLevelModal, DeleteLevelModal } = useDeleteLevelModal();
   const { toast } = useToast();
   const router = useRouter();
   const { repositoryId } = useParams() as { repositoryId: string };
@@ -226,7 +225,7 @@ export function LevelsForm({
               <FormItem>
                 <FormLabel>Level Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Code cub" {...field} disabled={isFieldDisabled(levelName)} />
+                  <Input placeholder="e.g. Code cub" {...field} disabled={isFieldDisabled(levelName)} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -407,15 +406,18 @@ export function LevelsForm({
         </div>
         {isForm ? (
           <Button loading={isLoading} type="submit">
-            save
+            Save
           </Button>
         ) : (
           <>
             {isEditMode ? (
               <div className="flex gap-2">
-                <Button onClick={() => {
-                  setShowDeleteLevelModal(true);
-                }} loading={isLoading} variant="destructive">
+                <Button
+                  onClick={() => {
+                    setShowDeleteLevelModal(true);
+                  }}
+                  loading={isLoading}
+                  variant="destructive">
                   Delete
                 </Button>
 

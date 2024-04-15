@@ -5,7 +5,7 @@ export const handleFileUpload = async (
   error?: string;
   url: string;
 }> => {
-  if (!file) return { error: "No file provided", url: "" };
+  if (!file) return { error: "No file to upload provided", url: "" };
 
   if (!file.type.startsWith("image/")) {
     return { error: "Please upload an image file.", url: "" };
@@ -76,7 +76,6 @@ export const handleFileUpload = async (
     ...(signingData ? { headers: requestHeaders } : {}),
     body: formData,
   });
-
 
   if (!uploadResponse.ok) {
     return {
