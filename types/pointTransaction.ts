@@ -15,12 +15,12 @@ export const ZPointTransaction = z
 
 export type TPointTransaction = z.infer<typeof ZPointTransaction>;
 
-export const ZPointTransactionWithUser = ZPointTransaction.extend({
-  user: z.object({
-    name: z.string().nullable(),
-    avatarUrl: z.string().nullable(),
-    login: z.string(),
-  }),
+export const ZPointTransactionWithUser = z.object({
+  name: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
+  login: z.string(),
+  points: z.number().int(),
+  userId: z.string(),
 });
 
 export type TPointTransactionWithUser = z.infer<typeof ZPointTransactionWithUser>;

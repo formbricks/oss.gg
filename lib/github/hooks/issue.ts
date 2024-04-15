@@ -71,7 +71,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
-      if (issueCommentBody === ASSIGN_IDENTIFIER) {
+      if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
         if (!isOssGgLabel) return;
 
         const isAssigned = context.payload.issue.assignees.length > 0;
@@ -183,7 +183,7 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
       const issueCommentBody = context.payload.comment.body;
-      if (issueCommentBody !== UNASSIGN_IDENTIFIER) {
+      if (issueCommentBody.trim() !== UNASSIGN_IDENTIFIER) {
         return;
       }
 
