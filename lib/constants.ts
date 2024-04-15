@@ -2,7 +2,7 @@ import { env } from "../env.mjs";
 
 export const DEFAULT_CACHE_REVALIDATION_INTERVAL = 60 * 30; // 30 minutes
 
-export const GITHUB_CACHE_REVALIDATION_INTERVAL = 60 * 60 * 24; // 24 hours
+export const GITHUB_CACHE_REVALIDATION_INTERVAL = 60 * 60 * 1; // 1 hours
 
 export const GITHUB_APP_CLIENT_ID = env.GITHUB_APP_CLIENT_ID;
 export const GITHUB_APP_CLIENT_SECRET = env.GITHUB_APP_CLIENT_SECRET;
