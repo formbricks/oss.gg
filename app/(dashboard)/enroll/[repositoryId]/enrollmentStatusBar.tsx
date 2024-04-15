@@ -61,7 +61,7 @@ export default function EnrollmentStatusBar({ repositoryId }) {
   );
 
   return (
-    <div className="flex items-center justify-between rounded-md bg-muted p-4">
+    <div className="flex items-center justify-between rounded-md bg-muted p-4 gap-4">
       <p className="font-mono">
         {isEnrolled
           ? "Status: You're in! Work on some open issues to get points 🕹️"

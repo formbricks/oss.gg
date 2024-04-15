@@ -18,15 +18,15 @@ export default function LayoutTabs({ repository }) {
       <EnrollmentStatusBar repositoryId={repository.id} />
       <Tabs defaultValue={`${activeTab}`} className="w-full">
         <TabsList>
-          <Link href={`/enroll/${repository.id}/details`}>
-            <TabsTrigger value="details">Project Details</TabsTrigger>
-          </Link>
-          <Link href={`/enroll/${repository.id}/leaderboard`}>
-            <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
-          </Link>
-          <Link href={`/enroll/${repository.id}/issues`}>
-            <TabsTrigger value="issues">Open Issues</TabsTrigger>
-          </Link>
+          {[
+            { href: `/enroll/${repository.id}/details`, value: "details", label: "Project Details" },
+            { href: `/enroll/${repository.id}/leaderboard`, value: "leaderboard", label: "Leaderboard" },
+            { href: `/enroll/${repository.id}/issues`, value: "issues", label: "Open Issues" }
+          ].map((tab, index) => (
+            <Link key={index} href={tab.href} className="max-[640px]:w-full">
+              <TabsTrigger value={tab.value}>{tab.label}</TabsTrigger>
+            </Link>
+          ))}
         </TabsList>
       </Tabs>
     </DashboardShell>
