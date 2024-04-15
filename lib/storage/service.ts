@@ -14,15 +14,7 @@ import { add, isAfter, parseISO } from "date-fns";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { z } from "zod";
 
-import {
-  MAX_SIZE,
-  S3_ACCESS_KEY,
-  S3_BUCKET_NAME,
-  S3_ENDPOINT_URL,
-  S3_REGION,
-  S3_SECRET_KEY,
-  WEBAPP_URL,
-} from "../constants";
+import { MAX_SIZE, S3_ACCESS_KEY, S3_BUCKET_NAME, S3_REGION, S3_SECRET_KEY, WEBAPP_URL } from "../constants";
 
 const ZAccessType = z.enum(["public", "private"]);
 type TAccessType = z.infer<typeof ZAccessType>;
@@ -38,11 +30,11 @@ export const getS3Client = () => {
         secretAccessKey: S3_SECRET_KEY!,
       },
       region: S3_REGION,
-      endpoint: S3_ENDPOINT_URL,
     });
   }
   return s3ClientInstance;
 };
+
 export const storageCache = {
   tag: {
     byFileKey(filekey: string): string {

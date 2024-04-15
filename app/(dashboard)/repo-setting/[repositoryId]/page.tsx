@@ -1,5 +1,3 @@
-import { DashboardHeader } from "@/components/header";
-import { DashboardShell } from "@/components/shell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -9,18 +7,6 @@ export const metadata = {
 };
 
 export default async function RepoSettings() {
-  //Do some sort of authorization to check if the user is allowed to access this page
-
-  //TODO: fetch all the players in the repo
-  //TODO: make the UI a component
-
-  //   const user = await getCurrentUser();
-  //   if (!user) {
-  //     redirect(authOptions?.pages?.signIn || "/login");
-  //   }
-
-  //   const repos = await getRepositoriesForUser(user.id);
-
   const players = [
     {
       id: 1,
@@ -78,7 +64,9 @@ export default async function RepoSettings() {
   return (
     <div>
       {players.map((player) => (
-        <div className="flex w-full items-center justify-between border-b border-gray-200 py-4">
+        <div
+          className="flex w-full items-center justify-between border-b border-gray-200 py-4"
+          key={player.id}>
           <div className="flex items-center gap-3">
             <p>#{player.id}</p>
             <Avatar>

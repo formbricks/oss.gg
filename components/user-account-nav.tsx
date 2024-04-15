@@ -18,18 +18,6 @@ interface UserAccountNavProps {
   };
 }
 
-const topNavigation = [
-  { label: "Open issues", url: "/issues" },
-  { label: "Repositories", url: "/enroll" },
-  { label: "Settings", url: "/settings" },
-  { label: "Your profile", url: "/", target: "_blank" },
-];
-
-const bottomNavigation = [
-  { label: "What is oss.gg?", url: "https://oss.gg", target: "_blank" },
-  { label: "Help build oss.gg", url: "/contribute" },
-];
-
 export function UserAccountNav({ user }: UserAccountNavProps) {
   return (
     <DropdownMenu>
