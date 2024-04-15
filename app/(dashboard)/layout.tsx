@@ -2,8 +2,13 @@ import { DashboardNav } from "@/components/nav";
 import { Logo } from "@/components/ui/logo";
 import { UserAccountNav } from "@/components/user-account-nav";
 import { dashboardConfig } from "@/config/dashboard";
+import { GITHUB_APP_SLUG, WEBAPP_URL } from "@/lib/constants";
+import { getRepositoriesForUser } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
+import { capitalizeFirstLetter } from "@/lib/utils/textformat";
 import { notFound } from "next/navigation";
+
+import ConnectGitHubAppButton from "./client-page";
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -15,6 +20,19 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
   if (!user) {
     return notFound();
   }
+
+  const reposWithAccess = await getRepositoriesForUser(user.id);
+
+  function formatRepositoryToNavItem(repo) {
+    return {
+      title: capitalizeFirstLetter(repo.name),
+      disabled: false,
+      external: false,
+      href: `/repo-setting/${repo.id}`,
+    };
+  }
+
+  const repoNavList = reposWithAccess.map((repo) => formatRepositoryToNavItem(repo));
 
   return (
     <div className="relative flex min-h-screen">
@@ -36,11 +54,16 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           <DashboardNav items={dashboardConfig.mainNav} userGitHubId={user.login} />
         </div>
         <div>
-          {/*           <div className="mb-2">
-            <ConnectGitHubAppButton
-              appInstallationUrl={`https://github.com/apps/${GITHUB_APP_SLUG}/installations/new`}
-            />
-          </div> */}
+          {WEBAPP_URL === "http://localhost:3000" && (
+            <div className="mb-2">
+              <ConnectGitHubAppButton
+                appInstallationUrl={`https://github.com/apps/${GITHUB_APP_SLUG}/installations/new`}
+              />
+            </div>
+          )}
+
+          <DashboardNav items={repoNavList} />
+          {repoNavList.length !== 0 && <hr className="mb-2 mt-2" />}
           <DashboardNav items={dashboardConfig.bottomNav} />
           <p className="mb-3 ml-3 mt-5  text-xs">
             <a href="https://github.com/formbricks/oss.gg">Built by the community</a>

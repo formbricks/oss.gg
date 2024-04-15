@@ -38,13 +38,6 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         </div>
         <DropdownMenuItem
           className="cursor-pointer"
-          onSelect={() => {
-            router.push("/dashboard");
-          }}>
-          Dashboard
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer"
           onSelect={(event) => {
             event.preventDefault();
             signOut({
