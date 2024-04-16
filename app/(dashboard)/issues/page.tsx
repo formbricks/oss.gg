@@ -2,7 +2,9 @@ import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import GitHubIssue from "@/components/ui/githubIssue";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllOssGgIssuesOfRepo } from "@/lib/github/service";
+import { capitalizeFirstLetter } from "@/lib/utils/textformat";
 
 import { getEnrolledRepositoriesAction } from "./actions";
 
@@ -17,6 +19,16 @@ export default async function IssuesPage() {
   const issuesPromises = enrolledRepos.map((repo) => getAllOssGgIssuesOfRepo(repo.githubId));
   const issuesResults = await Promise.all(issuesPromises);
   const allOpenIssues = issuesResults.flat();
+
+  const repoWithIssuesMap = enrolledRepos.reduce(
+    (acc, repo, index) => {
+      acc[capitalizeFirstLetter(repo.name)] = issuesResults[index];
+      return acc;
+    },
+    {
+      "All Projects": allOpenIssues,
+    }
+  );
 
   return (
     <DashboardShell>
@@ -35,7 +47,22 @@ export default async function IssuesPage() {
             <Button href="/enroll">Enroll in more repos</Button>
           </div>
         ) : (
-          allOpenIssues.map((issue) => <GitHubIssue issue={issue} key={issue.title} />)
+          <Tabs defaultValue={Object.keys(repoWithIssuesMap)[0]}>
+            <TabsList>
+              {Object.keys(repoWithIssuesMap).map((repoName) => (
+                <TabsTrigger key={repoName} value={repoName}>
+                  {repoName}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {Object.entries(repoWithIssuesMap).map(([repoName, issues]) => (
+              <TabsContent key={repoName} value={repoName}>
+                {issues.map((issue) => (
+                  <GitHubIssue issue={issue} key={issue.title} />
+                ))}
+              </TabsContent>
+            ))}
+          </Tabs>
         )}
       </div>
     </DashboardShell>
