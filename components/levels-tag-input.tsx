@@ -1,19 +1,10 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Tag, TagInput } from "@/components/ui/tag-input";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { Tag } from "@/components/ui/tag-input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -43,7 +34,7 @@ export default function LevelsTagInput() {
     toast({
       title: "You submitted the following values:",
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        <pre className="mt-2 w-[340px] rounded-md bg-zinc-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),

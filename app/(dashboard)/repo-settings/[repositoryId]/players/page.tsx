@@ -14,6 +14,7 @@ export default async function RepoSettings({ params }) {
       {players.length === 0 ? (
         <p>No players enrolled in this repository.</p>
       ) : (
+        // Replace with Leaderboard component
         <div>
           {players.map((player) => (
             <div

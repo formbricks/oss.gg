@@ -87,7 +87,7 @@ model Repository {
 
   pointTransactions PointTransaction[]
   installation      Installation       @relation(fields: [installationId], references: [id])
-  Enrollment        Enrollment[]
+  enrollment        Enrollment[]
   levels            Level[]
 
   @@map(name: "repositories")
@@ -112,15 +112,12 @@ model Membership {
 }
 
 model Enrollment {
-  id             String     @id @default(cuid())
-  userId         String
-  repositoryId   String
-  enrolledAt     DateTime   @default(now())
-  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  repository     Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
-  currentLevel   Level?     @relation(fields: [currentLevelId], references: [id])
-  currentLevelId String?
-  totalPoints    Int        @default(0)
+  id           String     @id @default(cuid())
+  userId       String
+  repositoryId String
+  enrolledAt   DateTime   @default(now())
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
 
   @@unique([userId, repositoryId])
   @@map(name: "enrollments")
@@ -153,16 +150,15 @@ model PointTransaction {
 }
 
 model Level {
-  id             String       @id @default(cuid())
+  id             String     @id @default(cuid())
   name           String
   pointThreshold Int
   description    String
   icon           String
-  permissions    Json 
-  tags          String[]
-  repositoryId   String       @unique
-  repository     Repository   @relation(fields: [repositoryId], references: [id])
-  enrollment     Enrollment[]
+  permissions    Json
+  tags           String[]
+  repositoryId   String     @unique
+  repository     Repository @relation(fields: [repositoryId], references: [id])
 
   @@map(name: "levels")
 }

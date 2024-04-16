@@ -38,11 +38,14 @@ export default async function RepoSettingsLayout({ children, params }) {
           <Link href={`/repo-settings/${params.repositoryId}/players`}>
             <TabsTrigger value="players">Players</TabsTrigger>
           </Link>
-          {/*           <Link href={`/repo-settings/${params.repositoryId}/description`}>
+          <Link href={`/repo-settings/${params.repositoryId}/description`}>
             <TabsTrigger value="description">Project Description</TabsTrigger>
-          </Link> */}
-          <Link href={`/repo-settings/${params.repositoryId}/levels`}>
+          </Link>
+          {/*           <Link href={`/repo-settings/${params.repositoryId}/levels`}>
             <TabsTrigger value="levels">Levels</TabsTrigger>
+          </Link> */}
+          <Link href={`/repo-settings/${params.repositoryId}/bounties`}>
+            <TabsTrigger value="bounties">Bounties</TabsTrigger>
           </Link>
         </TabsList>
       </Tabs>

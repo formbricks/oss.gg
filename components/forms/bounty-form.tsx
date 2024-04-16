@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -43,7 +42,7 @@ export function BountySettingsForm() {
     toast({
       title: "You submitted the following values:",
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        <pre className="mt-2 w-[340px] rounded-md bg-zinc-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),
@@ -72,7 +71,7 @@ export function BountySettingsForm() {
               name="maxBountyAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Max Bounty Amount(in USD)</FormLabel>
+                  <FormLabel>Max bounty amount (in USD)</FormLabel>
                   <FormControl>
                     <Input
                       disabled={!isEditMode}
@@ -89,15 +88,11 @@ export function BountySettingsForm() {
               name="minBountyAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Min Bounty Amount(in USD)</FormLabel>
+                  <FormLabel>Max automatic payout (in USD)</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Type your message here"
-                      disabled={!isEditMode}
-                      {...field}
-                    />
+                    <Input placeholder="Type your message here" disabled={!isEditMode} {...field} />
                   </FormControl>
-                  <FormDescription>Higher Bounties need manual Approval</FormDescription>
+                  <FormDescription>Higher bounties need manual approval</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
