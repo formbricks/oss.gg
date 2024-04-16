@@ -54,7 +54,7 @@ const members = [
 
 export default function FoundingMembersPage() {
   return (
-    <div className="mx-auto flex max-w-6xl flex-col items-center space-y-16 py-32 text-center">
+    <div className="mx-auto flex max-w-6xl flex-col items-center space-y-16 py-8 sm:py-32 text-center px-8">
       <section>
         <h1 className="font-heading mb-8 text-3xl sm:text-3xl md:text-4xl lg:text-5xl">Founding Members</h1>
         <p className="max-w-[42rem] text-center leading-normal text-muted-foreground sm:text-xl sm:leading-8">

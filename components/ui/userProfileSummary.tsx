@@ -29,7 +29,7 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = ({
   };
   return (
     <div className="flex justify-between border-b py-4">
-      <div className="flex w-fit items-center gap-12">
+      <div className="flex w-fit items-center gap-4 sm:gap-12">
         <div>#{index}</div>
         <div>
           <UserAvatar className="h-8 w-8" user={{ name: name, avatarUrl: avatarUrl }} />

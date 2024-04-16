@@ -28,7 +28,7 @@ export default async function SettingsPage() {
       <Image
         src={OSSGGTribe}
         alt="formbricks open source survey infrastructure"
-        className="max-w-3xl rounded-lg"
+        className="max-w-l sm:max-w-3xl rounded-lg"
       />
       <p>
         oss.gg is from the open source community for the open source community. While it has been started by

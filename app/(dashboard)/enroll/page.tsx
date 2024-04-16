@@ -62,7 +62,7 @@ export default async function EnrollPage() {
             ))}
           </div>
         )}
-        <div className="flex flex-col items-center justify-center space-y-4 rounded-md border border-accent pb-8 pt-10">
+        <div className="hidden flex-col items-center justify-center space-y-4 rounded-md border border-accent px-8 pb-8 pt-10 text-center lg:flex">
           <p>You run an OSS project and want to be part of oss.gg?</p>
           <Button
             href="https://app.formbricks.com/s/clrl910rrevx31225b389v4pw"
