@@ -1,5 +1,6 @@
 import { env } from "../env.mjs";
 
+
 export const DEFAULT_CACHE_REVALIDATION_INTERVAL = 60 * 30; // 30 minutes
 
 export const GITHUB_CACHE_REVALIDATION_INTERVAL = 60 * 60 * 1; // 1 hours
@@ -51,3 +52,14 @@ export const OSS_GG_LABEL = "🕹️ oss.gg" as const;
 export const TRIGGER_API_KEY = env.TRIGGER_API_KEY as string;
 export const TRIGGER_API_URL = env.TRIGGER_API_URL as string;
 export const ITEMS_PER_PAGE = 50;
+
+// Storage constants
+export const S3_ACCESS_KEY = env.S3_ACCESS_KEY;
+export const S3_SECRET_KEY = env.S3_SECRET_KEY;
+export const S3_REGION = env.S3_REGION;
+export const S3_BUCKET_NAME = env.S3_BUCKET_NAME;
+export const MAX_SIZE = 1024 * 1024 * 10 
+
+// URLs
+export const WEBAPP_URL =
+  env.WEBAPP_URL || (env.VERCEL_URL ? `https://${env.VERCEL_URL}` : false) || "http://localhost:3000";

@@ -62,7 +62,7 @@ const dummyIssues = [
 ];
 
 const ProfileInfo = ({ githubUserData }) => (
-  <div className="z-40 -mt-24 grid grid-cols-5 gap-6 text-slate-50 md:-mt-36">
+  <div className="z-40 -mt-24 grid grid-cols-5 gap-6 text-zinc-50 md:-mt-36">
     <Image
       src={githubUserData.avatar_url}
       alt="github avatar"
@@ -154,7 +154,7 @@ export default async function ProfilePage({ params }) {
                   ))}
                 </>
               ) : (
-                <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-slate-50">
+                <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-zinc-50">
                   <p>You have not yet contributed to an oss.gg repository 🕹️</p>
                   <Button href="/enroll">Get started!</Button>
                 </div>

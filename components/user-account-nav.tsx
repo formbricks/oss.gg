@@ -19,18 +19,6 @@ interface UserAccountNavProps {
   };
 }
 
-const topNavigation = [
-  { label: "Open issues", url: "/issues" },
-  { label: "Repositories", url: "/enroll" },
-  { label: "Settings", url: "/settings" },
-  { label: "Your profile", url: "/", target: "_blank" },
-];
-
-const bottomNavigation = [
-  { label: "What is oss.gg?", url: "https://oss.gg", target: "_blank" },
-  { label: "Help build oss.gg", url: "/contribute" },
-];
-
 export function UserAccountNav({ user }: UserAccountNavProps) {
   const router = useRouter();
   return (
@@ -48,13 +36,6 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             {user.email && <p className="w-[200px] truncate text-sm text-muted-foreground">{user.email}</p>}
           </div>
         </div>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onSelect={() => {
-            router.push("/dashboard");
-          }}>
-          Dashboard
-        </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
           onSelect={(event) => {

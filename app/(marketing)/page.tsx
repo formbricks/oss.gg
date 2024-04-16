@@ -27,7 +27,7 @@ export default function IndexPage() {
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
             More quality community contributions with less work. Join the fun!
           </p>
-          <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 items-center">
+          <div className="flex flex-col items-center space-y-4 sm:flex-row sm:space-x-4">
             <Link href="/login" className={cn(buttonVariants({ size: "lg" }), "mt-4")}>
               Get Started
             </Link>
@@ -48,12 +48,12 @@ export default function IndexPage() {
         </div>
       </section>
       <section>
-        <div className="mx-auto flex max-w-4xl space-x-2 rounded-t-lg bg-slate-200 px-6 py-3">
+        <div className="mx-auto flex max-w-4xl space-x-2 rounded-t-lg bg-zinc-200 px-6 py-3">
           <div className="h-4 w-4 rounded-full bg-white"></div>
           <div className="h-4 w-4 rounded-full bg-white"></div>
           <div className="h-4 w-4 rounded-full bg-white"></div>
         </div>
-        <div className="mx-auto max-w-4xl rounded-b-lg bg-slate-50 sm:p-12 p-8 text-slate-800">
+        <div className="mx-auto max-w-4xl rounded-b-lg bg-zinc-50 p-8 text-zinc-800 sm:p-12">
           <h2 className="mb-4 text-3xl font-medium">
             What&apos;s oss.gg 🕹️, why we need it and how you can become a part of it
           </h2>
@@ -549,7 +549,7 @@ export default function IndexPage() {
           <h3 className="mb-4 mt-6 text-2xl font-medium" id="call-for-contributions-">
             Sounds good? Let&apos;s make this happen!
           </h3>
-          <p className="flex gap-3 pb-3 flex-col sm:flex-row">
+          <p className="flex flex-col gap-3 pb-3 sm:flex-row">
             <Link
               href="https://oss.gg/discord"
               target="_blank"

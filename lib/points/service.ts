@@ -44,6 +44,28 @@ export const assignUserPoints = async (
   }
 };
 
+export const totalRepoPoints = async (userId: string, repositoryId: string) => {
+
+  try {
+    const totalPoints = await db.pointTransaction.aggregate({
+      _sum: {
+        points: true,
+      },
+      where: {
+        userId,
+        repositoryId,
+      },
+    });
+    if (!totalPoints._sum.points) {
+      return 0;
+    }
+    return totalPoints._sum.points;
+  } catch (error) {
+    throw error;
+  }
+  
+}
+
 export const getPointsOfUsersInRepoByRepositoryId = async (
   repositoryId: string,
   page?: number

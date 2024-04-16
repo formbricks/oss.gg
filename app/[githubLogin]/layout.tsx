@@ -14,7 +14,7 @@ export default async function ProfileLayout({ children }: ProfileLayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="h-[35vh] bg-gradient-to-br from-slate-950 to-slate-800">
+      <div className="h-[35vh] bg-gradient-to-br from-zinc-950 to-zinc-800">
         <header className="sticky top-0 z-40 mx-auto flex max-w-6xl justify-between px-8 py-6">
           <Link href="/">
             <Image src={OSSGGLogoDark} alt="oss gg logo" width={120} />

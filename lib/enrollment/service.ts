@@ -24,8 +24,6 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
       },
     });
 
-    console.log("existing enrollment", existingEnrollment);
-
     if (existingEnrollment) {
       throw new Error("Enrollment already exists.");
     }
@@ -95,7 +93,7 @@ export const hasEnrollmentForRepository = async (userId: string, repositoryId: s
 export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> => {
   const enrolledRepositories = await db.repository.findMany({
     where: {
-      Enrollment: {
+      enrollment: {
         some: {
           userId: userId,
         },
@@ -112,7 +110,7 @@ export const getEnrolledRepositories = async (userId: string): Promise<TReposito
       installation: true,
       installationId: true,
       pointTransactions: true,
-      Enrollment: true,
+      enrollment: true,
       logoUrl: true,
     },
   });
