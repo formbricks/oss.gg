@@ -93,7 +93,7 @@ export const hasEnrollmentForRepository = async (userId: string, repositoryId: s
 export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> => {
   const enrolledRepositories = await db.repository.findMany({
     where: {
-      enrollment: {
+      enrollments: {
         some: {
           userId: userId,
         },
@@ -110,7 +110,7 @@ export const getEnrolledRepositories = async (userId: string): Promise<TReposito
       installation: true,
       installationId: true,
       pointTransactions: true,
-      enrollment: true,
+      enrollments: true,
       logoUrl: true,
     },
   });

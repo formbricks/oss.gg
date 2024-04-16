@@ -29,7 +29,7 @@ model User {
   account           Account?
   pointTransactions PointTransaction[]
   memberships       Membership[]
-  Enrollment        Enrollment[]
+  enrollments       Enrollment[]
 
   @@map(name: "users")
 }
@@ -88,7 +88,7 @@ model Repository {
   levels            Json               @default("[]")
   pointTransactions PointTransaction[]
   installation      Installation       @relation(fields: [installationId], references: [id])
-  Enrollment        Enrollment[]
+  enrollments       Enrollment[]
 
   @@map(name: "repositories")
 }
