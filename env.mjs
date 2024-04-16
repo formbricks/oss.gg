@@ -23,11 +23,12 @@ export const env = createEnv({
     GITHUB_APP_ACCESS_TOKEN: z.string().min(1),
     TRIGGER_API_KEY: z.string().min(1),
     TRIGGER_API_URL: z.string().min(1),
-    S3_BUCKET_NAME: z.string(), 
+    S3_BUCKET_NAME: z.string(),
     S3_REGION: z.string(),
     S3_ACCESS_KEY: z.string(),
     S3_SECRET_KEY: z.string(),
-    
+    WEBAPP_URL: z.string().url().optional(),
+    VERCEL_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
