@@ -2,8 +2,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUsersForRepository } from "@/lib/repository/service";
 
 export const metadata = {
-  title: "Repo settings",
-  description: "Set up oss.gg to work well with your repo and community",
+  title: "Player overview",
+  description: "This is a list of all players currently playing at this repository.",
 };
 
 export default async function RepoSettings({ params }) {

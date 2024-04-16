@@ -28,7 +28,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
       title: capitalizeFirstLetter(repo.name),
       disabled: false,
       external: false,
-      href: `/repo-setting/${repo.id}`,
+      href: `/repo-settings/${repo.id}`,
     };
   }
 

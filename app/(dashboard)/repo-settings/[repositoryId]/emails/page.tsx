@@ -1,9 +1,8 @@
 import { CelebrationEmailForm } from "@/components/forms/emails-form";
-import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Project description settings",
-  description: "set up project description settings for your repo and community",
+  title: "Email settings",
+  description: "Change the email settings for your repository.",
 };
 
 const celebrationEmails = [

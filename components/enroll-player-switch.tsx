@@ -5,7 +5,7 @@ export default function EnrollPlayerSwitch() {
   return (
     <div className="flex w-full  rounded-lg border border-gray-200 bg-zinc-50 p-5">
       <div className="flex items-center space-x-2">
-        <Switch id="allow-players-enroll" />
+        <Switch id="allow-players-enroll" disabled defaultChecked />
         <Label htmlFor="allow-players-enroll">Allow players to enroll</Label>
       </div>
     </div>

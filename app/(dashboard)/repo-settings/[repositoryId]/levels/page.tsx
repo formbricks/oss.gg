@@ -5,8 +5,8 @@ import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Repo Levels settings",
-  description: " Set up levels for your repository.",
+  title: "Level settings",
+  description: "Set up levels for your repository.",
 };
 
 // const LevelDummyData: LevelsFormProps[] = [

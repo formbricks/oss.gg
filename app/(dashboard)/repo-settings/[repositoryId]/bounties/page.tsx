@@ -1,14 +1,14 @@
 import { BountySettingsForm } from "@/components/forms/bounty-form";
 
 export const metadata = {
-  title: "Project description settings",
-  description: "set up project description settings for your repo and community",
+  title: "Bounty settings",
+  description: "Control how bounties are given out incl. thresholds.",
 };
 
 export default function BountySettings() {
   return (
     <div>
-    <BountySettingsForm/>
+      <BountySettingsForm />
     </div>
   );
 }
