@@ -25,5 +25,12 @@ Created a community-work.txt file for the reasons mentioned above
 -------------------
 » April 2nd, 2024 by Doreen
 
-Setup Discord channels (please elaborate more on what you did and why)
--------------------
+Setup Discord channels 
+-------------------   
+The purpose 
+1. To help organize members within the OSS server based on their roles, responsibilities, or permissions. For example, we have Designers, PMs and engineers. This makes it easier to manage and interact with different groups of users.
+2. The roles can help identify members with specific roles or expertise within the oss community to showcase members skills or expertise 
+
+How i did it
+Assigned roles to designers, engineers and PMs 
+Also created some channels for Q and As, Resources and Updates etc 
