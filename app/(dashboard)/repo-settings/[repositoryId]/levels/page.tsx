@@ -1,6 +1,6 @@
-import LevelsFormContainer from "@/components/level-form-container";
+// import { getLevels } from "@/lib/levels/service";
+// import LevelsFormContainer from "@/components/level-form-container";
 import { authOptions } from "@/lib/auth";
-import { getLevels } from "@/lib/levels/service";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
@@ -114,11 +114,13 @@ export default async function Levels({ params: { repositoryId } }) {
     redirect(authOptions?.pages?.signIn || "/login");
   }
 
-  const levelsData = await getLevels(repositoryId);
+  // const levelsData = await getLevels(repositoryId);
+  const levelsData = []; //placeholder
 
   return (
     <>
-      <LevelsFormContainer data={levelsData} />
+      {/*  <LevelsFormContainer data={levelsData} /> */}
+      Placeholder
     </>
   );
 }

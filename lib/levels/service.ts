@@ -1,6 +1,4 @@
 import { db } from "@/lib/db";
-import { TLevelInput } from "@/types/level";
-import { Prisma } from "@prisma/client";
 
 export const assignUserPoints = async (
   userId: string,
@@ -36,8 +34,10 @@ export const assignUserPoints = async (
   }
 };
 
+//TODO: this should create and update the JSON in the repo model
+
+/* 
 export const createLevel = async (LevelData: TLevelInput) => {
-  //TODO: this should create and update
   try {
     await db.level.create({
       data: {
@@ -53,7 +53,7 @@ export const createLevel = async (LevelData: TLevelInput) => {
   } catch (error) {
     throw error;
   }
-};
+}; 
 
 export const updateLevel = async (LevelData: TLevelInput) => {
   try {
@@ -118,3 +118,4 @@ export const getLevels = async (repositoryId: string) => {
     throw error;
   }
 }
+*/

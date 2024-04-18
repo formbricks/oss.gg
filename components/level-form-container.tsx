@@ -1,8 +1,8 @@
-"use client";
+/* "use client";
 
 import React from "react";
 
-import { LevelsForm, LevelsFormProps } from "./forms/levels-form";
+import { LevelsFormProps } from "./forms/levels-form";
 import { Button } from "./ui/button";
 
 export default function LevelsFormContainer({ data }: { data: LevelsFormProps[] }) {
@@ -23,8 +23,8 @@ export default function LevelsFormContainer({ data }: { data: LevelsFormProps[] 
         />
       ))}
 
-      {/* shows an empty levels form when you click the add level */}
-
+      {/* shows an empty levels form when you click the add level */
+/*
       {showForm && <LevelsForm isForm={true} />}
 
       <div>
@@ -35,3 +35,4 @@ export default function LevelsFormContainer({ data }: { data: LevelsFormProps[] 
     </div>
   );
 }
+ */
