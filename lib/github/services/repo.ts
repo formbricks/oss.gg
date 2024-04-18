@@ -1,6 +1,6 @@
 import { GITHUB_APP_ACCESS_TOKEN } from "@/lib/constants";
 
-export const getRepositoryDefaultBranch = async (userName: number, repoName: string) => {
+export const getRepositoryDefaultBranch = async (userName: string, repoName: string) => {
   try {
     const githubHeaders = {
       Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
@@ -17,7 +17,7 @@ export const getRepositoryDefaultBranch = async (userName: number, repoName: str
   }
 };
 
-export const getRepositoryReadme = async (userName: number, repoName: string, branchName: string) => {
+export const getRepositoryReadme = async (userName: string, repoName: string, branchName: string) => {
   try {
     const readmeRes = await fetch(
       `https://raw.githubusercontent.com/${userName}/${repoName}/${branchName}/README.md`
