@@ -148,7 +148,7 @@ export const getUsersForRepository = async (repositoryId: string) => {
   try {
     const users = await db.user.findMany({
       where: {
-        enrollment: {
+        enrollments: {
           some: {
             repositoryId: repositoryId,
           },

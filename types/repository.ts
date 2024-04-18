@@ -20,7 +20,7 @@ export const ZRepository = z
     levels: z.any(),
     pointTransactions: z.array(ZPointTransaction).optional(),
     installation: ZInstallation.optional(),
-    enrollment: z.array(ZEnrollment).optional(),
+    enrollments: z.array(ZEnrollment).optional(),
   })
   .strict();
 
