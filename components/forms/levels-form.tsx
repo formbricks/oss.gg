@@ -1,10 +1,9 @@
 "use client";
 
-/* import {
+import {
   createLevelAction,
-  deleteLevelAction,
-  updateLevelIconAction,
-} from "@/app/(dashboard)/repo-settings/[repositoryId]/levels/action"; 
+  updateLevelAction,
+} from "@/app/(dashboard)/repo-settings/[repositoryId]/levels/action";
 import { handleFileUpload } from "@/app/(dashboard)/repo-settings/[repositoryId]/levels/lib";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,151 +19,117 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { TagInput, Tag as TagType } from "@/components/ui/tag-input";
+import { TFormSchema, TLevel, ZFormSchema } from "@/types/level";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams, useRouter } from "next/navigation";
-import React from "react";
+import { useParams } from "next/navigation";
+import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { v4 as uuidv4 } from "uuid";
 
 import { useDeleteLevelModal } from "../delete-level-modal";
 import { useToast } from "../ui/use-toast";
 
-const formSchema = z.object({
-  levelName: z.string().min(3, {
-    message: "level name must be at least 3 characters.",
-  }),
-  pointThreshold: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
-    message: "Expected number, received a string",
-  }),
-  description: z.string().min(10, {
-    message: "description must be at least 10 characters.",
-  }),
-  icon: z.custom(),
-
-  topics: z.array(
-    z.object({
-      id: z.string(),
-      text: z.string(),
-    })
-  ),
-  limitIssues: z.boolean(),
-  canReportBugs: z.boolean(),
-  canHuntBounties: z.boolean(),
-});
-
 export interface LevelsFormProps {
-  levelName?: string;
-  pointThreshold?: number;
-  description?: string;
-  topics?: TagType[];
-  limitIssues?: boolean;
-  iconUrl?: string;
-  canReportBugs?: boolean;
-  canHuntBounties?: boolean;
-  isForm?: boolean;
+  level: TLevel | null;
+  isForm: boolean;
+  setShowForm: Dispatch<SetStateAction<boolean>>;
 }
 
 export function LevelsForm({
-  levelName,
-  canHuntBounties,
-  canReportBugs,
-  description,
-  iconUrl,
-  limitIssues,
-  pointThreshold,
-  topics,
-  // pass the isForm when you want the levelForm to be used as a form
-  isForm,
+  level,
+  setShowForm,
+  isForm, // pass the isForm when you want the levelForm to be used as a form
 }: LevelsFormProps) {
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { id, name, pointThreshold, description, iconUrl } = level ?? {};
+  const { limitIssues, canReportBugs, canHuntBounties, issueLabels } = level?.permissions || {};
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLimitIssues, setIsLimitIssues] = useState(limitIssues ?? false);
+  const [tags, setTags] = useState<TagType[]>(issueLabels || []);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { repositoryId } = useParams() as { repositoryId: string };
+
+  const { setShowDeleteLevelModal, DeleteLevelModal } = useDeleteLevelModal(repositoryId, id!, setIsEditMode);
+  const { toast } = useToast();
+
+  const form = useForm<TFormSchema>({
+    resolver: zodResolver(ZFormSchema),
     defaultValues: {
-      levelName: levelName || "",
+      id: id || uuidv4(),
+      name: name || "",
       description: description || "",
+      iconUrl: iconUrl || "",
       limitIssues: limitIssues ?? false,
       pointThreshold: (pointThreshold ?? 0).toString(),
-      topics: topics || [],
+      issueLabels: issueLabels || [],
       canHuntBounties: canHuntBounties ?? false,
       canReportBugs: canReportBugs ?? false,
     },
   });
 
-  const [tags, setTags] = React.useState<TagType[]>([]);
-  const [isEditMode, setIsEditMode] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const { setShowDeleteLevelModal, DeleteLevelModal } = useDeleteLevelModal();
-  const { toast } = useToast();
-  const router = useRouter();
-  const { repositoryId } = useParams() as { repositoryId: string };
-
-  const { setValue } = form;
-
   const isFieldDisabled = (defaultValue: any) => {
     return !isEditMode && defaultValue !== undefined && defaultValue !== "";
   };
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function handleCreateUpdateLevel(values: TFormSchema, isCreate: boolean) {
     setIsLoading(true);
     try {
-      const icon = values.icon;
-      const { url, error } = await handleFileUpload(icon, repositoryId);
-      if (error) {
-        toast({
-          title: "Error",
-          description: error,
-        });
-        setIsLoading(false);
+      const isValid = await form.trigger();
+      if (!isValid) {
         return;
       }
-      // call the server action to create a new level for the repository
-      await createLevelAction({
-        name: values.levelName,
-        description: values.description,
-        pointThreshold: parseInt(values.pointThreshold, 10),
-        icon: url,
-        repositoryId: repositoryId,
-        permissions: {
-          canWorkOnIssues: values.limitIssues,
-          issueLabels: tags.map((tag) => tag.text),
-          canWorkOnBugs: values.canReportBugs,
-          canHuntBounties: values.canHuntBounties,
-        },
-        tags: values.topics.map((tag) => tag.text),
-      });
-      router.refresh();
+
+      const icon = values.iconUrl;
+      // const { url, error } = await handleFileUpload(icon, repositoryId);
+      // if (error) {
+      //   toast({
+      //     title: "Error",
+      //     description: error,
+      //   });
+      //   return;
+      // }
+
+      const permissions = {
+        limitIssues: values.limitIssues,
+        canReportBugs: values.canReportBugs,
+        canHuntBounties: values.canHuntBounties,
+        issueLabels: isLimitIssues ? tags : [],
+      };
+
+      if (isCreate) {
+        await createLevelAction({
+          id: values.id,
+          name: values.name,
+          description: values.description,
+          pointThreshold: parseInt(values.pointThreshold, 10),
+          iconUrl: "url",
+          repositoryId: repositoryId,
+          permissions: permissions,
+        });
+      } else {
+        await updateLevelAction({
+          id: values.id,
+          name: values.name,
+          description: values.description,
+          pointThreshold: parseInt(values.pointThreshold, 10),
+          iconUrl: "url",
+          repositoryId: repositoryId,
+          permissions: permissions,
+        });
+        setIsEditMode(false);
+      }
+
+      setShowForm(false);
     } catch (err) {
       toast({
         title: "Error",
-        description: "Failed to create level. Please try ",
+        description: `Failed to ${isCreate ? "create" : "update"} level.${err.message}`,
       });
+    } finally {
       setIsLoading(false);
     }
-
-    setIsLoading(false);
   }
-
-  const handleDeleteLevel = async () => {
-    // delete level action here
-
-    setIsLoading(true);
-    try {
-      //call the delete level action
-      await deleteLevelAction({
-        name: levelName!,
-        repositoryId: repositoryId,
-      });
-
-      setIsLoading(false);
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Level Update failed. Please try again.",
-      });
-      setIsLoading(false);
-    }
-  };
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -180,52 +145,50 @@ export function LevelsForm({
             description: error,
           });
 
-          setIsLoading(false);
           return;
         }
         //call the update file action
-        if (!levelName) {
+        if (!name) {
           toast({
             title: "Error",
             description: "Level name is required",
           });
 
-          setIsLoading(false);
           return;
         }
 
-        await updateLevelIconAction({
-          name: levelName,
-          repositoryId: repositoryId,
-          iconUrl: url,
-        });
-
-        router.refresh();
+        // await updateLevelIconAction({
+        //   name: name,
+        //   repositoryId: repositoryId,
+        //   iconUrl: url,
+        // });
       } catch (err) {
         toast({
           title: "Error",
           description: "Avatar update failed. Please try again.",
         });
+      } finally {
         setIsLoading(false);
       }
     }
   }
+
   return (
     <Form {...form}>
       <DeleteLevelModal />
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(() => handleCreateUpdateLevel(form.getValues(), true))}
         className="flex w-full gap-4 rounded-lg border border-gray-200 p-7 ">
         <div className="w-2/5 space-y-4">
           <p className="text-lg font-bold">Level</p>
           <FormField
             control={form.control}
-            name="levelName"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Level Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. Code cub" {...field} disabled={isFieldDisabled(levelName)} />
+                  <Input placeholder="e.g. Code cub" {...field} disabled={isFieldDisabled(name)} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -265,10 +228,10 @@ export function LevelsForm({
           ) : (
             <FormField
               control={form.control}
-              name="icon"
+              name="iconUrl"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>icon</FormLabel>
+                  <FormLabel>Icon</FormLabel>
                   <FormControl>
                     <Input
                       {...fieldProps}
@@ -316,7 +279,10 @@ export function LevelsForm({
                   <Switch
                     id="limit-issues"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={() => {
+                      field.onChange(!field.value);
+                      setIsLimitIssues(!field.value);
+                    }}
                     disabled={isFieldDisabled(limitIssues)}
                   />
                 </FormControl>
@@ -325,46 +291,45 @@ export function LevelsForm({
             )}
           />
 
-          {isFieldDisabled(topics) ? (
-            (topics ?? []).length > 0 && (
-              <div className="flex w-full flex-wrap items-end gap-2 rounded-lg bg-zinc-100 p-3">
-                {(topics ?? []).map((tag) => (
-                  <span
-                    key={tag.id}
-                    className="rounded-full bg-zinc-700 px-2 py-1 text-xs text-primary-foreground">
-                    {tag.text}
-                  </span>
-                ))}
-              </div>
-            )
-          ) : (
-            <div className="flex items-end gap-2 rounded-lg bg-zinc-100 p-3">
-              <FormField
-                control={form.control}
-                name="topics"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col items-start">
-                    <FormControl>
-                      <TagInput
-                        {...field}
-                        placeholder="Enter a topic"
-                        tags={tags}
-                        shape="pill"
-                        variant="primary"
-                        className="w-full"
-                        setTags={(newTags) => {
-                          setTags(newTags);
-                          setValue("topics", newTags as [TagType, ...TagType[]]);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button>Add Label</Button>
-            </div>
-          )}
+          {isFieldDisabled(issueLabels)
+            ? (issueLabels ?? []).length > 0 && (
+                <div className="flex w-full flex-wrap items-end gap-2 rounded-lg bg-zinc-100 p-3">
+                  {(issueLabels ?? []).map((tag, index) => (
+                    <span
+                      key={index}
+                      className="rounded-full bg-zinc-700 px-2 py-1 text-xs text-primary-foreground">
+                      {tag.text}
+                    </span>
+                  ))}
+                </div>
+              )
+            : isLimitIssues && (
+                <div className="flex items-end gap-2 rounded-lg bg-zinc-100 p-3">
+                  <FormField
+                    control={form.control}
+                    name="issueLabels"
+                    render={({ field }) => (
+                      <FormItem className="flex w-full flex-col items-start">
+                        <FormControl>
+                          <TagInput
+                            {...field}
+                            placeholder={`e.g. S or Full-Stack`}
+                            tags={tags}
+                            shape="pill"
+                            variant="primary"
+                            className="w-full"
+                            setTags={(newTags) => {
+                              setTags(newTags);
+                              field.onChange(newTags);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
 
           <FormField
             control={form.control}
@@ -421,7 +386,7 @@ export function LevelsForm({
                   Delete
                 </Button>
 
-                <Button loading={isLoading} type="submit">
+                <Button loading={isLoading} onClick={() => handleCreateUpdateLevel(form.getValues(), false)}>
                   Save
                 </Button>
               </div>
@@ -440,4 +405,3 @@ export function LevelsForm({
     </Form>
   );
 }
-*/

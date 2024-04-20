@@ -1,42 +1,42 @@
 "use server";
 
-/*
-
-// import { createLevel, deleteLevel, updateLevel, updateLevelIcon } from "@/lib/levels/service";
+import { createLevel, deleteLevel, updateLevel } from "@/lib/levels/service";
 import { getCurrentUser } from "@/lib/session";
-import { TLevelInput } from "@/types/level";
+import { TLevel } from "@/types/level";
 
-export async function createLevelAction(levelData: TLevelInput) {
-  const user = await getCurrentUser();
-  if (!user || !user.id) {
-    return { error: "User must be authenticated to perform this action." };
+export async function createLevelAction(levelData: TLevel) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !user.id) {
+      throw new Error("User must be authenticated to perform this action.");
+    }
+    return await createLevel(levelData);
+  } catch (error) {
+    throw new Error(`Failed to create level: ${error.message}`);
   }
-  await createLevel(levelData);
 }
 
-//TODO: fix the type
-export async function updateLevelIconAction(updateData: {
-  name: string;
-  repositoryId: string;
-  iconUrl: string;
-}) {
-  const user = await getCurrentUser();
-  if (!user || !user.id) {
-    return { error: "User must be authenticated to perform this action." };
-  }
-  // update level icon
+export async function updateLevelAction(updateData: TLevel) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !user.id) {
+      throw new Error("User must be authenticated to perform this action.");
+    }
 
-  await updateLevelIcon(updateData.name, updateData.repositoryId, updateData.iconUrl);
+    return await updateLevel(updateData);
+  } catch (error) {
+    throw new Error(`Failed to update level: ${error.message}`);
+  }
 }
 
-
-export async function deleteLevelAction(levelData: {
-  repositoryId: string;
-  name: string;
-}) {
-  const user = await getCurrentUser();
-  if (!user || !user.id) {
-    return { error: "User must be authenticated to perform this action." };
+export async function deleteLevelAction(repositoryId: string, levelId: string) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !user.id) {
+      throw new Error("User must be authenticated to perform this action.");
+    }
+    return await deleteLevel(repositoryId, levelId);
+  } catch (error) {
+    throw new Error(`Failed to delete level: ${error.message}`);
   }
-  await deleteLevel(levelData.name, levelData.repositoryId);
-} */
+}
