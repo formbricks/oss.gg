@@ -186,7 +186,7 @@ export function LevelsForm({
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-2">
                 <FormLabel>Level Name</FormLabel>
                 <FormControl>
                   <Input placeholder="e.g. Code cub" {...field} disabled={isFieldDisabled(name)} />
@@ -199,7 +199,7 @@ export function LevelsForm({
             control={form.control}
             name="pointThreshold"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-2">
                 <FormLabel>Point Threshold</FormLabel>
                 <FormControl>
                   <Input
@@ -245,7 +245,7 @@ export function LevelsForm({
               control={form.control}
               name="iconUrl"
               render={({ field: { value, onChange, ...fieldProps } }) => (
-                <FormItem>
+                <FormItem className="space-y-2">
                   <FormLabel>Icon</FormLabel>
                   <FormControl>
                     <Input
@@ -270,7 +270,7 @@ export function LevelsForm({
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-2">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input
