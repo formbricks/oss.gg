@@ -2,11 +2,9 @@ import EnrollPlayerSwitch from "@/components/enroll-player-switch";
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import LayoutTabs from "@/components/ui/layoutTabs";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { userHasPermissionForRepository } from "@/lib/repository/auth";
 import { getRepositoryById } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const metadata = {

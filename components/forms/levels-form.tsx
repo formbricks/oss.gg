@@ -41,6 +41,7 @@ export function LevelsForm({
   isForm, // pass the isForm when you want the levelForm to be used as a form
 }: LevelsFormProps) {
   const { id, name, pointThreshold, description, iconUrl } = level ?? {};
+
   const { limitIssues, canReportBugs, canHuntBounties, issueLabels } = level?.permissions || {};
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -81,14 +82,14 @@ export function LevelsForm({
       }
 
       const icon = values.iconUrl;
-      // const { url, error } = await handleFileUpload(icon, repositoryId);
-      // if (error) {
-      //   toast({
-      //     title: "Error",
-      //     description: error,
-      //   });
-      //   return;
-      // }
+      const { url, error } = await handleFileUpload(icon, repositoryId);
+      if (error) {
+        toast({
+          title: "Error",
+          description: error,
+        });
+        return;
+      }
 
       const permissions = {
         limitIssues: values.limitIssues,
@@ -103,7 +104,7 @@ export function LevelsForm({
           name: values.name,
           description: values.description,
           pointThreshold: parseInt(values.pointThreshold, 10),
-          iconUrl: "url",
+          iconUrl: url,
           repositoryId: repositoryId,
           permissions: permissions,
         });
@@ -113,7 +114,7 @@ export function LevelsForm({
           name: values.name,
           description: values.description,
           pointThreshold: parseInt(values.pointThreshold, 10),
-          iconUrl: "url",
+          iconUrl: url,
           repositoryId: repositoryId,
           permissions: permissions,
         });
@@ -213,7 +214,19 @@ export function LevelsForm({
               </FormItem>
             )}
           />
-          {isFieldDisabled(iconUrl) ? (
+
+          {/* when edit and image => show image and replace button
+          when !edit and image => show image
+          when edit and !image => show upload component
+          when !edit and !image => show fallback image
+          when creating level for the first time => show upload component  */}
+          {!isEditMode && iconUrl ? (
+            <div>
+              <Avatar className="h-56 w-56">
+                <AvatarImage src={iconUrl} alt="level icon" />
+              </Avatar>
+            </div>
+          ) : isEditMode && iconUrl ? (
             <div>
               <Avatar className="h-56 w-56">
                 <AvatarImage src={iconUrl} alt="level icon" />
@@ -225,6 +238,8 @@ export function LevelsForm({
                 </Button>
               </div>
             </div>
+          ) : !isEditMode && !iconUrl && !isForm ? (
+            <div>Fallback content</div>
           ) : (
             <FormField
               control={form.control}
