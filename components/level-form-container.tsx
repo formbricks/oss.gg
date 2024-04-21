@@ -27,9 +27,7 @@ export default function LevelsFormContainer({ levelsData }: { levelsData: TLevel
 
       {showForm && <LevelsForm isForm={true} setShowForm={setShowForm} level={null} />}
       <div>
-        <Button variant="secondary" onClick={toggleFormVisibility}>
-          {showForm ? "Cancel" : "Add Level"}
-        </Button>
+        <Button onClick={toggleFormVisibility}>{showForm ? "Cancel" : "Add Level"}</Button>
       </div>
     </div>
   );
