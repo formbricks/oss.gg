@@ -4,7 +4,7 @@ import { createLevel, deleteLevel, updateLevel } from "@/lib/levels/service";
 import { getCurrentUser } from "@/lib/session";
 import { TLevel } from "@/types/level";
 
-export async function createLevelAction(levelData: TLevel) {
+export const createLevelAction = async (levelData: TLevel) => {
   try {
     const user = await getCurrentUser();
     if (!user || !user.id) {
@@ -12,11 +12,11 @@ export async function createLevelAction(levelData: TLevel) {
     }
     return await createLevel(levelData);
   } catch (error) {
-    throw new Error(`Failed to create level: ${error.message}`);
+    throw new Error(`Failed to create level.`);
   }
-}
+};
 
-export async function updateLevelAction(updateData: TLevel) {
+export const updateLevelAction = async (updateData: TLevel) => {
   try {
     const user = await getCurrentUser();
     if (!user || !user.id) {
@@ -25,11 +25,11 @@ export async function updateLevelAction(updateData: TLevel) {
 
     return await updateLevel(updateData);
   } catch (error) {
-    throw new Error(`Failed to update level: ${error.message}`);
+    throw new Error(`Failed to update level.`);
   }
-}
+};
 
-export async function deleteLevelAction(repositoryId: string, levelId: string) {
+export const deleteLevelAction = async (repositoryId: string, levelId: string) => {
   try {
     const user = await getCurrentUser();
     if (!user || !user.id) {
@@ -37,6 +37,6 @@ export async function deleteLevelAction(repositoryId: string, levelId: string) {
     }
     return await deleteLevel(repositoryId, levelId);
   } catch (error) {
-    throw new Error(`Failed to delete level: ${error.message}`);
+    throw new Error(`Failed to delete level.`);
   }
-}
+};

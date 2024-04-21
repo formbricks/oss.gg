@@ -73,7 +73,7 @@ export function LevelsForm({
   const isFieldDisabled = (defaultValue: any) => {
     return !isEditMode && defaultValue !== undefined && defaultValue !== "";
   };
-  async function handleCreateUpdateLevel(values: TFormSchema, isCreate: boolean) {
+  const handleCreateUpdateLevel = async (values: TFormSchema, isCreate: boolean) => {
     setIsLoading(true);
     try {
       const isValid = await form.trigger();
@@ -82,14 +82,14 @@ export function LevelsForm({
       }
 
       const icon = values.iconUrl;
-      const { url, error } = await handleFileUpload(icon, repositoryId);
-      if (error) {
-        toast({
-          title: "Error",
-          description: error,
-        });
-        return;
-      }
+      // const { url, error } = await handleFileUpload(icon, repositoryId);
+      // if (error) {
+      //   toast({
+      //     title: "Error",
+      //     description: error,
+      //   });
+      //   return;
+      // }
 
       const permissions = {
         limitIssues: values.limitIssues,
@@ -104,7 +104,7 @@ export function LevelsForm({
           name: values.name,
           description: values.description,
           pointThreshold: parseInt(values.pointThreshold, 10),
-          iconUrl: url,
+          iconUrl: "https://github.com/shadcn.png",
           repositoryId: repositoryId,
           permissions: permissions,
         });
@@ -114,7 +114,7 @@ export function LevelsForm({
           name: values.name,
           description: values.description,
           pointThreshold: parseInt(values.pointThreshold, 10),
-          iconUrl: url,
+          iconUrl: "https://github.com/shadcn.png",
           repositoryId: repositoryId,
           permissions: permissions,
         });
@@ -125,12 +125,12 @@ export function LevelsForm({
     } catch (err) {
       toast({
         title: "Error",
-        description: `Failed to ${isCreate ? "create" : "update"} level.${err.message}`,
+        description: `Failed to ${isCreate ? "create" : "update"} level.`,
       });
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
