@@ -1,3 +1,4 @@
+import { onBountyCreated, onBountyPullRequestMerged } from "@/lib/github/hooks/bounty";
 import { Webhooks, createNodeMiddleware } from "@octokit/webhooks";
 
 import { GITHUB_APP_WEBHOOK_SECRET } from "../constants";
@@ -27,4 +28,6 @@ export const registerHooks = async () => {
   onAwardPoints(webhooks);
   onPullRequestOpened(webhooks);
   onRejectCommented(webhooks);
+  onBountyCreated(webhooks);
+  onBountyPullRequestMerged(webhooks);
 };
