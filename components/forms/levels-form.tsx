@@ -204,8 +204,6 @@ export function LevelsForm({
 
           {/* when edit and image => show image and replace button
           when !edit and image => show image
-          when edit and !image => show upload component
-          when !edit and !image => show fallback image
           when creating level for the first time => show upload component  */}
           {!isEditMode && iconUrl ? (
             <div>
@@ -225,8 +223,6 @@ export function LevelsForm({
                 </Button>
               </div>
             </div>
-          ) : !isEditMode && !iconUrl && !isForm ? (
-            <div>Fallback content</div>
           ) : (
             <FormField
               control={form.control}
