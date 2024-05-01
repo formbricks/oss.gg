@@ -26,13 +26,13 @@ export const ZFormSchema = z
   .object({
     id: z.string(),
     name: z.string().min(3, {
-      message: "level name must be at least 3 characters.",
+      message: "Level name must be at least 3 characters.",
     }),
     pointThreshold: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
       message: "Expected number, received a string",
     }),
     description: z.string().min(10, {
-      message: "description must be at least 10 characters.",
+      message: "Description must be at least 10 characters.",
     }),
     iconUrl: z.custom(),
 

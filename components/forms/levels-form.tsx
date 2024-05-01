@@ -81,16 +81,6 @@ export function LevelsForm({
         return;
       }
 
-      const icon = values.iconUrl;
-      // const { url, error } = await handleFileUpload(icon, repositoryId);
-      // if (error) {
-      //   toast({
-      //     title: "Error",
-      //     description: error,
-      //   });
-      //   return;
-      // }
-
       const permissions = {
         limitIssues: values.limitIssues,
         canReportBugs: values.canReportBugs,
@@ -99,12 +89,22 @@ export function LevelsForm({
       };
 
       if (isCreate) {
+        const { url, error } = await handleFileUpload(values.iconUrl, repositoryId);
+
+        if (error) {
+          toast({
+            title: "Error",
+            description: error,
+          });
+          return;
+        }
+
         await createLevelAction({
           id: values.id,
           name: values.name,
           description: values.description,
           pointThreshold: parseInt(values.pointThreshold, 10),
-          iconUrl: "https://github.com/shadcn.png",
+          iconUrl: url,
           repositoryId: repositoryId,
           permissions: permissions,
         });
@@ -114,29 +114,29 @@ export function LevelsForm({
           name: values.name,
           description: values.description,
           pointThreshold: parseInt(values.pointThreshold, 10),
-          iconUrl: "https://github.com/shadcn.png",
+          iconUrl: values.iconUrl,
           repositoryId: repositoryId,
           permissions: permissions,
         });
         setIsEditMode(false);
       }
-
-      setShowForm(false);
     } catch (err) {
       toast({
         title: "Error",
         description: `Failed to ${isCreate ? "create" : "update"} level.`,
       });
     } finally {
+      setShowForm(false);
       setIsLoading(false);
     }
   };
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
+
     if (file) {
-      //call the s3 upload function to upload the image
       setIsLoading(true);
+
       try {
         const { url, error } = await handleFileUpload(file, repositoryId);
 
@@ -148,21 +148,8 @@ export function LevelsForm({
 
           return;
         }
-        //call the update file action
-        if (!name) {
-          toast({
-            title: "Error",
-            description: "Level name is required",
-          });
 
-          return;
-        }
-
-        // await updateLevelIconAction({
-        //   name: name,
-        //   repositoryId: repositoryId,
-        //   iconUrl: url,
-        // });
+        form.setValue("iconUrl", url);
       } catch (err) {
         toast({
           title: "Error",
