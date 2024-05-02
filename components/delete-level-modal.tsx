@@ -12,6 +12,7 @@ interface DeleteLevelModalProps {
   setIsEditMode: Dispatch<SetStateAction<boolean>>;
   repositoryId: string;
   levelId: string;
+  iconUrl: string;
 }
 
 function DeleteLevelModal({
@@ -20,6 +21,7 @@ function DeleteLevelModal({
   repositoryId,
   levelId,
   setIsEditMode,
+  iconUrl,
 }: DeleteLevelModalProps) {
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
@@ -27,7 +29,7 @@ function DeleteLevelModal({
   const handleDeleteLevel = async () => {
     setDeleting(true);
     try {
-      await deleteLevelAction(repositoryId!, levelId!);
+      await deleteLevelAction(repositoryId!, levelId!, iconUrl);
     } catch (err) {
       toast({
         title: "Error",
@@ -61,7 +63,7 @@ function DeleteLevelModal({
   );
 }
 
-export function useDeleteLevelModal(repositoryId: string, levelId: string, setIsEditMode) {
+export function useDeleteLevelModal(repositoryId: string, levelId: string, setIsEditMode, iconUrl: string) {
   const [showDeleteLevelModal, setShowDeleteLevelModal] = useState(false);
 
   const DeleteLevelModalCallback = useCallback(() => {
@@ -72,6 +74,7 @@ export function useDeleteLevelModal(repositoryId: string, levelId: string, setIs
         repositoryId={repositoryId}
         levelId={levelId}
         setIsEditMode={setIsEditMode}
+        iconUrl={iconUrl}
       />
     );
   }, [showDeleteLevelModal, setShowDeleteLevelModal]);

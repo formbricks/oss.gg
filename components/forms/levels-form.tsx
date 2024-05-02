@@ -52,7 +52,12 @@ export function LevelsForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { repositoryId } = useParams() as { repositoryId: string };
 
-  const { setShowDeleteLevelModal, DeleteLevelModal } = useDeleteLevelModal(repositoryId, id!, setIsEditMode);
+  const { setShowDeleteLevelModal, DeleteLevelModal } = useDeleteLevelModal(
+    repositoryId,
+    id!,
+    setIsEditMode,
+    iconUrl! //if delete button is shown then it means it has image present.
+  );
   const { toast } = useToast();
 
   const form = useForm<TFormSchema>({
