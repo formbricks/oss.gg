@@ -20,6 +20,8 @@
     "@aws-sdk/client-s3": "^3.540.0",
     "@aws-sdk/s3-presigned-post": "^3.540.0",
     "@aws-sdk/s3-request-presigner": "^3.540.0",
+    "@discordjs/core": "1.2.0",
+    "@discordjs/rest": "2.3.0",
     "@hookform/resolvers": "^3.3.4",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@octokit/auth-app": "^6.0.3",
@@ -97,7 +99,12 @@
     "typescript": "^5"
   },
   "packageManager": "pnpm@8.11.0",
+  "pnpm": {
+    "overrides": {
+      "undici": "5.27.0"
+    }
+  },
   "trigger.dev": {
-    "endpointId": "testing-bHhV"
+    "endpointId": "oss-gg-dev-ND8k"
   }
 }

@@ -1,6 +1,5 @@
 import { env } from "../env.mjs";
 
-
 export const DEFAULT_CACHE_REVALIDATION_INTERVAL = 60 * 30; // 30 minutes
 
 export const GITHUB_CACHE_REVALIDATION_INTERVAL = 60 * 60 * 1; // 1 hours
@@ -58,8 +57,14 @@ export const S3_ACCESS_KEY = env.S3_ACCESS_KEY;
 export const S3_SECRET_KEY = env.S3_SECRET_KEY;
 export const S3_REGION = env.S3_REGION;
 export const S3_BUCKET_NAME = env.S3_BUCKET_NAME;
-export const MAX_SIZE = 1024 * 1024 * 10 
+export const MAX_SIZE = 1024 * 1024 * 10;
 
 // URLs
 export const WEBAPP_URL =
   env.WEBAPP_URL || (env.VERCEL_URL ? `https://${env.VERCEL_URL}` : false) || "http://localhost:3000";
+
+// Discord
+export const DISCORD_BOT_TOKEN = env.DISCORD_BOT_TOKEN;
+export const DISCORD_POINTS_MESSAGE_TRIGGER_ID = "discord.pointsMessage";
+export const DISCORD_AWARD_POINTS_MESSAGE = (username: string, points: number) =>
+  `Way to go, ${username} 🎉 You've just earned ${points} points. Your contribution is invaluable to our community 🙌 Keep up the fantastic work and let's keep pushing forward! 💪`;

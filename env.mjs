@@ -29,6 +29,8 @@ export const env = createEnv({
     S3_SECRET_KEY: z.string(),
     WEBAPP_URL: z.string().url().optional(),
     VERCEL_URL: z.string().optional(),
+    DISCORD_BOT_TOKEN: z.string(),
+    DISCORD_CHANNEL_ID: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -58,5 +60,7 @@ export const env = createEnv({
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
     TRIGGER_API_KEY: process.env.TRIGGER_API_KEY,
     TRIGGER_API_URL: process.env.TRIGGER_API_URL,
+    DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
+    DISCORD_CHANNEL_ID: process.env.DISCORD_CHANNEL_ID,
   },
 });
