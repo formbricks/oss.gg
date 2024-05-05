@@ -30,7 +30,7 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
       const owner = context.payload.repository.owner.login;
       const hasOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
-      const createIssueComment = async (comment: string) => {
+      const commentOnIssue = async (comment: string) => {
         await octokit.issues.createComment({
           body: comment,
           issue_number: issueNumber,
@@ -41,26 +41,26 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
 
       if (bountyMatch) {
         if (isPR) {
-          await createIssueComment("Bounties can be setup in only issues, not in PRs.");
+          await commentOnIssue("Bounties can be setup in only issues, not in PRs.");
           return;
         }
 
         if (!hasOssGgLabel) {
-          await createIssueComment(`Bounties can be setup only in issues with the ${OSS_GG_LABEL} label.`);
+          await commentOnIssue(`Bounties can be setup only in issues with the ${OSS_GG_LABEL} label.`);
           return;
         }
 
         // Check if the repo is registered in oss.gg
         const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
         if (!ossGgRepo) {
-          await createIssueComment(
+          await commentOnIssue(
             "If you are the repo owner, please register at oss.gg to be able to create bounties"
           );
           return;
         } else if (ossGgRepo) {
           let usersThatCanCreateBounty = ossGgRepo?.installation.memberships.map((m) => m.userId);
           if (!usersThatCanCreateBounty) {
-            await createIssueComment("No admins for the given repo in oss.gg!");
+            await commentOnIssue("No admins for the given repo in oss.gg!");
             return;
           }
           const ossGgUsers = await Promise.all(
@@ -71,9 +71,7 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
           );
           const isUserAllowedToCreateBounty = ossGgUsers?.includes(context.payload.comment.user.id);
           if (!isUserAllowedToCreateBounty) {
-            await createIssueComment(
-              "You are not allowed to create bounties! Please contact the repo admin."
-            );
+            await commentOnIssue("You are not allowed to create bounties! Please contact the repo admin.");
             return;
           }
 
@@ -98,7 +96,7 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
                 color: "0E8A16",
               });
 
-              await createIssueComment(
+              await commentOnIssue(
                 `The bounty amount was updated to ${newBountyAmount} ${USD_CURRENCY_CODE}`
               );
             }
@@ -109,7 +107,7 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
               issue_number: issueNumber,
               labels: [newBountyLabel],
             });
-            await createIssueComment(
+            await commentOnIssue(
               `A bounty of ${newBountyAmount} ${USD_CURRENCY_CODE} has been created. Happy hacking!`
             );
           }
@@ -145,7 +143,7 @@ export const onBountyPullRequestMerged = async (webhooks: Webhooks) => {
       const linkedIssueNumbers = extractIssueNumbersFromPrBody(prBody); // This assumes that a PR body can be linked to multiple issues
 
       const awardBountyToUser = async (issueNumber: number) => {
-        const createIssueComment = async (comment: string) => {
+        const commentOnIssue = async (comment: string) => {
           await octokit.issues.createComment({
             body: comment,
             issue_number: issueNumber,
@@ -194,7 +192,7 @@ export const onBountyPullRequestMerged = async (webhooks: Webhooks) => {
 
           const bountyExists = await checkIfBountyExists(issue.data.html_url);
           if (bountyExists) {
-            await createIssueComment("Bounty already exists for this issue. Please check your inbox!");
+            await commentOnIssue("Bounty already exists for this issue. Please check your inbox!");
             console.error(`Bounty already exists for issue: ${issue.data.html_url}`);
             return;
           }
@@ -219,7 +217,7 @@ export const onBountyPullRequestMerged = async (webhooks: Webhooks) => {
               repositoryId: ossGgRepo?.id!,
             });
 
-            await createIssueComment(
+            await commentOnIssue(
               `Thanks a lot for your valuable contribution! Pls check your inbox for all details to redeem your bounty of ${bountyAmount} ${USD_CURRENCY_CODE}!`
             );
           }
