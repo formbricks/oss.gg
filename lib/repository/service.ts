@@ -154,6 +154,7 @@ export const getUsersForRepository = async (repositoryId: string) => {
           },
         },
       },
+      include: { pointTransactions: true },
     });
 
     return users;
