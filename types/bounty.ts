@@ -39,3 +39,11 @@ export const ZBountyOrderInput = z.object({
 });
 
 export type TBountyOrderInput = z.infer<typeof ZBountyOrderInput>;
+
+export const ZBountySettingsInput = z.object({
+  repositoryId: z.string(),
+  maxBounty: z.number().min(1),
+  maxAutomaticPayout: z.number().min(1),
+});
+
+export type TBountySettingsInput = z.infer<typeof ZBountySettingsInput>;

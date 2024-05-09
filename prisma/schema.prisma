@@ -86,11 +86,13 @@ model Repository {
   logoUrl            String?
   projectDescription String?
 
-  levels            Json               @default("[]")
-  pointTransactions PointTransaction[]
-  installation      Installation       @relation(fields: [installationId], references: [id])
-  enrollments       Enrollment[]
-  bounties          Bounty[]
+  levels             Json               @default("[]")
+  pointTransactions  PointTransaction[]
+  installation       Installation       @relation(fields: [installationId], references: [id])
+  enrollments        Enrollment[]
+  bounties           Bounty[]
+  maxBounty          Int                @default(250)
+  maxAutomaticPayout Int                @default(50)
 
   @@map(name: "repositories")
 }

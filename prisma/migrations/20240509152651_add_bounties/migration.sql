@@ -1,6 +1,10 @@
 -- CreateEnum
 CREATE TYPE "BountyStatus" AS ENUM ('open', 'redeemed');
 
+-- AlterTable
+ALTER TABLE "repositories" ADD COLUMN     "maxAutomaticPayout" INTEGER NOT NULL DEFAULT 50,
+ADD COLUMN     "maxBounty" INTEGER NOT NULL DEFAULT 250;
+
 -- CreateTable
 CREATE TABLE "bounties" (
     "id" TEXT NOT NULL,

@@ -1,4 +1,9 @@
-import { checkIfBountyExists, dispatchBountyOrder, storeBounty } from "@/lib/bounty/service";
+import {
+  checkIfBountyExists,
+  dispatchBountyOrder,
+  getBountySettingsByRepositoryId,
+  storeBounty,
+} from "@/lib/bounty/service";
 import {
   BOUNTY_EMOJI,
   BOUNTY_IDENTIFIER,
@@ -50,6 +55,9 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
           return;
         }
 
+        const newBountyAmount = parseInt(bountyMatch[1], 10);
+        const newBountyLabel = `${BOUNTY_EMOJI} ${newBountyAmount} ${USD_CURRENCY_CODE}`;
+
         // Check if the repo is registered in oss.gg
         const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
         if (!ossGgRepo) {
@@ -58,6 +66,14 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
           );
           return;
         } else if (ossGgRepo) {
+          const bountySettings = await getBountySettingsByRepositoryId(ossGgRepo.id)();
+          if (bountySettings?.maxBounty && newBountyAmount > bountySettings.maxBounty) {
+            await commentOnIssue(
+              `Bounty amount exceeds the maximum bounty amount of ${bountySettings.maxBounty} ${USD_CURRENCY_CODE} set by the repo owner.`
+            );
+            return;
+          }
+
           let usersThatCanCreateBounty = ossGgRepo?.installation.memberships.map((m) => m.userId);
           if (!usersThatCanCreateBounty) {
             await commentOnIssue("No admins for the given repo in oss.gg!");
@@ -74,9 +90,6 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
             await commentOnIssue("You are not allowed to create bounties! Please contact the repo admin.");
             return;
           }
-
-          const newBountyAmount = parseInt(bountyMatch[1], 10);
-          const newBountyLabel = `${BOUNTY_EMOJI} ${newBountyAmount} ${USD_CURRENCY_CODE}`;
 
           // Regex that matches the bounty label format like "💸 50 USD"
           const previousBountyLabel = context.payload.issue?.labels?.find((label) =>
