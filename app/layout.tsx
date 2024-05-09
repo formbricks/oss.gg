@@ -2,8 +2,10 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from "@/config/site";
+import { WEBAPP_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
+import { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 
 const fontSans = FontSans({
@@ -15,7 +17,7 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
@@ -29,6 +31,7 @@ export const metadata = {
     },
   ],
   creator: "Formbricks Team",
+  metadataBase: new URL(WEBAPP_URL),
   openGraph: {
     type: "website",
     locale: "en_US",
