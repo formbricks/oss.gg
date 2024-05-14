@@ -15,8 +15,12 @@ import {
 import { assignUserPoints, getPointsForUserInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
-import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
+import {
+  calculateAssignabelNonAssignableIssuesForUserInALevel,
+  findCurrentAndNextLevelOfCurrentUser,
+} from "@/lib/utils/levelUtils";
 import { triggerDotDevClient } from "@/trigger";
+import { TLevel } from "@/types/level";
 import { TRepository } from "@/types/repository";
 import { Webhooks } from "@octokit/webhooks";
 
@@ -136,31 +140,35 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         //checking if the current level of user has the power to solve the issue on which the /assign comment was made.
         const currentRepo = await getRepositoryByGithubId(context.payload.repository.id);
         const user = await getUserByGithubId(context.payload.comment.user.id);
-        const userTotalPoints = await getPointsForUserInRepoByRepositoryId(
-          currentRepo?.id || "",
-          user?.id || ""
-        );
-        const { currentLevelOfUser } = findCurrentAndNextLevelOfCurrentUser(
-          currentRepo as TRepository,
-          userTotalPoints
-        );
-        const labels = context.payload.issue.labels;
-        const tags = currentLevelOfUser?.permissions.issueLabels;
 
-        const isAssignable = labels.some((label) => {
-          return tags?.some((tag) => tag.text === label.name);
-        });
+        if (currentRepo && user) {
+          const userTotalPoints = await getPointsForUserInRepoByRepositoryId(currentRepo.id, user.id);
+          const { currentLevelOfUser } = findCurrentAndNextLevelOfCurrentUser(
+            currentRepo as TRepository,
+            userTotalPoints
+          ); //this just has tags that limit the user to take on task of higher level but  misses out  on tags of lower levels.
 
-        if (!isAssignable) {
-          await octokit.issues.createComment({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            body: `With your current level, you are not yet able to work on this issue.`,
+          const levels = currentRepo?.levels as TLevel[];
+          const sortedLevels = levels.sort((a, b) => a.pointThreshold - b.pointThreshold);
+          const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(sortedLevels); //gets all assignable tags be it from the current level and from lower levels.
+
+          const labels = context.payload.issue.labels;
+          const tags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
+
+          const isAssignable = labels.some((label) => {
+            return tags?.assignableIssues.includes(label.name);
           });
-          return;
-        }
 
+          if (!isAssignable) {
+            await octokit.issues.createComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: `With your current level, you are not yet able to work on this issue.`,
+            });
+            return;
+          }
+        }
         await octokit.issues.addAssignees({
           owner,
           repo,
