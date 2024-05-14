@@ -93,3 +93,26 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
   )();
   return points;
 };
+export const getPointsForUserInRepoByRepositoryId = async (
+  repositoryId: string,
+  userId: string
+): Promise<number> => {
+  try {
+    const userPoints = await db.pointTransaction.aggregate({
+      where: {
+        repositoryId: repositoryId,
+        userId: userId,
+      },
+      _sum: {
+        points: true,
+      },
+    });
+
+    return userPoints._sum.points ?? 0;
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      throw new DatabaseError(error.message);
+    }
+    throw error;
+  }
+};

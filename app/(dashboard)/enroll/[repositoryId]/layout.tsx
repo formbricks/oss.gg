@@ -26,6 +26,7 @@ export default async function RepoDetailPageLayout({ params, children }) {
   }
   const tabsData = [
     { href: `/enroll/${repository.id}/details`, value: "details", label: "Project Details" },
+    { href: `/enroll/${repository.id}/levels`, value: "levels", label: "Levels" },
     { href: `/enroll/${repository.id}/leaderboard`, value: "leaderboard", label: "Leaderboard" },
     { href: `/enroll/${repository.id}/issues`, value: "issues", label: "Open Issues" },
   ];

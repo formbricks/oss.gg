@@ -28,9 +28,10 @@ export const ZFormSchema = z
     name: z.string().min(3, {
       message: "Level name must be at least 3 characters.",
     }),
-    pointThreshold: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
-      message: "Expected number, received a string",
+    pointThreshold: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)) && parseInt(val, 10) >= 0, {
+      message: "Threshold must be a number greater than or equal to 0.",
     }),
+
     description: z.string().min(10, {
       message: "Description must be at least 10 characters.",
     }),

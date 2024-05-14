@@ -1,9 +1,10 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import PointsCard from "@/components/ui/pointsCard";
+import UserPointsAndLevelCard from "@/components/ui/userPointsAndLevelCard";
 import { authOptions } from "@/lib/auth";
 import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getCurrentUser } from "@/lib/session";
+import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
 import { TPointTransaction } from "@/types/pointTransaction";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -46,14 +47,17 @@ export default async function DashboardPage() {
 
   const repositoriesUserIsEnrolledIn = await getEnrolledRepositories(user.id);
 
-  const calculateTotalPointsForCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
+  const calculateTotalPointsForCurrentUser = (
+    currentUserId: string,
+    pointTransactions: TPointTransaction[]
+  ) => {
     return pointTransactions.reduce((acc, transaction) => {
       if (transaction.userId === currentUserId) {
         return acc + transaction.points;
       }
       return acc;
     }, 0);
-  }
+  };
   const calculateRankOfCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
     // Create an object to store the total points for each user enrolled in the repositories that the current user is in.
     const totalPointsOfAllUsersInTheRepo = {};
@@ -84,12 +88,16 @@ export default async function DashboardPage() {
     return userRank;
   };
 
-  // Calculate total points and rank for the current user in repositories they are enrolled in.
-  const pointsPerRepository = repositoriesUserIsEnrolledIn.map((repository) => {
+  // Calculate total points,rank,current level for the current user in repositories they are enrolled in.
+  const pointsAndLevelsPerRepository = repositoriesUserIsEnrolledIn.map((repository) => {
     const pointTransactions = repository.pointTransactions || [];
 
     const totalPoints = calculateTotalPointsForCurrentUser(user.id, pointTransactions);
     const rank = calculateRankOfCurrentUser(user.id, pointTransactions);
+    const { currentLevelOfUser, nextLevelForUser } = findCurrentAndNextLevelOfCurrentUser(
+      repository,
+      totalPoints
+    );
 
     return {
       id: repository.id,
@@ -97,6 +105,8 @@ export default async function DashboardPage() {
       points: totalPoints,
       repositoryLogo: repository.logoUrl,
       rank: rank,
+      currentLevelOfUser: currentLevelOfUser,
+      nextLevelForUser: nextLevelForUser,
     };
   });
 
@@ -104,18 +114,18 @@ export default async function DashboardPage() {
     <DashboardShell>
       <DashboardHeader heading="Shall we play a game?"></DashboardHeader>
 
-      <div className=" grid gap-4 md:grid-cols-2">
-        {pointsPerRepository.map((point, index) => {
-          const isLastItem = index === pointsPerRepository.length - 1;
-          const isSingleItemInLastRow = pointsPerRepository.length % 2 !== 0 && isLastItem;
+      <div className=" grid gap-4 ">
+        {pointsAndLevelsPerRepository.map((repositoryData, index) => {
           return (
-            <div key={point.id} className={`${isSingleItemInLastRow ? "md:col-span-2" : "md:col-span-1"}`}>
-              <PointsCard
-                key={point.id}
-                repositoryName={point.repositoryName}
-                points={point.points}
-                rank={point.rank}
-                repositoryLogo={point.repositoryLogo}
+            <div key={repositoryData.id}>
+              <UserPointsAndLevelCard
+                key={repositoryData.id}
+                repositoryName={repositoryData.repositoryName}
+                points={repositoryData.points}
+                rank={repositoryData.rank}
+                repositoryLogo={repositoryData.repositoryLogo}
+                currentLevelOfUser={repositoryData.currentLevelOfUser}
+                nextLevelForUser={repositoryData.nextLevelForUser}
               />
             </div>
           );

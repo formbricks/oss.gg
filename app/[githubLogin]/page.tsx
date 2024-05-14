@@ -1,9 +1,12 @@
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import GitHubIssue from "@/components/ui/githubIssue";
 import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getMergedPullRequestsByGithubLogin, getOpenPullRequestsByGithubLogin } from "@/lib/github/service";
 import { getGithubUserByLogin } from "@/lib/githubUser/service";
+import { getPointsForUserInRepoByRepositoryId } from "@/lib/points/service";
 import { getUserByLogin } from "@/lib/user/service";
+import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
 import Rick from "@/public/rick.webp";
 import Image from "next/image";
 import Link from "next/link";
@@ -107,14 +110,50 @@ export default async function ProfilePage({ params }) {
 
     const userEnrollments = await getEnrolledRepositories(user?.id);
 
+    const arrayCurrentLevelOfUserInEnrolledRepos = await Promise.all(
+      userEnrollments.map(async (repo) => {
+        const totalPointsForUserInThisRepo = await getPointsForUserInRepoByRepositoryId(
+          repo.id,
+          user?.id || ""
+        );
+        const { currentLevelOfUser } = findCurrentAndNextLevelOfCurrentUser(
+          repo,
+          totalPointsForUserInThisRepo
+        );
+        return { currentLevelOfUser: currentLevelOfUser, repoLogo: repo?.logoUrl || "" };
+      })
+    );
+
     return (
       <div>
         <ProfileInfo githubUserData={githubUserData} />
-        <div className="mt-12 grid grid-cols-4 gap-6 md:grid-cols-5">
-          <div className="col-span-1 hidden text-center md:block">
-            {/* <h2 className="text-7xl text-gray-800">#3</h2> <p className="text-sm text-gray-500">of 727</p> */}
+        <div className="mt-10 grid grid-cols-4 gap-6   md:grid-cols-5">
+          <div className="col-span-1 hidden  text-center  md:flex md:flex-col md:gap-8 ">
+            {arrayCurrentLevelOfUserInEnrolledRepos.map((obj) => {
+              if (!obj.currentLevelOfUser) return;
+              return (
+                <>
+                  <div className="relative flex w-11/12 items-center justify-center rounded-lg bg-secondary py-3">
+                    <Avatar className="h-40 w-40 ">
+                      <AvatarImage src={obj.currentLevelOfUser?.iconUrl || ""} alt="level icon" />
+                    </Avatar>
+                    {obj.repoLogo && (
+                      <div className="absolute left-0 top-0 -translate-x-1/3 -translate-y-1/3">
+                        <Image
+                          src={obj.repoLogo}
+                          height={40}
+                          width={40}
+                          alt={"repo logo"}
+                          className="rounded-lg"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </>
+              );
+            })}
           </div>
-          <div className="col-span-4 space-y-12">
+          <div className="col-span-4 space-y-12 ">
             {openPRs.length > 1 && (
               <div>
                 <h3 className="mb-2 text-xl font-medium">Open PRs @ Formbricks by {githubUserData.name} </h3>
@@ -123,7 +162,6 @@ export default async function ProfilePage({ params }) {
                 ))}
               </div>
             )}
-
             {userEnrollments && (
               <div>
                 <h3 className="mb-2 text-xl font-medium">Congrats! </h3>
@@ -142,7 +180,6 @@ export default async function ProfilePage({ params }) {
                 ))}
               </div>
             )}
-
             <div>
               {mergedIssues.length > 1 ? (
                 <>

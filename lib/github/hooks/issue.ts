@@ -12,10 +12,12 @@ import {
   REJECT_IDENTIFIER,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
-import { assignUserPoints } from "@/lib/points/service";
+import { assignUserPoints, getPointsForUserInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
+import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
 import { triggerDotDevClient } from "@/trigger";
+import { TRepository } from "@/types/repository";
 import { Webhooks } from "@octokit/webhooks";
 
 import { isMemberOfRepository } from "../services/user";
@@ -127,6 +129,34 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
             repo,
             issue_number: issueNumber,
             body: `You already have an open issue assigned to you [here](${assignedIssue.html_url}). Once that's closed or unassigned, only then we recommend you to take up more.`,
+          });
+          return;
+        }
+
+        //checking if the current level of user has the power to solve the issue on which the /assign comment was made.
+        const currentRepo = await getRepositoryByGithubId(context.payload.repository.id);
+        const user = await getUserByGithubId(context.payload.comment.user.id);
+        const userTotalPoints = await getPointsForUserInRepoByRepositoryId(
+          currentRepo?.id || "",
+          user?.id || ""
+        );
+        const { currentLevelOfUser } = findCurrentAndNextLevelOfCurrentUser(
+          currentRepo as TRepository,
+          userTotalPoints
+        );
+        const labels = context.payload.issue.labels;
+        const tags = currentLevelOfUser?.permissions.issueLabels;
+
+        const isAssignable = labels.some((label) => {
+          return tags?.some((tag) => tag.text === label.name);
+        });
+
+        if (!isAssignable) {
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: `With your current level, you are not yet able to work on this issue.`,
           });
           return;
         }

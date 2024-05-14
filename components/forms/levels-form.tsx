@@ -44,6 +44,7 @@ export function LevelsForm({
 
   const { limitIssues, canReportBugs, canHuntBounties, issueLabels } = level?.permissions || {};
 
+  const [newIconUrl, setNewIconUrl] = useState(iconUrl); //this will be just used to show the new image when image is replaced during an edit of a level.
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLimitIssues, setIsLimitIssues] = useState(limitIssues ?? false);
@@ -154,7 +155,9 @@ export function LevelsForm({
           return;
         }
 
-        form.setValue("iconUrl", url);
+        form.setValue("iconUrl", url); //this is necessary to make sure that form has the updated value of image.This iconUrl from form is being set to db so thus necessary.
+
+        setNewIconUrl(url); //this updates the old image with new.
       } catch (err) {
         toast({
           title: "Error",
@@ -219,7 +222,7 @@ export function LevelsForm({
           ) : isEditMode && iconUrl ? (
             <div>
               <Avatar className="h-56 w-56">
-                <AvatarImage src={iconUrl} alt="level icon" />
+                <AvatarImage src={newIconUrl} alt="level icon" />
               </Avatar>
               <div className="relative flex flex-col space-y-5">
                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
@@ -373,7 +376,7 @@ export function LevelsForm({
           />
         </div>
         {isForm ? (
-          <Button loading={isLoading} type="submit">
+          <Button disabled={isLoading} type="submit">
             Save
           </Button>
         ) : (
@@ -384,12 +387,12 @@ export function LevelsForm({
                   onClick={() => {
                     setShowDeleteLevelModal(true);
                   }}
-                  loading={isLoading}
+                  disabled={isLoading}
                   variant="destructive">
                   Delete
                 </Button>
 
-                <Button loading={isLoading} onClick={() => handleCreateUpdateLevel(form.getValues(), false)}>
+                <Button disabled={isLoading} onClick={() => handleCreateUpdateLevel(form.getValues(), false)}>
                   Save
                 </Button>
               </div>

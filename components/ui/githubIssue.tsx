@@ -1,21 +1,54 @@
+import {
+  ModifiedTagsArray,
+  calculateAssignabelNonAssignableIssuesForUserInALevel,
+} from "@/lib/utils/levelUtils";
+import { TLevel } from "@/types/level";
 import { GitMerge, GitPullRequestDraft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-interface Issue {
-  href: string;
-  logoUrl: string;
-  title: string;
-  author: string;
-  repository?: string;
-  assignee?: string | null;
-  state?: string;
-  draft?: boolean;
-  isIssue: boolean;
-  points?: null | number;
+import { Avatar, AvatarImage } from "./avatar";
+
+interface IssueProps {
+  issue: {
+    href: string;
+    logoUrl: string;
+    title: string;
+    author: string;
+    repository?: string;
+    assignee?: string | null;
+    state?: string;
+    draft?: boolean;
+    isIssue: boolean;
+    points?: null | number;
+    labels?: string[];
+  };
+  levelsInRepo?: TLevel[];
 }
 
-const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
+const GitHubIssue = ({ issue, levelsInRepo }: IssueProps) => {
+  const sortedLevels = levelsInRepo && levelsInRepo.sort((a, b) => a.pointThreshold - b.pointThreshold);
+
+  const modifiedTagsArray: ModifiedTagsArray[] = calculateAssignabelNonAssignableIssuesForUserInALevel(
+    sortedLevels || []
+  );
+
+  const iconUrlOfLevelsMatchingLabelsSet: Set<string> = new Set();
+
+  levelsInRepo &&
+    modifiedTagsArray.forEach((modifiedTag) => {
+      issue.labels?.forEach((label) => {
+        if (modifiedTag.assignableIssues.includes(label)) {
+          const level = levelsInRepo.find((level) => level.id === modifiedTag.levelId);
+          if (level) {
+            iconUrlOfLevelsMatchingLabelsSet.add(level.iconUrl);
+          }
+        }
+      });
+    });
+
+  const iconUrlOfLevelsMatchingLabelsArray: string[] = Array.from(iconUrlOfLevelsMatchingLabelsSet);
+
   return (
     <Link
       href={issue.href}
@@ -40,20 +73,34 @@ const GitHubIssue: React.FC<{ issue: Issue }> = ({ issue }) => {
             opened by {issue.author} {issue.repository && <span>in {issue.repository}</span>}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex w-1/2 justify-end gap-2  sm:flex-row">
+          {iconUrlOfLevelsMatchingLabelsArray.length > 0 && (
+            <div className="flex items-center gap-2 rounded-full bg-card px-3 py-2">
+              {iconUrlOfLevelsMatchingLabelsArray.map((iconUrl) => {
+                return (
+                  <div key={iconUrl}>
+                    <Avatar className="h-7 w-7">
+                      <AvatarImage src={iconUrl} alt="level icon" />
+                    </Avatar>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {issue.assignee && issue.isIssue ? (
-            <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
+            <div className="flex h-full items-center justify-center whitespace-nowrap rounded-full bg-card px-6  py-1 text-sm font-medium">
               {issue.assignee} 🚧
             </div>
           ) : (
             issue.isIssue && (
-              <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
+              <div className="flex h-full items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
                 Assign yourself 🫵
               </div>
             )
           )}
           {issue.points && issue.points !== null && (
-            <div className="flex items-center justify-center whitespace-nowrap rounded-full bg-card px-6 py-1 text-sm font-medium">
+            <div className="flex h-full items-center justify-center whitespace-nowrap rounded-full bg-card px-6  py-1 text-sm font-medium">
               {issue.points} Points 🔥
             </div>
           )}
