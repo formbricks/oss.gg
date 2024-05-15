@@ -34,7 +34,9 @@ export const calculateLevelProgress = (
   };
 };
 
-export const calculateAssignabelNonAssignableIssuesForUserInALevel = (sortedLevels: TLevel[]) => {
+export const calculateAssignabelNonAssignableIssuesForUserInALevel = (levels: TLevel[]) => {
+  const sortedLevels = levels.sort((a, b) => a.pointThreshold - b.pointThreshold);
+
   // Collect all tags from the sorted levels
   const allTags = sortedLevels.reduce((tags, level) => {
     const levelTags = level.permissions.issueLabels.map((tag) => tag.text);

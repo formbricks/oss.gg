@@ -149,8 +149,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           ); //this just has tags that limit the user to take on task of higher level but  misses out  on tags of lower levels.
 
           const levels = currentRepo?.levels as TLevel[];
-          const sortedLevels = levels.sort((a, b) => a.pointThreshold - b.pointThreshold);
-          const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(sortedLevels); //gets all assignable tags be it from the current level and from lower levels.
+          const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
 
           const labels = context.payload.issue.labels;
           const tags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.

@@ -27,10 +27,8 @@ interface IssueProps {
 }
 
 const GitHubIssue = ({ issue, levelsInRepo }: IssueProps) => {
-  const sortedLevels = levelsInRepo && levelsInRepo.sort((a, b) => a.pointThreshold - b.pointThreshold);
-
   const modifiedTagsArray: ModifiedTagsArray[] = calculateAssignabelNonAssignableIssuesForUserInALevel(
-    sortedLevels || []
+    levelsInRepo || []
   );
 
   const iconUrlOfLevelsMatchingLabelsSet: Set<string> = new Set();
