@@ -29,6 +29,8 @@ export const env = createEnv({
     S3_SECRET_KEY: z.string(),
     WEBAPP_URL: z.string().url().optional(),
     VERCEL_URL: z.string().optional(),
+    TREMENDOUS_API_KEY: z.string().min(1),
+    TREMENDOUS_CAMPAIGN_ID: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -58,5 +60,7 @@ export const env = createEnv({
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
     TRIGGER_API_KEY: process.env.TRIGGER_API_KEY,
     TRIGGER_API_URL: process.env.TRIGGER_API_URL,
+    TREMENDOUS_API_KEY: process.env.TREMENDOUS_API_KEY,
+    TREMENDOUS_CAMPAIGN_ID: process.env.TREMENDOUS_CAMPAIGN_ID,
   },
 });

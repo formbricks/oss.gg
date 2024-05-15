@@ -30,6 +30,7 @@ model User {
   pointTransactions PointTransaction[]
   memberships       Membership[]
   enrollments       Enrollment[]
+  bounties          Bounty[]
 
   @@map(name: "users")
 }
@@ -85,10 +86,13 @@ model Repository {
   logoUrl            String?
   projectDescription String?
 
-  levels            Json               @default("[]")
-  pointTransactions PointTransaction[]
-  installation      Installation       @relation(fields: [installationId], references: [id])
-  enrollments       Enrollment[]
+  levels             Json               @default("[]")
+  pointTransactions  PointTransaction[]
+  installation       Installation       @relation(fields: [installationId], references: [id])
+  enrollments        Enrollment[]
+  bounties           Bounty[]
+  maxBounty          Int                @default(250)
+  maxAutomaticPayout Int                @default(50)
 
   @@map(name: "repositories")
 }
@@ -148,4 +152,27 @@ model PointTransaction {
 
   @@unique([userId, repositoryId, url])
   @@map(name: "point_transactions")
+}
+
+enum BountyStatus {
+  open
+  redeemed
+}
+
+model Bounty {
+  id           String       @id @default(cuid())
+  usdAmount    Int
+  status       BountyStatus
+  issueUrl     String
+  orderId      String
+  rewardId     String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now())
+  userId       String
+  repositoryId String
+
+  user       User       @relation(fields: [userId], references: [id])
+  repository Repository @relation(fields: [repositoryId], references: [id])
+
+  @@map(name: "bounties")
 }

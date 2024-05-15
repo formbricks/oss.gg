@@ -12,41 +12,44 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
+import { updateBountySettings } from "@/lib/bounty/service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const FormSchema = z.object({
-  minBountyAmount: z.number().min(50, {
-    message: "Bounty must be at least $50.",
-  }),
-  maxBountyAmount: z.number().max(250, {
-    message: "Bounty must not be more than $250.",
-  }),
+  maxAutomaticPayout: z.coerce.number().min(1),
+  maxBounty: z.coerce.number().min(1),
 });
 
-export function BountySettingsForm() {
+export function BountySettingsForm({
+  repositoryId,
+  bountySettings,
+}: {
+  repositoryId: string;
+  bountySettings: z.infer<typeof FormSchema> | null;
+}) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      minBountyAmount: 50,
-      maxBountyAmount: 250,
+      maxBounty: bountySettings?.maxBounty,
+      maxAutomaticPayout: bountySettings?.maxAutomaticPayout,
     },
   });
 
   const [isEditMode, setIsEditMode] = React.useState(false);
+  const { toast } = useToast();
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-zinc-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  async function onSubmit(formData: z.infer<typeof FormSchema>) {
+    try {
+      await updateBountySettings({ repositoryId, ...formData });
+      setIsEditMode(false);
+      toast({ title: "Bounty settings updated successfully!" });
+    } catch (error) {
+      toast({ title: "Failed to update bounty settings!" });
+    }
   }
 
   return (
@@ -56,7 +59,9 @@ export function BountySettingsForm() {
           <CardTitle>Bounty Settings</CardTitle>
         </CardHeader>
         {isEditMode ? (
-          <Button type="submit">Save</Button>
+          <Button type="button" onClick={form.handleSubmit(onSubmit)}>
+            Save
+          </Button>
         ) : (
           <Button onClick={() => setIsEditMode(true)} variant="secondary">
             Edit
@@ -68,14 +73,14 @@ export function BountySettingsForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-3">
             <FormField
               control={form.control}
-              name="maxBountyAmount"
+              name="maxBounty"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Max bounty amount (in USD)</FormLabel>
                   <FormControl>
                     <Input
                       disabled={!isEditMode}
-                      placeholder="Tell us a little bit about yourself"
+                      placeholder="Enter the maximum bounty amount (in USD)"
                       {...field}
                     />
                   </FormControl>
@@ -85,18 +90,23 @@ export function BountySettingsForm() {
             />
             <FormField
               control={form.control}
-              name="minBountyAmount"
+              name="maxAutomaticPayout"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Max automatic payout (in USD)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Type your message here" disabled={!isEditMode} {...field} />
+                    <Input
+                      placeholder="Enter the maximum automatic payout amount (in USD)"
+                      disabled={!isEditMode}
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>Higher bounties need manual approval</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <button type="submit" className="hidden" />
           </form>
         </Form>
       </CardContent>

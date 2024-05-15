@@ -1,6 +1,5 @@
 import { env } from "../env.mjs";
 
-
 export const DEFAULT_CACHE_REVALIDATION_INTERVAL = 60 * 30; // 30 minutes
 
 export const GITHUB_CACHE_REVALIDATION_INTERVAL = 60 * 60 * 1; // 1 hours
@@ -19,8 +18,13 @@ export enum EVENT_TRIGGERS {
   INSTALLATION_CREATED = "installation.created",
   ISSUE_COMMENTED = "issue_comment.created",
   PULL_REQUEST_OPENED = "pull_request.opened",
+  PULL_REQUEST_CLOSED = "pull_request.closed",
 }
 export const AWARD_POINTS_IDENTIFIER = "/award" as const;
+export const USD_CURRENCY_CODE = "USD" as const;
+export const BOUNTY_IDENTIFIER = "/bounty" as const;
+export const BOUNTY_EMOJI = "💸" as const;
+export const BOUNTY_LABEL_REGEX = new RegExp(`^${BOUNTY_EMOJI}\\s+\\d+\\s+${USD_CURRENCY_CODE}$`);
 
 export const ON_NEW_ISSUE = "Thanks for opening an issue! It's live on oss.gg!";
 export const ON_REPO_NOT_REGISTERED = `This repository is not registered with oss.gg. Please register it at [oss.gg](https://oss.gg).`;
@@ -58,8 +62,12 @@ export const S3_ACCESS_KEY = env.S3_ACCESS_KEY;
 export const S3_SECRET_KEY = env.S3_SECRET_KEY;
 export const S3_REGION = env.S3_REGION;
 export const S3_BUCKET_NAME = env.S3_BUCKET_NAME;
-export const MAX_SIZE = 1024 * 1024 * 10 
+export const MAX_SIZE = 1024 * 1024 * 10;
 
 // URLs
 export const WEBAPP_URL =
   env.WEBAPP_URL || (env.VERCEL_URL ? `https://${env.VERCEL_URL}` : false) || "http://localhost:3000";
+
+// Tremendous
+export const TREMENDOUS_API_KEY = env.TREMENDOUS_API_KEY;
+export const TREMENDOUS_CAMPAIGN_ID = env.TREMENDOUS_CAMPAIGN_ID;
