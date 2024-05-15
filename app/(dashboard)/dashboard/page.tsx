@@ -4,7 +4,11 @@ import UserPointsAndLevelCard from "@/components/ui/userPointsAndLevelCard";
 import { authOptions } from "@/lib/auth";
 import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getCurrentUser } from "@/lib/session";
-import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
+import {
+  calculateAssignabelNonAssignableIssuesForUserInALevel,
+  findCurrentAndNextLevelOfCurrentUser,
+} from "@/lib/utils/levelUtils";
+import { TLevel } from "@/types/level";
 import { TPointTransaction } from "@/types/pointTransaction";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -98,6 +102,10 @@ export default async function DashboardPage() {
       repository,
       totalPoints
     );
+    const levels = (repository?.levels as TLevel[]) || [];
+    const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
+
+    const assignableTags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
 
     return {
       id: repository.id,
@@ -107,6 +115,7 @@ export default async function DashboardPage() {
       rank: rank,
       currentLevelOfUser: currentLevelOfUser,
       nextLevelForUser: nextLevelForUser,
+      assignableTags: assignableTags?.assignableIssues || [],
     };
   });
 
@@ -126,6 +135,7 @@ export default async function DashboardPage() {
                 repositoryLogo={repositoryData.repositoryLogo}
                 currentLevelOfUser={repositoryData.currentLevelOfUser}
                 nextLevelForUser={repositoryData.nextLevelForUser}
+                assignableTags={repositoryData.assignableTags}
               />
             </div>
           );

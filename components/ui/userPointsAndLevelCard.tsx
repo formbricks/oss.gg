@@ -16,6 +16,7 @@ interface UserPointsAndLevelCardProps {
   rank: number | null;
   currentLevelOfUser: TLevel | null;
   nextLevelForUser: TLevel | null;
+  assignableTags: string[];
 }
 
 const UserPointsAndLevelCard = ({
@@ -25,10 +26,13 @@ const UserPointsAndLevelCard = ({
   rank,
   currentLevelOfUser,
   nextLevelForUser,
+  assignableTags,
 }: UserPointsAndLevelCardProps) => {
   return (
     <div className="flex h-full items-center justify-center gap-6 rounded-lg bg-secondary p-6">
-      {currentLevelOfUser && <UserLevelCard currentLevelOfUser={currentLevelOfUser} />}
+      {currentLevelOfUser && (
+        <UserLevelCard currentLevelOfUser={currentLevelOfUser} assignableTags={assignableTags} />
+      )}
       <UserPointsCard
         repositoryName={repositoryName}
         points={points}
@@ -43,7 +47,7 @@ const UserPointsAndLevelCard = ({
 
 export default UserPointsAndLevelCard;
 
-const UserLevelCard = ({ currentLevelOfUser }) => {
+const UserLevelCard = ({ currentLevelOfUser, assignableTags }) => {
   return (
     <div className=" flex h-full w-full flex-col items-center space-y-4 rounded-lg bg-popover p-4 font-semibold">
       <Avatar className="h-40 w-40">
@@ -58,12 +62,12 @@ const UserLevelCard = ({ currentLevelOfUser }) => {
         condition={currentLevelOfUser.permissions.canReportBugs}
         text={"Can report bugs 🐛"}
       />
-      {currentLevelOfUser.permissions.issueLabels.map((tag) => {
+      {assignableTags.map((tag, idx) => {
         return (
           <ConditionalParagraphAssignable
-            key={tag.id}
+            key={`${tag.id}+${idx}`}
             condition={true}
-            text={`Can work on "${tag.text}" issues`}
+            text={`Can work on "${tag}" issues`}
           />
         );
       })}
