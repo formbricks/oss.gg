@@ -65,7 +65,7 @@ const UserLevelCard = ({ currentLevelOfUser, assignableTags }) => {
       {assignableTags.map((tag, idx) => {
         return (
           <ConditionalParagraphAssignable
-            key={`${tag.id}+${idx}`}
+            key={`${tag}+${idx}`}
             condition={true}
             text={`Can work on "${tag}" issues`}
           />
