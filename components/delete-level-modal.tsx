@@ -1,49 +1,61 @@
-import { deleteUserAction } from "@/app/(dashboard)/settings/actions";
+"use client";
+
+import { deleteLevelAction } from "@/app/(dashboard)/repo-settings/[repositoryId]/levels/action";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/use-toast";
-import { signOut } from "next-auth/react";
 import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
+
+interface DeleteLevelModalProps {
+  showDeleteLevelModal: boolean;
+  setShowDeleteLevelModal: Dispatch<SetStateAction<boolean>>;
+  setIsEditMode: Dispatch<SetStateAction<boolean>>;
+  repositoryId: string;
+  levelId: string;
+  iconUrl: string;
+}
 
 function DeleteLevelModal({
   showDeleteLevelModal,
   setShowDeleteLevelModal,
-}: {
-  showDeleteLevelModal: boolean;
-  setShowDeleteLevelModal: Dispatch<SetStateAction<boolean>>;
-}) {
+  repositoryId,
+  levelId,
+  setIsEditMode,
+  iconUrl,
+}: DeleteLevelModalProps) {
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
-  async function deleteLevel() {
+  const handleDeleteLevel = async () => {
+    setDeleting(true);
     try {
-      setDeleting(true);
-      // await deleteUserAction();
-      // signOut({
-      //   callbackUrl: `${window.location.origin}/login`,
-      // });
-    } catch (error) {
+      await deleteLevelAction(repositoryId!, levelId!, iconUrl);
+    } catch (err) {
       toast({
-        title: `Error deleting level`,
-        description: error.message,
+        title: "Error",
+        description: "Failed to delete level.",
       });
     } finally {
       setDeleting(false);
+      setShowDeleteLevelModal(false);
+      setIsEditMode(false);
     }
-  }
+  };
 
   return (
-    <Modal showModal={showDeleteLevelModal} setShowModal={setShowDeleteLevelModal}>
-      <div className="flex flex-col items-center justify-center space-y-3  border-gray-200 px-4 py-4 pt-8 sm:px-16">
-        <h3 className="text-lg font-medium">Are you sure you want to delete this level?</h3>
+    <Modal
+      className="flex h-1/2 flex-col items-center justify-center"
+      showModal={showDeleteLevelModal}
+      setShowModal={setShowDeleteLevelModal}>
+      <div className="flex flex-col items-center justify-center border-gray-200     px-4 py-4 pt-8 sm:px-16">
+        <h3 className="text-center text-lg font-medium">Are you sure you want to delete this level?</h3>
         <p className="text-center text-sm text-gray-500">
-        This action cannot be undone and will permanently delete this level 
+          This action cannot be undone and will permanently delete this level
         </p>
       </div>
 
-      <div className="flex flex-col space-y-6 bg-gray-50 px-4 py-8 text-left sm:px-16">
-        <Button onClick={deleteLevel} variant="destructive" loading={deleting}>
-          {" "}
+      <div className="flex w-full flex-col    px-4 py-8 text-left sm:px-16">
+        <Button onClick={handleDeleteLevel} variant="destructive" loading={deleting}>
           Delete
         </Button>
       </div>
@@ -51,14 +63,18 @@ function DeleteLevelModal({
   );
 }
 
-export function useDeleteLevelModal() {
+export function useDeleteLevelModal(repositoryId: string, levelId: string, setIsEditMode, iconUrl: string) {
   const [showDeleteLevelModal, setShowDeleteLevelModal] = useState(false);
 
   const DeleteLevelModalCallback = useCallback(() => {
     return (
       <DeleteLevelModal
-      showDeleteLevelModal={showDeleteLevelModal}
-      setShowDeleteLevelModal={setShowDeleteLevelModal}
+        showDeleteLevelModal={showDeleteLevelModal}
+        setShowDeleteLevelModal={setShowDeleteLevelModal}
+        repositoryId={repositoryId}
+        levelId={levelId}
+        setIsEditMode={setIsEditMode}
+        iconUrl={iconUrl}
       />
     );
   }, [showDeleteLevelModal, setShowDeleteLevelModal]);

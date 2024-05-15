@@ -28,36 +28,37 @@ const UserProfileSummary: React.FC<UserProfileSummaryProps> = ({
     return;
   };
   return (
-    <div className="flex justify-between border-b py-4">
-      <div className="flex w-fit items-center gap-4 sm:gap-12">
-        <div>#{index}</div>
-        <div>
-          <UserAvatar className="h-8 w-8" user={{ name: name, avatarUrl: avatarUrl }} />
-        </div>
-        <Link key={userGitHubId} href={`https://oss.gg/${userGitHubId}`} target="_blank">
-          <div className="hover:underline">{name}</div>
-        </Link>
-      </div>
-
-      <div className="flex w-auto items-center gap-4">
-        {showSettingButtons && (
-          <div className="flex gap-2">
-            <Button size={"sm"} variant={"destructive"} onClick={kickAndBlockHandler}>
-              Kick and block
-            </Button>
-            <Button size={"sm"} variant={"default"} onClick={kickAndBlockHandler}>
-              Mute
-            </Button>
-            <Button size={"sm"} variant={"default"} onClick={kickAndBlockHandler}>
-              Change Points
-            </Button>
+    <Link key={userGitHubId} href={`https://oss.gg/${userGitHubId}`} target="_blank">
+      <div className="group flex justify-between border-b py-4">
+        <div className="flex w-fit items-center gap-4 sm:gap-12">
+          <div>#{index}</div>
+          <div>
+            <UserAvatar className="h-8 w-8" user={{ name: name, avatarUrl: avatarUrl }} />
           </div>
-        )}
-        <div className=" w-[6rem] whitespace-nowrap text-justify   font-[400] dark:text-white">
-          {points} points
+
+          <div className="group-hover:underline">{name}</div>
+        </div>
+
+        <div className="flex w-auto items-center gap-4">
+          {showSettingButtons && (
+            <div className="flex gap-2">
+              <Button size={"sm"} variant={"destructive"} onClick={kickAndBlockHandler}>
+                Kick and block
+              </Button>
+              <Button size={"sm"} variant={"default"} onClick={kickAndBlockHandler}>
+                Mute
+              </Button>
+              <Button size={"sm"} variant={"default"} onClick={kickAndBlockHandler}>
+                Change Points
+              </Button>
+            </div>
+          )}
+          <div className=" w-[6rem] whitespace-nowrap text-justify   font-[400] dark:text-white">
+            {points} points
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 export default UserProfileSummary;

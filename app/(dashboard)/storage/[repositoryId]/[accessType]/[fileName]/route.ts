@@ -7,22 +7,21 @@ import getFile from "./lib/getFile";
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { environmentId: string; accessType: string; fileName: string } }
+  { params }: { params: { repositoryId: string; accessType: string; fileName: string } }
 ) {
   const paramValidation = ZStorageRetrievalParams.safeParse(params);
-
 
   if (!paramValidation.success) {
     return new Response("Fields are missing or incorrectly formatted", { status: 400 });
   }
 
-  const { environmentId, accessType, fileName: fileNameOG } = paramValidation.data;
+  const { repositoryId, accessType, fileName: fileNameOG } = paramValidation.data;
 
   const fileName = decodeURIComponent(fileNameOG);
 
   // maybe we might have private files in future that would require some sort of authentication
   if (accessType === "public") {
-    return await getFile(environmentId, accessType, fileName);
+    return await getFile(repositoryId, accessType, fileName);
   }
 
   // if the user is authenticated via the session
@@ -32,7 +31,7 @@ export async function GET(
     return new Response("User must be authenticated to perform this action.", { status: 401 });
   }
 
-  return await getFile(environmentId, accessType, fileName);
+  return await getFile(repositoryId, accessType, fileName);
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: { fileName: string } }) {
@@ -40,9 +39,9 @@ export async function DELETE(_: NextRequest, { params }: { params: { fileName: s
     return new Response("Fields are missing or incorrectly formatted", { status: 400 });
   }
 
-  const [environmentId, accessType, file] = params.fileName.split("/");
+  const [repositoryId, accessType, file] = params.fileName.split("/");
 
-  const paramValidation = ZStorageRetrievalParams.safeParse({ fileName: file, environmentId, accessType });
+  const paramValidation = ZStorageRetrievalParams.safeParse({ fileName: file, repositoryId, accessType });
 
   if (!paramValidation.success) {
     return new Response("Fields are missing or incorrectly formatted", { status: 400 });
@@ -57,7 +56,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { fileName: s
   }
 
   return await handleDeleteFile(
-    paramValidation.data.environmentId,
+    paramValidation.data.repositoryId,
     paramValidation.data.accessType,
     paramValidation.data.fileName
   );
