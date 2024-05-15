@@ -22,11 +22,17 @@ export default async function IssuesPage() {
 
   const repoWithIssuesMap = enrolledRepos.reduce(
     (acc, repo, index) => {
-      acc[capitalizeFirstLetter(repo.name)] = issuesResults[index];
+      acc[capitalizeFirstLetter(repo.name)] = {
+        issues: issuesResults[index],
+        level: repo.levels,
+      };
       return acc;
     },
     {
-      "All Projects": allOpenIssues,
+      "All Projects": {
+        issues: allOpenIssues,
+        level: [],
+      },
     }
   );
 
@@ -55,10 +61,10 @@ export default async function IssuesPage() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            {Object.entries(repoWithIssuesMap).map(([repoName, issues]) => (
+            {Object.entries(repoWithIssuesMap).map(([repoName, { issues, level }]) => (
               <TabsContent key={repoName} value={repoName}>
                 {issues.map((issue) => (
-                  <GitHubIssue issue={issue} key={issue.title} />
+                  <GitHubIssue key={issue.title} issue={issue} levelsInRepo={level} />
                 ))}
               </TabsContent>
             ))}
