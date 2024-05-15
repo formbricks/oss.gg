@@ -123,12 +123,13 @@ export default async function DashboardPage() {
     <DashboardShell>
       <DashboardHeader heading="Shall we play a game?"></DashboardHeader>
 
-      <div className=" grid gap-4 ">
+      <div className=" grid gap-8">
         {pointsAndLevelsPerRepository.map((repositoryData, index) => {
           return (
             <div key={repositoryData.id}>
               <UserPointsAndLevelCard
                 key={repositoryData.id}
+                repositoryId={repositoryData.id}
                 repositoryName={repositoryData.repositoryName}
                 points={repositoryData.points}
                 rank={repositoryData.rank}

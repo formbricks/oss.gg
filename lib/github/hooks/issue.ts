@@ -163,7 +163,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
               owner,
               repo,
               issue_number: issueNumber,
-              body: `With your current level, you are not yet able to work on this issue.`,
+              body: `With your current level, you are not yet able to work on this issue. Please have a look on oss.gg to see which levels can work on which issues 🤓`,
             });
             return;
           }

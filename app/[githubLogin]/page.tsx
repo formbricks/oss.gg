@@ -166,15 +166,15 @@ export default async function ProfilePage({ params }) {
               <div>
                 <h3 className="mb-2 text-xl font-medium">Congrats! </h3>
                 {userEnrollments.map((item) => (
-                  <div key={item.id}>
-                    <div className="flex items-center space-x-3 rounded-lg border border-muted p-3">
-                      <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
-                      <div>
-                        <p className="font-medium">
-                          {githubUserData?.name} enrolled to contribute to {item.name}
-                        </p>
-                        <p className="mt-0.5 text-xs">Let the games begin!</p>
-                      </div>
+                  <div
+                    key={item.id}
+                    className="mb-2 flex items-center space-x-3 rounded-lg border border-muted p-3">
+                    <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-3xl">🎉</div>
+                    <div>
+                      <p className="font-medium">
+                        {githubUserData?.name} enrolled to contribute to {item.name}
+                      </p>
+                      <p className="mt-0.5 text-xs">Let the games begin!</p>
                     </div>
                   </div>
                 ))}

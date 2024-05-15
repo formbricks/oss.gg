@@ -82,12 +82,12 @@ export default function Leaderboard({
 
             return (
               <div key={level.id}>
-                <div className="mt-6 border-b-2  border-foreground  py-3">
+                <div className="mt-6 border-b border-foreground/25 py-3">
                   <div className="flex items-center gap-6">
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={level.iconUrl} alt="level icon" />
                     </Avatar>
-                    <div className="">
+                    <div className="font-medium text-foreground">
                       Level {sortedLevels.length - levelIndex}: {capitalizeEachWord(level.name)}
                     </div>
                   </div>
@@ -106,7 +106,7 @@ export default function Leaderboard({
                     </>
                   ))
                 ) : (
-                  <p key={`${level.id}-no-players`}>
+                  <p key={`${level.id}-no-players`} className="py-4 text-foreground/50">
                     No player levelled up here yet. Who&prime;s gonna be the first?
                   </p>
                 )}
