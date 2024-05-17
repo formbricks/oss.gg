@@ -71,3 +71,9 @@ export const WEBAPP_URL =
 // Tremendous
 export const TREMENDOUS_API_KEY = env.TREMENDOUS_API_KEY;
 export const TREMENDOUS_CAMPAIGN_ID = env.TREMENDOUS_CAMPAIGN_ID;
+
+// Discord
+export const DISCORD_BOT_TOKEN = env.DISCORD_BOT_TOKEN;
+export const DISCORD_POINTS_MESSAGE_TRIGGER_ID = "discord.pointsMessage";
+export const DISCORD_AWARD_POINTS_MESSAGE = (username: string, points: number) =>
+  `Way to go, ${username} 🎉 You've just earned ${points} points. Your contribution is invaluable to our community 🙌 Keep up the fantastic work and let's keep pushing forward! 💪`;
