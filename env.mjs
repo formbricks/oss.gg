@@ -60,6 +60,8 @@ export const env = createEnv({
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
     S3_REGION: process.env.S3_REGION,
     S3_SECRET_KEY: process.env.S3_SECRET_KEY,
+    WEBAPP_URL: process.env.WEBAPP_URL,
+    VERCEL_URL: process.env.VERCEL_URL,
     TRIGGER_API_KEY: process.env.TRIGGER_API_KEY,
     TRIGGER_API_URL: process.env.TRIGGER_API_URL,
     TREMENDOUS_API_KEY: process.env.TREMENDOUS_API_KEY,
