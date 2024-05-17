@@ -8,6 +8,7 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client"],
+    serverComponentsExternalPackages: ["@aws-sdk"],
   },
   async redirects() {
     return [
