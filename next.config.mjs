@@ -7,8 +7,8 @@ const nextConfig = {
     domains: ["avatars.githubusercontent.com", "pbs.twimg.com"],
   },
   experimental: {
-    appDir: true,
     serverComponentsExternalPackages: ["@prisma/client"],
+    serverComponentsExternalPackages: ["@aws-sdk"],
   },
   async redirects() {
     return [

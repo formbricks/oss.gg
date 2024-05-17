@@ -18,8 +18,13 @@ export enum EVENT_TRIGGERS {
   INSTALLATION_CREATED = "installation.created",
   ISSUE_COMMENTED = "issue_comment.created",
   PULL_REQUEST_OPENED = "pull_request.opened",
+  PULL_REQUEST_CLOSED = "pull_request.closed",
 }
 export const AWARD_POINTS_IDENTIFIER = "/award" as const;
+export const USD_CURRENCY_CODE = "USD" as const;
+export const BOUNTY_IDENTIFIER = "/bounty" as const;
+export const BOUNTY_EMOJI = "💸" as const;
+export const BOUNTY_LABEL_REGEX = new RegExp(`^${BOUNTY_EMOJI}\\s+\\d+\\s+${USD_CURRENCY_CODE}$`);
 
 export const ON_NEW_ISSUE = "Thanks for opening an issue! It's live on oss.gg!";
 export const ON_REPO_NOT_REGISTERED = `This repository is not registered with oss.gg. Please register it at [oss.gg](https://oss.gg).`;
@@ -62,6 +67,10 @@ export const MAX_SIZE = 1024 * 1024 * 10;
 // URLs
 export const WEBAPP_URL =
   env.WEBAPP_URL || (env.VERCEL_URL ? `https://${env.VERCEL_URL}` : false) || "http://localhost:3000";
+
+// Tremendous
+export const TREMENDOUS_API_KEY = env.TREMENDOUS_API_KEY;
+export const TREMENDOUS_CAMPAIGN_ID = env.TREMENDOUS_CAMPAIGN_ID;
 
 // Discord
 export const DISCORD_BOT_TOKEN = env.DISCORD_BOT_TOKEN;

@@ -10,7 +10,13 @@ export default async function RepoSettings({ params }) {
   const players = await getUsersForRepository(params.repositoryId);
 
   const arrayOfPlayersWithTheirTotalPoints = players.map((player) => {
-    const totalPointsForThisSinglePlayer = player.pointTransactions.reduce((acc, pt) => acc + pt.points, 0);
+    const totalPointsForThisSinglePlayer = player.pointTransactions.reduce((acc, pt) => {
+      if (pt.repositoryId === params.repositoryId) {
+        return acc + pt.points;
+      } else {
+        return acc;
+      }
+    }, 0);
     return {
       ...player,
       totalPointsForThisSinglePlayer: totalPointsForThisSinglePlayer,

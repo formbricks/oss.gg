@@ -43,3 +43,21 @@ export const extractIssueNumbers = (body: string): number[] => {
     return [];
   }
 };
+
+export const extractIssueNumbersFromPrBody = (body: string): number[] => {
+  // Refer: https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue
+  // Regex pattern to match both full URLs and shorthand references to issues
+  const pattern =
+    /\b(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\b\s+(?:https:\/\/github\.com\/\w+\/\w+\/issues\/(\d+)|#(\d+))/gi;
+
+  // Find matches and extract issue numbers
+  const issueSet = new Set<number>(); // Using a Set to ensure uniqueness
+  let match;
+  while ((match = pattern.exec(body)) !== null) {
+    // Adding the issue number to the Set, match[2] for full URL, match[3] for shorthand
+    const issueNumber = match[2] || match[3];
+    issueSet.add(Number(issueNumber));
+  }
+  const uniqueIssues = Array.from(issueSet);
+  return uniqueIssues;
+};

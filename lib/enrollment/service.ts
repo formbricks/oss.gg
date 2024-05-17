@@ -112,6 +112,7 @@ export const getEnrolledRepositories = async (userId: string): Promise<TReposito
       pointTransactions: true,
       enrollments: true,
       logoUrl: true,
+      levels: true,
     },
   });
 
