@@ -1,64 +1,28 @@
 import { z } from "zod";
 
-export const ZLevel = z.object({
-  id: z.string(),
+export const ZEnrollment = z.object({
+  id: z.string().optional(),
+  userId: z.string(),
+  repositoryId: z.string(),
+  enrolledAt: z.date().optional(),
+});
+
+export type TEnrollment = z.infer<typeof ZEnrollment>;
+
+export const ZLevelInput = z.object({
   name: z.string(),
   description: z.string(),
   pointThreshold: z.number(),
-  iconUrl: z.string(),
+  icon: z.string(),
   repositoryId: z.string(),
   permissions: z.object({
-    limitIssues: z.boolean(),
-    issueLabels: z.array(
-      z.object({
-        id: z.string(),
-        text: z.string(),
-      })
-    ),
-    canReportBugs: z.boolean(),
+    canWorkOnIssues: z.boolean(),
+    issueLabels: z.array(z.string()),
+    canWorkOnBugs: z.boolean(),
     canHuntBounties: z.boolean(),
   }),
+  tags: z.array(z.string()),
 });
 
-export type TLevel = z.infer<typeof ZLevel>;
+export type TLevelInput = z.infer<typeof ZLevelInput>;
 
-export const ZFormSchema = z
-  .object({
-    id: z.string(),
-    name: z.string().min(3, {
-      message: "Level name must be at least 3 characters.",
-    }),
-    pointThreshold: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)) && parseInt(val, 10) >= 0, {
-      message: "Threshold must be a number greater than or equal to 0.",
-    }),
-
-    description: z.string().min(10, {
-      message: "Description must be at least 10 characters.",
-    }),
-    iconUrl: z.custom(),
-
-    issueLabels: z.array(
-      z.object({
-        id: z.string(),
-        text: z.string(),
-      })
-    ),
-    limitIssues: z.boolean(),
-    canReportBugs: z.boolean(),
-    canHuntBounties: z.boolean(),
-  })
-  .refine(
-    (data) => {
-      if (data.limitIssues && data.issueLabels.length === 0) {
-        return false;
-      }
-      return true;
-    },
-
-    {
-      message: "At least one issue label is required when limit issues is enabled.",
-      path: ["issueLabels"],
-    }
-  );
-
-export type TFormSchema = z.infer<typeof ZFormSchema>;

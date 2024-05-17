@@ -1,14 +1,9 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import UserPointsAndLevelCard from "@/components/ui/userPointsAndLevelCard";
+import PointsCard from "@/components/ui/pointsCard";
 import { authOptions } from "@/lib/auth";
 import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getCurrentUser } from "@/lib/session";
-import {
-  calculateAssignabelNonAssignableIssuesForUserInALevel,
-  findCurrentAndNextLevelOfCurrentUser,
-} from "@/lib/utils/levelUtils";
-import { TLevel } from "@/types/level";
 import { TPointTransaction } from "@/types/pointTransaction";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -51,17 +46,14 @@ export default async function DashboardPage() {
 
   const repositoriesUserIsEnrolledIn = await getEnrolledRepositories(user.id);
 
-  const calculateTotalPointsForCurrentUser = (
-    currentUserId: string,
-    pointTransactions: TPointTransaction[]
-  ) => {
+  const calculateTotalPointsForCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
     return pointTransactions.reduce((acc, transaction) => {
       if (transaction.userId === currentUserId) {
         return acc + transaction.points;
       }
       return acc;
     }, 0);
-  };
+  }
   const calculateRankOfCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
     // Create an object to store the total points for each user enrolled in the repositories that the current user is in.
     const totalPointsOfAllUsersInTheRepo = {};
@@ -92,20 +84,12 @@ export default async function DashboardPage() {
     return userRank;
   };
 
-  // Calculate total points,rank,current level for the current user in repositories they are enrolled in.
-  const pointsAndLevelsPerRepository = repositoriesUserIsEnrolledIn.map((repository) => {
+  // Calculate total points and rank for the current user in repositories they are enrolled in.
+  const pointsPerRepository = repositoriesUserIsEnrolledIn.map((repository) => {
     const pointTransactions = repository.pointTransactions || [];
 
     const totalPoints = calculateTotalPointsForCurrentUser(user.id, pointTransactions);
     const rank = calculateRankOfCurrentUser(user.id, pointTransactions);
-    const { currentLevelOfUser, nextLevelForUser } = findCurrentAndNextLevelOfCurrentUser(
-      repository,
-      totalPoints
-    );
-    const levels = (repository?.levels as TLevel[]) || [];
-    const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
-
-    const assignableTags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
 
     return {
       id: repository.id,
@@ -113,9 +97,6 @@ export default async function DashboardPage() {
       points: totalPoints,
       repositoryLogo: repository.logoUrl,
       rank: rank,
-      currentLevelOfUser: currentLevelOfUser,
-      nextLevelForUser: nextLevelForUser,
-      assignableTags: assignableTags?.assignableIssues || [],
     };
   });
 
@@ -123,20 +104,18 @@ export default async function DashboardPage() {
     <DashboardShell>
       <DashboardHeader heading="Shall we play a game?"></DashboardHeader>
 
-      <div className=" grid gap-8">
-        {pointsAndLevelsPerRepository.map((repositoryData, index) => {
+      <div className=" grid gap-4 md:grid-cols-2">
+        {pointsPerRepository.map((point, index) => {
+          const isLastItem = index === pointsPerRepository.length - 1;
+          const isSingleItemInLastRow = pointsPerRepository.length % 2 !== 0 && isLastItem;
           return (
-            <div key={repositoryData.id}>
-              <UserPointsAndLevelCard
-                key={repositoryData.id}
-                repositoryId={repositoryData.id}
-                repositoryName={repositoryData.repositoryName}
-                points={repositoryData.points}
-                rank={repositoryData.rank}
-                repositoryLogo={repositoryData.repositoryLogo}
-                currentLevelOfUser={repositoryData.currentLevelOfUser}
-                nextLevelForUser={repositoryData.nextLevelForUser}
-                assignableTags={repositoryData.assignableTags}
+            <div key={point.id} className={`${isSingleItemInLastRow ? "md:col-span-2" : "md:col-span-1"}`}>
+              <PointsCard
+                key={point.id}
+                repositoryName={point.repositoryName}
+                points={point.points}
+                rank={point.rank}
+                repositoryLogo={point.repositoryLogo}
               />
             </div>
           );

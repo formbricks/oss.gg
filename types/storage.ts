@@ -5,8 +5,8 @@ export type TAccessType = z.infer<typeof ZAccessType>;
 
 export const ZStorageRetrievalParams = z.object({
   fileName: z.string(),
-  //TODO: add cuid validation to the repositoryId
-  repositoryId: z.string(),
+  //TODO: add cuid validation to the environmentId
+  environmentId: z.string(),
   accessType: ZAccessType,
 });
 

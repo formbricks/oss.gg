@@ -8,8 +8,8 @@ import { v4 as uuid } from "uuid";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { toast } from "../ui/use-toast";
-import { tagVariants } from "./tag";
 import { Autocomplete } from "./tag-auto-complete";
+import { tagVariants } from "./tag";
 import { TagList } from "./tag-list";
 import { TagPopover } from "./tag-popover";
 
@@ -90,7 +90,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, ref) 
     truncate,
     autocompleteFilter,
     borderStyle,
-    textCase = null,
+    textCase,
     interaction,
     animation,
     textStyle,
@@ -132,64 +132,61 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, ref) 
     onInputChange?.(newValue);
   };
 
-  const addLabel = () => {
-    const newTagText = inputValue.trim();
-
-    // Check if the tag is in the autocomplete options if restrictTagsToAutocomplete is true
-    if (
-      restrictTagsToAutocompleteOptions &&
-      !autocompleteOptions?.some((option) => option.text === newTagText)
-    ) {
-      toast({
-        title: "Invalid Tag",
-        description: "Please select a tag from the autocomplete options.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (validateTag && !validateTag(newTagText)) {
-      return;
-    }
-
-    if (minLength && newTagText.length < minLength) {
-      console.warn("Tag is too short");
-      toast({
-        title: "Tag is too short",
-        description: "Please enter a tag with more characters",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate maxLength
-    if (maxLength && newTagText.length > maxLength) {
-      toast({
-        title: "Tag is too long",
-        description: "Please enter a tag with less characters",
-        variant: "destructive",
-      });
-      console.warn("Tag is too long");
-      return;
-    }
-
-    const newTagId = uuid();
-
-    if (
-      newTagText &&
-      (allowDuplicates || !tags.some((tag) => tag.text === newTagText)) &&
-      (maxTags === undefined || tags.length < maxTags)
-    ) {
-      setTags([...tags, { id: newTagId, text: newTagText }]);
-      onTagAdd?.(newTagText);
-      setTagCount((prevTagCount) => prevTagCount + 1);
-    }
-    setInputValue("");
-  };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (delimiterList ? delimiterList.includes(e.key) : e.key === delimiter || e.key === Delimiter.Enter) {
       e.preventDefault();
-      addLabel();
+      const newTagText = inputValue.trim();
+
+      // Check if the tag is in the autocomplete options if restrictTagsToAutocomplete is true
+      if (
+        restrictTagsToAutocompleteOptions &&
+        !autocompleteOptions?.some((option) => option.text === newTagText)
+      ) {
+        toast({
+          title: "Invalid Tag",
+          description: "Please select a tag from the autocomplete options.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (validateTag && !validateTag(newTagText)) {
+        return;
+      }
+
+      if (minLength && newTagText.length < minLength) {
+        console.warn("Tag is too short");
+        toast({
+          title: "Tag is too short",
+          description: "Please enter a tag with more characters",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate maxLength
+      if (maxLength && newTagText.length > maxLength) {
+        toast({
+          title: "Tag is too long",
+          description: "Please enter a tag with less characters",
+          variant: "destructive",
+        });
+        console.warn("Tag is too long");
+        return;
+      }
+
+      const newTagId = uuid();
+
+      if (
+        newTagText &&
+        (allowDuplicates || !tags.some((tag) => tag.text === newTagText)) &&
+        (maxTags === undefined || tags.length < maxTags)
+      ) {
+        setTags([...tags, { id: newTagId, text: newTagText }]);
+        onTagAdd?.(newTagText);
+        setTagCount((prevTagCount) => prevTagCount + 1);
+      }
+      setInputValue("");
     }
   };
 
@@ -312,7 +309,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, ref) 
           </Autocomplete>
         </div>
       ) : (
-        <div className="flex w-full items-center justify-between gap-2 ">
+        <div className="w-full">
           {!usePopoverForTags ? (
             <Input
               ref={inputRef}
@@ -369,9 +366,6 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, ref) 
               />
             </TagPopover>
           )}
-          <Button onClick={() => addLabel()} disabled={maxTags !== undefined && tags.length >= maxTags}>
-            Add Label
-          </Button>
         </div>
       )}
       {showCount && maxTags && (

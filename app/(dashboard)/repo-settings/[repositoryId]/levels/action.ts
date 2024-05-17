@@ -1,54 +1,42 @@
 "use server";
 
-import { createLevel, deleteLevel, updateLevel } from "@/lib/levels/service";
+/*
+
+// import { createLevel, deleteLevel, updateLevel, updateLevelIcon } from "@/lib/levels/service";
 import { getCurrentUser } from "@/lib/session";
-import { deleteFile } from "@/lib/storage/service";
-import { getFileNameWithIdFromUrl } from "@/lib/storage/utils";
-import { TLevel } from "@/types/level";
+import { TLevelInput } from "@/types/level";
 
-export const createLevelAction = async (levelData: TLevel) => {
-  try {
-    const user = await getCurrentUser();
-    if (!user || !user.id) {
-      throw new Error("User must be authenticated to perform this action.");
-    }
-    return await createLevel(levelData);
-  } catch (error) {
-    throw new Error(`Failed to create level.`);
+export async function createLevelAction(levelData: TLevelInput) {
+  const user = await getCurrentUser();
+  if (!user || !user.id) {
+    return { error: "User must be authenticated to perform this action." };
   }
-};
+  await createLevel(levelData);
+}
 
-export const updateLevelAction = async (updateData: TLevel) => {
-  try {
-    const user = await getCurrentUser();
-    if (!user || !user.id) {
-      throw new Error("User must be authenticated to perform this action.");
-    }
-
-    return await updateLevel(updateData);
-  } catch (error) {
-    throw new Error(`Failed to update level.`);
+//TODO: fix the type
+export async function updateLevelIconAction(updateData: {
+  name: string;
+  repositoryId: string;
+  iconUrl: string;
+}) {
+  const user = await getCurrentUser();
+  if (!user || !user.id) {
+    return { error: "User must be authenticated to perform this action." };
   }
-};
+  // update level icon
 
-export const deleteLevelAction = async (repositoryId: string, levelId: string, iconUrl: string) => {
-  try {
-    const user = await getCurrentUser();
-    if (!user || !user.id) {
-      throw new Error("User must be authenticated to perform this action.");
-    }
-    const fileName = getFileNameWithIdFromUrl(iconUrl);
-    if (!fileName) {
-      throw new Error("Invalid filename");
-    }
+  await updateLevelIcon(updateData.name, updateData.repositoryId, updateData.iconUrl);
+}
 
-    const deletionResult = await deleteFile(repositoryId, "public", fileName);
-    if (!deletionResult.success) {
-      throw new Error("Deletion failed");
-    }
 
-    return await deleteLevel(repositoryId, levelId);
-  } catch (error) {
-    throw new Error(`Failed to delete level.`);
+export async function deleteLevelAction(levelData: {
+  repositoryId: string;
+  name: string;
+}) {
+  const user = await getCurrentUser();
+  if (!user || !user.id) {
+    return { error: "User must be authenticated to perform this action." };
   }
-};
+  await deleteLevel(levelData.name, levelData.repositoryId);
+} */

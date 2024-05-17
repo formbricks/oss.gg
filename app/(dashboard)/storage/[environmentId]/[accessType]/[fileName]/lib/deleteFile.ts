@@ -3,13 +3,13 @@ import { storageCache } from "@/lib/storage/service";
 import { deleteFile } from "@/lib/storage/service";
 import { TAccessType } from "@/types/storage";
 
-export const handleDeleteFile = async (repositoryId: string, accessType: TAccessType, fileName: string) => {
+export const handleDeleteFile = async (environmentId: string, accessType: TAccessType, fileName: string) => {
   try {
-    const { message, success, code } = await deleteFile(repositoryId, accessType, fileName);
+    const { message, success, code } = await deleteFile(environmentId, accessType, fileName);
 
     if (success) {
       // revalidate cache
-      storageCache.revalidate({ fileKey: `${repositoryId}/${accessType}/${fileName}` });
+      storageCache.revalidate({ fileKey: `${environmentId}/${accessType}/${fileName}` });
       return Response.json(
         {
           data: message,

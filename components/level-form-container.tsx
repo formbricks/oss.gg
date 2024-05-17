@@ -1,34 +1,38 @@
-"use client";
+/* "use client";
 
-import { TLevel } from "@/types/level";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 
-import { LevelsForm } from "./forms/levels-form";
+import { LevelsFormProps } from "./forms/levels-form";
 import { Button } from "./ui/button";
 
-export default function LevelsFormContainer({ levelsData }: { levelsData: TLevel[] }) {
-  const [showForm, setShowForm] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const toggleFormVisibility = () => {
-    setShowForm(!showForm);
-  };
-
-  useEffect(() => {
-    if (containerRef.current && showForm) {
-      containerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  }, [showForm]);
+export default function LevelsFormContainer({ data }: { data: LevelsFormProps[] }) {
+  const [showForm, setShowForm] = React.useState(false);
   return (
-    <div className="space-y-6" ref={containerRef}>
-      {levelsData.map((level) => (
-        <LevelsForm key={level.id} isForm={false} level={level} setShowForm={setShowForm} />
+    <div className="space-y-6">
+      {data.map((level, index) => (
+        <LevelsForm
+          canHuntBounties={level.canHuntBounties}
+          canReportBugs={level.canReportBugs}
+          description={level.description}
+          iconUrl={level.iconUrl}
+          key={index}
+          levelName={level.levelName}
+          limitIssues={level.limitIssues}
+          topics={level.topics}
+          pointThreshold={level.pointThreshold}
+        />
       ))}
 
-      {showForm && <LevelsForm isForm={true} setShowForm={setShowForm} level={null} />}
+      {/* shows an empty levels form when you click the add level */
+/*
+      {showForm && <LevelsForm isForm={true} />}
+
       <div>
-        <Button onClick={toggleFormVisibility}>{showForm ? "Cancel" : "Add Level"}</Button>
+        <Button variant="secondary" onClick={() => setShowForm(!showForm)}>
+          Add Level
+        </Button>
       </div>
     </div>
   );
 }
+ */

@@ -1,8 +1,8 @@
 import { getS3File } from "@/lib/storage/service";
 
-const getFile = async (repositoryId: string, accessType: string, fileName: string) => {
+const getFile = async (environmentId: string, accessType: string, fileName: string) => {
   try {
-    const signedUrl = await getS3File(`${repositoryId}/${accessType}/${fileName}`);
+    const signedUrl = await getS3File(`${environmentId}/${accessType}/${fileName}`);
 
     return new Response(null, {
       status: 302,

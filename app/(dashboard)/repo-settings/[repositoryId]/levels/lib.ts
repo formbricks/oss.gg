@@ -1,6 +1,6 @@
 export const handleFileUpload = async (
   file: File,
-  repositoryId: string
+  environmentId: string
 ): Promise<{
   error?: string;
   url: string;
@@ -21,7 +21,7 @@ export const handleFileUpload = async (
   const payload = {
     fileName: file.name,
     fileType: file.type,
-    repositoryId,
+    environmentId,
   };
 
   const response = await fetch("/api/storage", {
@@ -53,7 +53,7 @@ export const handleFileUpload = async (
     requestHeaders = {
       "X-File-Type": file.type,
       "X-File-Name": encodeURIComponent(updatedFileName),
-      "X-Environment-ID": repositoryId ?? "",
+      "X-Environment-ID": environmentId ?? "",
       "X-Signature": signature,
       "X-Timestamp": String(timestamp),
       "X-UUID": uuid,

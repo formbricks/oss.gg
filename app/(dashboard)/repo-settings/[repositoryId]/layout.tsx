@@ -1,10 +1,11 @@
 import EnrollPlayerSwitch from "@/components/enroll-player-switch";
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import LayoutTabs from "@/components/ui/layoutTabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { userHasPermissionForRepository } from "@/lib/repository/auth";
 import { getRepositoryById } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -24,16 +25,7 @@ export default async function RepoSettingsLayout({ children, params }) {
   }
 
   const repository = await getRepositoryById(params.repositoryId);
-  const tabsData = [
-    { href: `/repo-settings/${params.repositoryId}/players`, value: "players", label: "Players" },
-    {
-      href: `/repo-settings/${params.repositoryId}/description`,
-      value: "description",
-      label: "Project Description",
-    },
-    { href: `/repo-settings/${params.repositoryId}/levels`, value: "levels", label: "Levels" },
-    { href: `/repo-settings/${params.repositoryId}/bounties`, value: "bounties", label: "Bounties" },
-  ];
+
   return (
     <DashboardShell>
       <DashboardHeader
@@ -41,8 +33,22 @@ export default async function RepoSettingsLayout({ children, params }) {
         text="Set up oss.gg to work well with your repo and community."
       />
       <EnrollPlayerSwitch />
-      <LayoutTabs tabsData={tabsData} tabNumberInUrlPathSegment={3} defaultTab={"players"} />
-
+      <Tabs defaultValue="players" className="w-full">
+        <TabsList>
+          <Link href={`/repo-settings/${params.repositoryId}/players`}>
+            <TabsTrigger value="players">Players</TabsTrigger>
+          </Link>
+          <Link href={`/repo-settings/${params.repositoryId}/description`}>
+            <TabsTrigger value="description">Project Description</TabsTrigger>
+          </Link>
+          {/*           <Link href={`/repo-settings/${params.repositoryId}/levels`}>
+            <TabsTrigger value="levels">Levels</TabsTrigger>
+          </Link> */}
+          <Link href={`/repo-settings/${params.repositoryId}/bounties`}>
+            <TabsTrigger value="bounties">Bounties</TabsTrigger>
+          </Link>
+        </TabsList>
+      </Tabs>
       {children}
     </DashboardShell>
   );

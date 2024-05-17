@@ -13,7 +13,7 @@ export interface ApiSuccessResponse<T = { [key: string]: any }> {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
-  const { fileName, fileType, repositoryId, allowedFileExtensions } = await req.json();
+  const { fileName, fileType, environmentId, allowedFileExtensions } = await req.json();
 
   if (!fileName) {
     return new Response("fileName is required", { status: 400 });
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   const accessType = "public";
 
   try {
-    const signedUrlResponse = await getUploadSignedUrl(fileName, repositoryId, fileType, accessType);
+    const signedUrlResponse = await getUploadSignedUrl(fileName, environmentId, fileType, accessType);
     return new Response(JSON.stringify({ data: signedUrlResponse }), {
       status: 200,
     });

@@ -160,7 +160,7 @@ export const getS3File = async (fileKey: string): Promise<string> => {
 // ingle service for generating a signed url based on user's environment variables
 export const getUploadSignedUrl = async (
   fileName: string,
-  repositoryId: string,
+  environmentId: string,
   fileType: string,
   accessType: TAccessType
 ): Promise<TGetSignedUrlResponse> => {
@@ -179,13 +179,13 @@ export const getUploadSignedUrl = async (
       updatedFileName,
       fileType,
       accessType,
-      repositoryId
+      environmentId
     );
 
     return {
       signedUrl,
       presignedFields,
-      fileUrl: new URL(`${WEBAPP_URL}/storage/${repositoryId}/${accessType}/${updatedFileName}`).href,
+      fileUrl: new URL(`${WEBAPP_URL}/storage/${environmentId}/${accessType}/${updatedFileName}`).href,
     };
   } catch (err) {
     throw err;
@@ -196,7 +196,7 @@ export const getS3UploadSignedUrl = async (
   fileName: string,
   contentType: string,
   accessType: string,
-  repositoryId: string
+  environmentId: string
 ) => {
   const maxSize = MAX_SIZE;
   const postConditions: PresignedPostOptions["Conditions"] = [["content-length-range", 0, maxSize]];
@@ -206,7 +206,7 @@ export const getS3UploadSignedUrl = async (
     const { fields, url } = await createPresignedPost(s3Client, {
       Expires: 10 * 60, // 10 minutes
       Bucket: S3_BUCKET_NAME,
-      Key: `${repositoryId}/${accessType}/${fileName}`,
+      Key: `${environmentId}/${accessType}/${fileName}`,
       Fields: {
         "Content-Type": contentType,
       },
@@ -227,13 +227,13 @@ export const putFile = async (
   fileName: string,
   fileBuffer: Buffer,
   accessType: TAccessType,
-  repositoryId: string
+  environmentId: string
 ) => {
   try {
     const input = {
       Body: fileBuffer,
       Bucket: S3_BUCKET_NAME,
-      Key: `${repositoryId}/${accessType}/${fileName}`,
+      Key: `${environmentId}/${accessType}/${fileName}`,
     };
 
     const command = new PutObjectCommand(input);
@@ -245,9 +245,9 @@ export const putFile = async (
   }
 };
 
-export const deleteFile = async (repositoryId: string, accessType: TAccessType, fileName: string) => {
+export const deleteFile = async (environmentId: string, accessType: TAccessType, fileName: string) => {
   try {
-    await deleteS3File(`${repositoryId}/${accessType}/${fileName}`);
+    await deleteS3File(`${environmentId}/${accessType}/${fileName}`);
     return { success: true, message: "File deleted" };
   } catch (err: any) {
     if (err.name === "NoSuchKey") {
@@ -272,14 +272,14 @@ export const deleteS3File = async (fileKey: string) => {
   }
 };
 
-export const deleteS3FilesByRepositoryId = async (repositoryId: string) => {
+export const deleteS3FilesByEnvironmentId = async (environmentId: string) => {
   try {
-    // List all objects in the bucket with the prefix of repositoryId
+    // List all objects in the bucket with the prefix of environmentId
     const s3Client = getS3Client();
     const listObjectsOutput = await s3Client.send(
       new ListObjectsCommand({
         Bucket: S3_BUCKET_NAME,
-        Prefix: repositoryId,
+        Prefix: environmentId,
       })
     );
 

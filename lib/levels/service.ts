@@ -1,162 +1,121 @@
 import { db } from "@/lib/db";
-import { ZId, ZString } from "@/types/common";
-import { TLevel, ZLevel } from "@/types/level";
-import { unstable_cache } from "next/cache";
 
-import { DEFAULT_CACHE_REVALIDATION_INTERVAL } from "../constants";
-import { validateInputs } from "../utils/validate";
-import { levelsCache } from "./cache";
-
-export const createLevel = async (levelData: TLevel): Promise<TLevel[]> => {
-  validateInputs([levelData, ZLevel]);
+export const assignUserPoints = async (
+  userId: string,
+  points: number,
+  description: string,
+  url: string,
+  repositoryId: string
+) => {
   try {
-    const repository = await db.repository.findUnique({
+    const alreadyAssignedPoints = await db.pointTransaction.findFirst({
       where: {
-        id: levelData.repositoryId,
+        userId,
+        repositoryId,
+        url,
       },
-      select: { levels: true },
     });
-
-    if (!repository) {
-      throw new Error("Repository not found");
+    if (alreadyAssignedPoints) {
+      throw new Error("Points already assigned for this user for the given url");
     }
 
-    const existingLevels = (repository.levels || []) as TLevel[];
-
-    existingLevels.push(levelData);
-
-    const updatedRepositoryWithNewLevel = await db.repository.update({
-      where: {
-        id: levelData.repositoryId,
-      },
+    const pointsUpdated = await db.pointTransaction.create({
       data: {
-        levels: existingLevels,
+        points,
+        userId,
+        description,
+        url,
+        repositoryId,
       },
     });
-
-    levelsCache.revalidate({
-      repositoryId: updatedRepositoryWithNewLevel.id,
-    });
-
-    return updatedRepositoryWithNewLevel.levels as TLevel[];
+    return pointsUpdated;
   } catch (error) {
     throw error;
   }
 };
 
-export const updateLevel = async (levelData: TLevel): Promise<TLevel[]> => {
-  validateInputs([levelData, ZLevel]);
+//TODO: this should create and update the JSON in the repo model
+
+/* 
+export const createLevel = async (LevelData: TLevelInput) => {
   try {
-    const repository = await db.repository.findUnique({
-      where: {
-        id: levelData.repositoryId,
-      },
-      select: {
-        levels: true,
+    await db.level.create({
+      data: {
+        description: LevelData.description,
+        name: LevelData.name,
+        pointThreshold: LevelData.pointThreshold,
+        icon: LevelData.icon,
+        repositoryId: LevelData.repositoryId,
+        permissions: LevelData.permissions,
+        tags: LevelData.tags,
       },
     });
+  } catch (error) {
+    throw error;
+  }
+}; 
 
-    if (!repository) {
-      throw new Error("Repository not found");
-    }
-    const levels = repository.levels as TLevel[];
-    const existingLevelIndex = levels.findIndex((level: TLevel) => level.id === levelData.id);
-
-    if (existingLevelIndex === -1) {
-      throw new Error("Level not found in repository");
-    }
-
-    const updatedLevels = [...levels];
-    updatedLevels[existingLevelIndex] = levelData;
-
-    const updatedRepositoryWithUpdatedLevel = await db.repository.update({
+export const updateLevel = async (LevelData: TLevelInput) => {
+  try {
+    await db.level.update({
       where: {
-        id: levelData.repositoryId,
+        repositoryId: LevelData.repositoryId,
+        name: LevelData.name,
       },
       data: {
-        levels: updatedLevels,
+        description: LevelData.description,
+        pointThreshold: LevelData.pointThreshold,
+        icon: LevelData.icon,
+        permissions: LevelData.permissions,
+        name: LevelData.name,
+        tags: LevelData.tags,
       },
     });
-    levelsCache.revalidate({
-      repositoryId: updatedRepositoryWithUpdatedLevel.id,
-    });
-    return updatedRepositoryWithUpdatedLevel.levels as TLevel[];
   } catch (error) {
     throw error;
   }
 };
 
-export const deleteLevel = async (repositoryId: string, levelId: string): Promise<TLevel> => {
-  validateInputs([levelId, ZString], [repositoryId, ZId]);
+//TODO: type this better
+export const updateLevelIcon = async (name: string, repositoryId: string, iconUrl: string) => {
   try {
-    const repository = await db.repository.findUnique({
+    await db.level.update({
       where: {
-        id: repositoryId,
-      },
-      select: { levels: true },
-    });
-
-    if (!repository) {
-      throw new Error("Repository not found");
-    }
-
-    const existingLevels = repository.levels as TLevel[];
-
-    const levelIndex = existingLevels.findIndex((level) => level.id === levelId);
-
-    if (levelIndex === -1) {
-      throw new Error("Level not found in repository");
-    }
-
-    const deletedLevel = existingLevels[levelIndex];
-
-    existingLevels.splice(levelIndex, 1);
-
-    const updatedRepositoryWithUpdatedLevels = await db.repository.update({
-      where: {
-        id: repositoryId,
+        repositoryId,
+        name,
       },
       data: {
-        levels: existingLevels,
+        icon: iconUrl,
       },
     });
-
-    levelsCache.revalidate({
-      repositoryId: updatedRepositoryWithUpdatedLevels.id,
-    });
-
-    return deletedLevel;
   } catch (error) {
     throw error;
   }
 };
 
-export const getLevels = async (repositoryId: string): Promise<TLevel[]> => {
-  const levels = await unstable_cache(
-    async () => {
-      validateInputs([repositoryId, ZId]);
-
-      try {
-        const repository = await db.repository.findUnique({
-          where: {
-            id: repositoryId,
-          },
-          select: { levels: true },
-        });
-
-        if (!repository) {
-          throw new Error("Repository not found");
-        }
-        return repository.levels as TLevel[];
-      } catch (error) {
-        throw error;
-      }
-    },
-    [`getLevels-${repositoryId}`],
-    {
-      tags: [levelsCache.tag.byRepositoryId(repositoryId)],
-      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
-    }
-  )();
-  return levels;
+export const deleteLevel = async (name: string, repositoryId: string ) => {
+  try {
+    await db.level.delete({
+      where: {
+        repositoryId: repositoryId,
+        name: name,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
 };
+
+export const getLevels = async (repositoryId: string) => {
+  try {
+    const levels = await db.level.findMany({
+      where: {
+        repositoryId,
+      },
+    });
+    return levels;
+  } catch (error) {
+    throw error;
+  }
+}
+*/
