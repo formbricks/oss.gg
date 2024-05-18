@@ -192,8 +192,7 @@ export default async function ProfilePage({ params }) {
                 </>
               ) : (
                 <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-zinc-50">
-                  <p>You have not yet contributed to an oss.gg repository 🕹️</p>
-                  <Button href="/enroll">Get started!</Button>
+                  <p>{githubUserData?.name} has not yet contributed to an oss.gg repository 🕹️</p>
                 </div>
               )}
             </div>
