@@ -33,7 +33,7 @@ const LevelDetailCard = ({
     currentLevelOfUser,
     nextLevelForUser
   );
-  const isLevelCompleted = idx <= sortedLevels.length - 1 && totalPoints > sortedLevels[idx].pointThreshold;
+  const isLevelCompleted = idx <= sortedLevels.length - 1 && totalPoints >= sortedLevels[idx].pointThreshold;
   const completedCurrentLevelPercentage = progressMadeInThisLevel * 100;
   const isNotStarted = totalPoints < level.pointThreshold;
 
@@ -51,7 +51,7 @@ const LevelDetailCard = ({
     levelStatus = `Not started`;
     progressBarStatus = 0;
   } else {
-    levelStatus = `${completedCurrentLevelPercentage}% Complete`;
+    levelStatus = `${completedCurrentLevelPercentage.toFixed(2)}% Complete`;
     progressBarStatus = progressMadeInThisLevel;
   }
 
