@@ -108,7 +108,7 @@ export default async function ProfilePage({ params }) {
         (data) => data || { name: "Rick", avatar_url: Rick, bio: "is never gonna give you up 🕺" }
       ),
       getMergedPullRequestsByGithubLogin(repos, githubLogin),
-      getOpenPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
+      getOpenPullRequestsByGithubLogin(repos, githubLogin),
     ]);
 
 

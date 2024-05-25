@@ -5,7 +5,10 @@ import { unstable_cache } from "next/cache";
 
 import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
 
-export const getMergedPullRequestsByGithubLogin = async (repos: Array<string> | null, githubLogin: string) => {
+export const getMergedPullRequestsByGithubLogin = async (
+  repos: Array<string> | null,
+  githubLogin: string
+) => {
   if (!repos || repos.length === 0) {
     return Promise.resolve([]);
   }
@@ -44,20 +47,9 @@ export const getMergedPullRequestsByGithubLogin = async (repos: Array<string> | 
             isIssue: false,
           }))
         );
-
-        // Map the GitHub API response to  issue format
-        // const mergedPRs = validatedData.items.map((pr) => ({
-        //   logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-        //   href: pr.html_url,
-        //   title: pr.title,
-        //   author: pr.user.login,
-        //   key: pr.id.toString(),
-        //   isIssue: false,
-        // }));
-
         return mergedPRs;
       },
-      [`getMergedPullRequests-${repos}-${githubLogin}`],
+      [`getMergedPullRequests-${repoName}-${githubLogin}`],
       {
         revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
       }
@@ -67,40 +59,61 @@ export const getMergedPullRequestsByGithubLogin = async (repos: Array<string> | 
   return mergedPRs;
 };
 
-export const getOpenPullRequestsByGithubLogin = (repo: string, githubLogin: string) =>
-  unstable_cache(
-    async () => {
-      const url = `https://api.github.com/search/issues?q=repo:${repo}+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
+export const getOpenPullRequestsByGithubLogin = async(repos: Array<string> | null, githubLogin: string) => {
+  if (!repos || repos.length === 0) {
+    return Promise.resolve([]);
+  }
 
-      const headers = {
-        Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-        Accept: "application/vnd.github.v3+json",
-      };
+  const openPRs: Array<{
+    logoUrl: string;
+    href: string;
+    title: string;
+    author: string;
+    key: string;
+    state: string | undefined;
+    draft: boolean | undefined;
+    isIssue: boolean;
+  }> = [];
 
-      const response = await fetch(url, { headers });
-      const data = await response.json();
+  for (const repo of repos) {
+   await  unstable_cache(
+      async () => {
+        const url = `https://api.github.com/search/issues?q=repo:${repo}+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
 
-      const validatedData = ZGithubApiResponseSchema.parse(data);
+        const headers = {
+          Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+        };
 
-      // Map the GitHub API response to  issue format
-      const openPRs = validatedData.items.map((pr) => ({
-        logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-        href: pr.html_url,
-        title: pr.title,
-        author: pr.user.login,
-        key: pr.id.toString(),
-        state: pr.state,
-        draft: pr.draft,
-        isIssue: false,
-      }));
+        const response = await fetch(url, { headers });
+        const data = await response.json();
 
-      return openPRs;
-    },
-    [`getOpenPullRequests-${repo}-${githubLogin}`],
-    {
-      revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
-    }
-  )();
+        const validatedData = ZGithubApiResponseSchema.parse(data);
+
+        // Map the GitHub API response to  issue format
+        openPRs.push(...validatedData.items.map((pr) => ({
+          logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+          href: pr.html_url,
+          title: pr.title,
+          author: pr.user.login,
+          key: pr.id.toString(),
+          state: pr.state,
+          draft: pr.draft,
+          isIssue: false,
+        }))
+      );
+
+        return openPRs;
+      },
+      [`getOpenPullRequests-${repo}-${githubLogin}`],
+      {
+        revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+      }
+    )();
+  }
+
+  return openPRs;
+};
 
 export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
   unstable_cache(
