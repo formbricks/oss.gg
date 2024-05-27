@@ -73,6 +73,7 @@ export const TREMENDOUS_API_KEY = env.TREMENDOUS_API_KEY;
 export const TREMENDOUS_CAMPAIGN_ID = env.TREMENDOUS_CAMPAIGN_ID;
 
 // Discord
+export const DISCORD_CHANNEL_ID = env.DISCORD_CHANNEL_ID;
 export const DISCORD_BOT_TOKEN = env.DISCORD_BOT_TOKEN;
 export const DISCORD_POINTS_MESSAGE_TRIGGER_ID = "discord.pointsMessage";
 export const DISCORD_AWARD_POINTS_MESSAGE = (username: string, points: number) =>

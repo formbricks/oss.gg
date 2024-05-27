@@ -1,9 +1,9 @@
-import { env } from "@/env.mjs";
 import {
   ASSIGN_IDENTIFIER,
   AWARD_POINTS_IDENTIFIER,
   CREATE_IDENTIFIER,
   DISCORD_AWARD_POINTS_MESSAGE,
+  DISCORD_CHANNEL_ID,
   DISCORD_POINTS_MESSAGE_TRIGGER_ID,
   EVENT_TRIGGERS,
   LEVEL_LABEL,
@@ -396,7 +396,7 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
             await triggerDotDevClient.sendEvent({
               name: DISCORD_POINTS_MESSAGE_TRIGGER_ID,
               payload: {
-                channelId: env.DISCORD_CHANNEL_ID,
+                channelId: DISCORD_CHANNEL_ID,
                 message: DISCORD_AWARD_POINTS_MESSAGE(user.name ?? prAuthorUsername, points),
               },
             });
