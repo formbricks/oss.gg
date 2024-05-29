@@ -49,7 +49,7 @@ Stay in your GitHub Account Settings -> Developer Settings -> GitHub Apps and Cr
 Set it up as follows:
 
 - Callback URL: `http://localhost:3000/api/auth/callback`
-- Setup URL: `http://localhost:3000/select-repo` (Check the **Redirect on Update** option)
+- Setup URL: `http://localhost:3000/manage-repos` (Check the **Redirect on Update** option)
 - Webhook set to Active and get a URL from `https://smee.io/` by clicking on **Start a new channel** and then paste the URL in the Webhook URL field.
 - Disable SSL verification for now
 - Hit "Create GitHub App"
