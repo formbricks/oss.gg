@@ -3,10 +3,8 @@
 import Tiptap from "@/components/ui/tiptap-editor";
 import { use, useEffect, useState } from "react";
 
-export default function UpdateProjectDescription({ repositoryId, action }) {
-  const [description, setDescription] = useState(
-    "<p>Make work with the current description on repository detail page.</p>"
-  );
+export default function UpdateProjectDescription({ content, action }) {
+  const [description, setDescription] = useState(content);
 
   useEffect(() => {
     const fetchDescription = async () => {
@@ -15,12 +13,11 @@ export default function UpdateProjectDescription({ repositoryId, action }) {
     };
     // add debounce here to avoid too many requests
     const debounced = setTimeout(() => {
-        fetchDescription();
-        }
-    , 2000);
+      fetchDescription();
+    }, 2000);
     return () => clearTimeout(debounced);
-  }, [repositoryId]);
- 
+  }, [description]);
+
   return (
     <div>
       <Tiptap fn={setDescription} content={description} />

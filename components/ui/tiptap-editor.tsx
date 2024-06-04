@@ -257,5 +257,5 @@ const extensions = [
 ];
 
 export default ({ content, fn }) => {
-  return <EditorProvider slotBefore={<MenuBar />} extensions={extensions} onUpdate={({editor}) => fn(editor.getText()) } content={content}></EditorProvider>;
+  return <EditorProvider slotBefore={<MenuBar />} extensions={extensions} onUpdate={({editor}) => fn(editor.getHTML()) } content={content}></EditorProvider>;
 };
