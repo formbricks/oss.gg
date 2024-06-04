@@ -100,6 +100,24 @@ export const updateRepository = async (id: string, configuredValue: boolean) => 
 };
 
 /**
+ * Updates a repository's description field
+ * @returns The updated repository.
+ */
+
+export const updateRepositoryDescritpion = async (id: string, description: string) => {
+  const updatedRepository = await db.repository.update({
+    where: { id },
+    data: { projectDescription: description },
+  });
+
+  if (!updatedRepository) {
+    throw new Error("Repository not found.");
+  }
+
+  return updatedRepository;
+};
+
+/**
  * Fetches a repository
  * @returns The fetched repository.
  */
