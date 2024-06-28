@@ -100,15 +100,17 @@ export default async function ProfilePage({ params }) {
   const user = await getUserByLogin(githubLogin);
 
   if (user) {
+    const userEnrollments = await getEnrolledRepositories(user?.id);
+
+    const repos = userEnrollments.length > 0 ? [...userEnrollments].map((repo) => repo.githubId) : null; // get repo names from userEnrollments
     const [githubUserData, mergedIssues, openPRs] = await Promise.all([
       getGithubUserByLogin(githubLogin).then(
         (data) => data || { name: "Rick", avatar_url: Rick, bio: "is never gonna give you up 🕺" }
       ),
-      getMergedPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
-      getOpenPullRequestsByGithubLogin("formbricks/formbricks", githubLogin),
+      getMergedPullRequestsByGithubLogin(repos, githubLogin),
+      getOpenPullRequestsByGithubLogin(repos, githubLogin),
     ]);
 
-    const userEnrollments = await getEnrolledRepositories(user?.id);
 
     const arrayCurrentLevelOfUserInEnrolledRepos = await Promise.all(
       userEnrollments.map(async (repo) => {
