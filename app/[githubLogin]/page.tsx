@@ -65,7 +65,7 @@ const dummyIssues = [
 ];
 
 const ProfileInfo = ({ githubUserData }) => (
-  <div className="z-40 -mt-24 grid grid-cols-5 gap-6 text-zinc-50 md:-mt-36">
+  <div className="z-40 -mt-24 grid grid-cols-5 gap-6 text-zinc-500 md:-mt-36">
     <Image
       src={githubUserData.avatar_url}
       alt="github avatar"
