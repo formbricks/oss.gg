@@ -1,5 +1,6 @@
 import { TLevel } from "@/types/level";
 import { TRepository } from "@/types/repository";
+import { getRepositoryById } from "lib/repository/service";
 
 export interface LevelProgress {
   totalPointsNeededToReachNextLevel: number;
@@ -58,11 +59,23 @@ export const calculateAssignabelNonAssignableIssuesForUserInALevel = (levels: TL
 
   return modifiedArray;
 };
-export const findCurrentAndNextLevelOfCurrentUser = (repository: TRepository, totalPoints: number) => {
-  // Find the levels whose threshold is just less amd just higher than the users total points in a repo.
+
+export const findCurrentAndNextLevelOfCurrentUser = async (
+  playerRepositoryId: string,
+  totalPoints: number
+): Promise<{
+  currentLevelOfUser: TLevel | null;
+  nextLevelForUser: TLevel | null;
+}> => {
   let currentLevelOfUser: TLevel | null = null;
   let nextLevelForUser: TLevel | null = null;
   let highestThreshold = -1;
+
+  const repository: TRepository | null = await getRepositoryById(playerRepositoryId);
+
+  if (!repository) {
+    throw new Error(`Repository not found for id: ${playerRepositoryId}`);
+  }
 
   for (const level of repository.levels) {
     if (level.pointThreshold <= totalPoints && level.pointThreshold > highestThreshold) {

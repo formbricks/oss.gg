@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ZId, ZOptionalNumber } from "@/types/common";
 import { DatabaseError } from "@/types/errors";
-import { TPointTransactionWithUser, ZPointTransaction } from "@/types/pointTransaction";
+import { TPointTransactionWithUser } from "@/types/pointTransaction";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
@@ -93,22 +93,23 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
   )();
   return points;
 };
-export const getPointsForUserInRepoByRepositoryId = async (
-  repositoryId: string,
-  userId: string
+
+export const getPointsForPlayerInRepoByRepositoryId = async (
+  playerRepositoryId: string,
+  playerId: string
 ): Promise<number> => {
   try {
-    const userPoints = await db.pointTransaction.aggregate({
+    const playerPoints = await db.pointTransaction.aggregate({
       where: {
-        repositoryId: repositoryId,
-        userId: userId,
+        repositoryId: playerRepositoryId,
+        userId: playerId,
       },
       _sum: {
         points: true,
       },
     });
 
-    return userPoints._sum.points ?? 0;
+    return playerPoints?._sum.points ?? 0;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       throw new DatabaseError(error.message);

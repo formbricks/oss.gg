@@ -1,4 +1,4 @@
-import GitHubIssue from "@/components/ui/githubIssue";
+import GitHubIssue from "@/components/ui/github-issue";
 import { getAllOssGgIssuesOfRepo } from "@/lib/github/service";
 import { getRepositoryById } from "@/lib/repository/service";
 import { TLevel } from "@/types/level";

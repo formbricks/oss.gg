@@ -15,7 +15,7 @@ import {
   REJECT_IDENTIFIER,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
-import { assignUserPoints, getPointsForUserInRepoByRepositoryId } from "@/lib/points/service";
+import { assignUserPoints, getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
 import {
@@ -145,7 +145,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         const user = await getUserByGithubId(context.payload.comment.user.id);
 
         if (currentRepo && user) {
-          const userTotalPoints = await getPointsForUserInRepoByRepositoryId(currentRepo.id, user.id);
+          const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
           const { currentLevelOfUser } = findCurrentAndNextLevelOfCurrentUser(
             currentRepo as TRepository,
             userTotalPoints

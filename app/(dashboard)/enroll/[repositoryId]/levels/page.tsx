@@ -1,6 +1,6 @@
-import LevelDetailCard from "@/components/ui/levelDetailCard";
+import LevelDetailCard from "@/components/ui/level-detail-card";
 import { authOptions } from "@/lib/auth";
-import { getPointsForUserInRepoByRepositoryId } from "@/lib/points/service";
+import { getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryById } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
 import {
@@ -32,7 +32,7 @@ export default async function Levels({ params: { repositoryId } }) {
   const modifiedTagsArray: ModifiedTagsArray[] =
     calculateAssignabelNonAssignableIssuesForUserInALevel(sortedLevels);
 
-  const totalPointsForUserInThisRepo: number = await getPointsForUserInRepoByRepositoryId(
+  const totalPointsForUserInThisRepo: number = await getPointsForPlayerInRepoByRepositoryId(
     repositoryId,
     user.id
   );

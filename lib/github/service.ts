@@ -6,10 +6,10 @@ import { unstable_cache } from "next/cache";
 import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
 
 export const getMergedPullRequestsByGithubLogin = async (
-  repos: Array<number> | null,
+  playerRepositoryIds: string[],
   githubLogin: string
 ) => {
-  if (!repos || repos.length === 0) {
+  if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
     return Promise.resolve([]);
   }
 
@@ -22,10 +22,10 @@ export const getMergedPullRequestsByGithubLogin = async (
     isIssue: boolean;
   }> = [];
 
-  for (const repoId of repos) {
+  for (const playerRepositoryId of playerRepositoryIds) {
     await unstable_cache(
       async () => {
-        const url = `https://api.github.com/search/issues?q=repository_id:${repoId}+is:pull-request+is:merged+author:${githubLogin}&per_page=10&sort=created&order=desc`;
+        const url = `https://api.github.com/search/issues?q=repository_id:${playerRepositoryId}+is:pull-request+is:merged+author:${githubLogin}&per_page=10&sort=created&order=desc`;
 
         const headers = {
           Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
@@ -50,7 +50,7 @@ export const getMergedPullRequestsByGithubLogin = async (
 
         return mergedPRs;
       },
-      [`getMergedPullRequests-${repoId}-${githubLogin}`],
+      [`getMergedPullRequests-${playerRepositoryId}-${githubLogin}`],
       {
         revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
       }
@@ -60,8 +60,11 @@ export const getMergedPullRequestsByGithubLogin = async (
   return mergedPRs;
 };
 
-export const getOpenPullRequestsByGithubLogin = async(repos: Array<number> | null, githubLogin: string) => {
-  if (!repos || repos.length === 0) {
+export const getOpenPullRequestsByGithubLogin = async (
+  playerRepositoryIds: string[] | null,
+  githubLogin: string
+) => {
+  if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
     return Promise.resolve([]);
   }
 
@@ -76,10 +79,10 @@ export const getOpenPullRequestsByGithubLogin = async(repos: Array<number> | nul
     isIssue: boolean;
   }> = [];
 
-  for (const repoId of repos) {
-   await  unstable_cache(
+  for (const playerRepositoryId of playerRepositoryIds) {
+    await unstable_cache(
       async () => {
-        const url = `https://api.github.com/search/issues?q=repository_id:${repoId}+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
+        const url = `https://api.github.com/search/issues?q=repository_id:${playerRepositoryId}+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
 
         const headers = {
           Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
@@ -92,21 +95,22 @@ export const getOpenPullRequestsByGithubLogin = async(repos: Array<number> | nul
         const validatedData = ZGithubApiResponseSchema.parse(data);
 
         // Map the GitHub API response to  issue format
-        openPRs.push(...validatedData.items.map((pr) => ({
-          logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-          href: pr.html_url,
-          title: pr.title,
-          author: pr.user.login,
-          key: pr.id.toString(),
-          state: pr.state,
-          draft: pr.draft,
-          isIssue: false,
-        }))
-      );
+        openPRs.push(
+          ...validatedData.items.map((pr) => ({
+            logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
+            href: pr.html_url,
+            title: pr.title,
+            author: pr.user.login,
+            key: pr.id.toString(),
+            state: pr.state,
+            draft: pr.draft,
+            isIssue: false,
+          }))
+        );
 
         return openPRs;
       },
-      [`getOpenPullRequests-${repoId}-${githubLogin}`],
+      [`getOpenPullRequests-${playerRepositoryId}-${githubLogin}`],
       {
         revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
       }

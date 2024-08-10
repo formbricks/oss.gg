@@ -44,7 +44,7 @@ export const getUser = async (id: string): Promise<TUser | null> => {
   }
 };
 
-export const getUserByLogin = async (login: string): Promise<TUser | null> => {
+export const getPlayerByLogin = async (login: string): Promise<TUser | null> => {
   try {
     const user = await db.user.findFirst({
       where: {

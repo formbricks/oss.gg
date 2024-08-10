@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import UserProfileSummary from "@/components/ui/userProfileSummary";
+import UserProfileSummary from "@/components/ui/user-profile-summary";
 import { capitalizeEachWord } from "@/lib/utils/textformat";
 import { TLevel } from "@/types/level";
 import { TPointTransactionWithUser } from "@/types/pointTransaction";
