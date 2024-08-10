@@ -9,38 +9,19 @@ In this manual we'll walk you through the steps you need to take to get oss.gg a
 3. Run oss.gg server locally
 4. Start the local instance of oss.gg with your GitHub test app and install oss.gg on test repository
 
-## 1. GitHub SSO Configuration
-oss.gg only works with GitHub sign up and login. To make it work locally, you need to fill in these .env variables:
-
-`GITHUB_APP_CLIENT_ID=`
-`GITHUB_APP_CLIENT_SECRET=`
-`GITHUB_APP_ACCESS_TOKEN=`
-
-Go to your GitHub account Settings -> Developer Settings -> OAuth Apps:
-
-<img width="778" alt="image" src="https://github.com/formbricks/oss.gg/assets/72809645/8d2d2bf3-63ef-4c97-bc94-b08a6a23b515">
-
-Set it up as follows:
-
-<img width="597" alt="image" src="https://github.com/formbricks/oss.gg/assets/72809645/2c5ea5aa-2ac3-4c20-b389-7c1815ffa040">
-
-Fill in these env variables:
-
-`GITHUB_APP_CLIENT_ID=`
-`GITHUB_APP_CLIENT_SECRET=`
-
-Now go to Personal Access Token:
+## 1. GitHub Personal Access Token
+In the development environemnt we're using Personal Access Tokens to query the GitHub API. This is neccessary because the rate limit of GitHub can be quite strict so we need to decentralize the request amount:
 
 <img width="1145" alt="image" src="https://github.com/formbricks/oss.gg/assets/72809645/56674a44-29b8-4297-9048-4974b50921ce">
 
-Generate one and fill it in the env variable. 
+Generate one and fill it in the env variable:
 
-All set for the GitHub login 💪
+`GITHUB_APP_ACCESS_TOKEN`
 
 Let's setup your oss.gg GitHub App 👇
 
 ## 2. oss.gg Github App Setup
-You need to create your own GitHub app to test the oss.gg functionality you're developing in your test repo.
+You need to create your own GitHub app to test the oss.gg functionality you're developing and to make the GitHub SSO work locally:
 
 Stay in your GitHub Account Settings -> Developer Settings -> GitHub Apps and Create a New App:
 
@@ -60,6 +41,8 @@ Set it up as follows:
 
 Fill in these env varibales with the data you get on the app detail page:
 
+`GITHUB_APP_CLIENT_ID=`
+`GITHUB_APP_CLIENT_SECRET=`
 `GITHUB_APP_WEBHOOK_SECRET`
 `GITHUB_APP_ID`
 `GITHUB_APP_SLUG`
