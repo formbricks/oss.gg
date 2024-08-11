@@ -37,8 +37,8 @@ export default async function Levels({ params: { repositoryId } }) {
     user.id
   );
 
-  const { currentLevelOfUser, nextLevelForUser } = findCurrentAndNextLevelOfCurrentUser(
-    repository,
+  const { currentLevelOfUser, nextLevelForUser } = await findCurrentAndNextLevelOfCurrentUser(
+    repository.id,
     totalPointsForUserInThisRepo
   );
 

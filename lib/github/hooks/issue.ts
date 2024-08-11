@@ -24,7 +24,6 @@ import {
 } from "@/lib/utils/levelUtils";
 import { triggerDotDevClient } from "@/trigger";
 import { TLevel } from "@/types/level";
-import { TRepository } from "@/types/repository";
 import { Webhooks } from "@octokit/webhooks";
 
 import { isMemberOfRepository } from "../services/user";
@@ -146,8 +145,8 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
 
         if (currentRepo && user) {
           const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
-          const { currentLevelOfUser } = findCurrentAndNextLevelOfCurrentUser(
-            currentRepo as TRepository,
+          const { currentLevelOfUser } = await findCurrentAndNextLevelOfCurrentUser(
+            currentRepo.id,
             userTotalPoints
           ); //this just has tags that limit the user to take on task of higher level but  misses out  on tags of lower levels.
 

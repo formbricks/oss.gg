@@ -17,8 +17,6 @@ export const getPullRequestsByGithubLogin = async (
   githubLogin: string,
   status?: PullRequestStatus
 ): Promise<TPullRequest[]> => {
-  console.log(`Fetching pull requests for GitHub user: ${githubLogin}`);
-
   if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
     console.warn("No repository IDs provided. Returning empty array.");
     return [];
@@ -33,7 +31,6 @@ export const getPullRequestsByGithubLogin = async (
 
   const repoQuery = playerRepositoryIds.map((id) => `repo:${id}`).join(" ");
   const query = `${repoQuery} ${statusQuery} author:${githubLogin}`;
-  console.log(`Search query: ${query}`);
 
   try {
     const { data } = await octokit.search.issuesAndPullRequests({
@@ -43,11 +40,8 @@ export const getPullRequestsByGithubLogin = async (
       order: "desc",
     });
 
-    console.log(`Found ${data.items.length} pull requests across all repositories`);
-
     for (const pr of data.items) {
-      console.log(`Processing PR: ${pr.title}`);
-      console.log(`Complete PR object: ${JSON.stringify(pr, null, 2)}`);
+      // console.log(`Complete PR object: ${JSON.stringify(pr, null, 2)}`);
 
       let prStatus: "open" | "merged" | "closed";
       if (pr.state === "open") {
@@ -74,7 +68,6 @@ export const getPullRequestsByGithubLogin = async (
         });
 
         pullRequests.push(pullRequest);
-        console.log(`Successfully processed PR: ${pr.title}`);
       } catch (error) {
         console.error(`Error parsing pull request: ${pr.title}`, error);
       }
@@ -82,8 +75,6 @@ export const getPullRequestsByGithubLogin = async (
   } catch (error) {
     console.error(`Error fetching or processing pull requests:`, error);
   }
-
-  console.log(`Total pull requests fetched: ${pullRequests.length}`);
 
   // Sort pullRequests by dateOpened in descending order
   pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
