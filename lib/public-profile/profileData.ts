@@ -18,7 +18,7 @@ type EnrichedUserData = {
 };
 const placeholderData = {
   name: "Rick Astley",
-  avatar_url: "@/public/rick.webp",
+  avatar_url: "/rick.webp",
   bio: "Never gonna give you up",
   html_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   twitter_username: "rickastley",

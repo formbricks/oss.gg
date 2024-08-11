@@ -6,6 +6,7 @@ import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
 import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
+import { extractPointsFromLabels } from "./utils";
 
 type PullRequestStatus = "open" | "merged" | "closed" | undefined;
 
@@ -46,6 +47,7 @@ export const getPullRequestsByGithubLogin = async (
 
     for (const pr of data.items) {
       console.log(`Processing PR: ${pr.title}`);
+      console.log(`Complete PR object: ${JSON.stringify(pr, null, 2)}`);
 
       let prStatus: "open" | "merged" | "closed";
       if (pr.state === "open") {
@@ -56,16 +58,19 @@ export const getPullRequestsByGithubLogin = async (
         prStatus = "closed";
       }
 
+      const prLabels = pr.labels.filter((label) => label.name !== undefined) as { name: string }[];
+
       try {
         const pullRequest: TPullRequest = ZPullRequest.parse({
           title: pr.title,
           href: pr.html_url,
           author: pr.user?.login || "",
+          repositoryFullName: pr.repository_url.split("/").slice(-2).join("/"),
           dateOpened: pr.created_at,
           dateMerged: pr.pull_request?.merged_at || null,
           dateClosed: pr.closed_at,
           status: prStatus,
-          points: 0, // You might want to add logic here to determine points
+          points: prLabels ? extractPointsFromLabels(prLabels) : null,
         });
 
         pullRequests.push(pullRequest);
@@ -107,17 +112,6 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
 
       // Map the GitHub API response to issue format
       const openPRs = validatedData.items.map((pr) => {
-        // Map the points label as number
-        const pointsLabel = pr.labels.find((label) => label.name.includes("points"));
-
-        let points: number | null = null;
-        if (pointsLabel) {
-          const match = pointsLabel.name.match(/(\d+)/); // This regex matches any sequence of digits
-          if (match) {
-            points = parseInt(match[0], 10); // Convert the first matching group to an integer
-          }
-        }
-
         return {
           logoUrl: `https://avatars.githubusercontent.com/u/${repoData.owner.id}?s=200&v=4`,
           href: pr.html_url,
@@ -129,7 +123,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
           draft: pr.draft,
           isIssue: true,
           labels: pr.labels.map((label) => label.name),
-          points,
+          points: extractPointsFromLabels(pr.labels),
           assignee: pr.assignee ? pr.assignee.login : null,
           createdAt: pr.created_at,
           updatedAt: pr.updated_at,

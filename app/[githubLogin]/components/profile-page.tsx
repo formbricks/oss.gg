@@ -1,11 +1,15 @@
+"use server";
+
 import { getPullRequestsByGithubLogin } from "@/lib/github/service";
 import { getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
 import { getEnrichedGithubUserData } from "@/lib/public-profile/profileData";
 import { getAllRepositories } from "@/lib/repository/service";
 import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
 import { TLevel } from "@/types/level";
+import { TPullRequest } from "@/types/pullRequest";
 
 import LevelList from "./level-list";
+import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
 export default async function ProfilePage({ githubLogin }: { githubLogin: string }) {
@@ -34,12 +38,14 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
     );
   }
 
+  const ossGgRepositories = await getAllRepositories();
+
+  let pullRequests = [] as TPullRequest[];
+
   // Get the 20 most recent PRs of a user for all repositories signed up on oss.gg
   if (enrichedUserData.status.githubUserFound) {
-    const ossGgRepositories = await getAllRepositories();
     const ossGgRepositoriesIds = ossGgRepositories.map((repo) => `${repo.owner}/${repo.name}`);
-    const allPRs = await getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin);
-    console.log(allPRs);
+    pullRequests = await getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin);
   }
 
   return (
@@ -47,7 +53,7 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
       <ProfileInfoBar githubData={enrichedUserData.githubData} />
       <div className="mt-10 grid grid-cols-4 gap-6 md:grid-cols-5">
         <LevelList levels={userLevels} />
-        {/* <ContributionsList contributions={contributions} profileName={enrichedUserData.githubData.name} /> */}
+        <PullRequestList pullRequests={pullRequests} profileName={enrichedUserData.githubData.name} />
       </div>
     </div>
   );

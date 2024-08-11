@@ -1,3 +1,5 @@
+"use server";
+
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/session";

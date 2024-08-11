@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import UserPointsAndLevelCard from "@/components/ui/userPointsAndLevelCard";
+import UserPointsAndLevelCard from "@/components/ui/user-points-and-level-card";
 import { authOptions } from "@/lib/auth";
 import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getCurrentUser } from "@/lib/session";

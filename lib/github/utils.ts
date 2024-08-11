@@ -2,12 +2,7 @@ import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/rest";
 import crypto from "node:crypto";
 
-import {
-  GITHUB_APP_CLIENT_ID,
-  GITHUB_APP_CLIENT_SECRET,
-  GITHUB_APP_ID,
-  GITHUB_APP_PRIVATE_KEY,
-} from "../constants";
+import { GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY } from "../constants";
 
 export const getOctokitInstance = (installationId: number) => {
   if (!installationId) {
@@ -60,4 +55,22 @@ export const extractIssueNumbersFromPrBody = (body: string): number[] => {
   }
   const uniqueIssues = Array.from(issueSet);
   return uniqueIssues;
+};
+
+/**
+ * Extracts points from a label name that includes the word "points" followed by a number.
+ * @param labels - An array of GitHub labels.
+ * @returns The points as a number or null if no points label is found.
+ */
+export const extractPointsFromLabels = (labels: { name: string }[]): number | null => {
+  const pointsLabel = labels.find((label) => label.name.toLowerCase().includes("points"));
+
+  if (pointsLabel) {
+    const match = pointsLabel.name.match(/(\d+)/); // Match any sequence of digits
+    if (match) {
+      return parseInt(match[0], 10); // Convert the first matching group to an integer
+    }
+  }
+
+  return null;
 };

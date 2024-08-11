@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { TLevel } from "@/types/level";
-// Adjust the import path as needed
 import Image from "next/image";
 import React from "react";
 
@@ -9,8 +9,21 @@ interface LevelListProps {
 }
 
 const LevelList: React.FC<LevelListProps> = ({ levels }) => {
+  const hasValidLevels = levels.some((level) => level.currentLevelOfUser !== null);
+
+  if (!hasValidLevels) {
+    return (
+      <div className="h-fit rounded-md bg-zinc-50 py-10 text-center">
+        <p className="text-sm text-slate-800">You haven&apos;t enrolled yet!</p>
+        <Button href="/login" className="mt-4">
+          Start playing 🕹️
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="col-span-1 hidden text-center md:flex md:flex-col md:gap-8">
+    <div className="col-span-1 flex flex-col gap-8 text-center">
       {levels.map(
         (level, index) =>
           level.currentLevelOfUser && (

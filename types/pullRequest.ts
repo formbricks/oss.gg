@@ -1,13 +1,14 @@
 import { z } from "zod";
 
-const PullRequestStatus = z.enum(["open", "merged", "closed"]);
+const PullRequestStatus = z.enum(["draft", "open", "merged", "closed"]);
 
 export const ZPullRequest = z
   .object({
     title: z.string(),
     href: z.string().url(),
     author: z.string(),
-    points: z.number().int().nonnegative().optional(),
+    repositoryFullName: z.string().optional(),
+    points: z.number().int().nonnegative().optional().nullable(),
     dateOpened: z.string().datetime(),
     dateMerged: z.string().datetime().nullable(),
     dateClosed: z.string().datetime().nullable(),
