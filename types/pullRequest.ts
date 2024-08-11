@@ -1,17 +1,17 @@
 import { z } from "zod";
 
-const ContributionStatus = z.enum(["open", "merged", "closed"]);
+const PullRequestStatus = z.enum(["open", "merged", "closed"]);
 
-export const ZContribution = z
+export const ZPullRequest = z
   .object({
     title: z.string(),
     href: z.string().url(),
     author: z.string(),
-    points: z.number().int().nonnegative(),
+    points: z.number().int().nonnegative().optional(),
     dateOpened: z.string().datetime(),
     dateMerged: z.string().datetime().nullable(),
     dateClosed: z.string().datetime().nullable(),
-    status: ContributionStatus,
+    status: PullRequestStatus,
   })
   .strict()
   .refine(
@@ -26,4 +26,4 @@ export const ZContribution = z
     }
   );
 
-export type TContribution = z.infer<typeof ZContribution>;
+export type TPullRequest = z.infer<typeof ZPullRequest>;

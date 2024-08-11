@@ -1,5 +1,7 @@
+import { getPullRequestsByGithubLogin } from "@/lib/github/service";
 import { getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
 import { getEnrichedGithubUserData } from "@/lib/public-profile/profileData";
+import { getAllRepositories } from "@/lib/repository/service";
 import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
 import { TLevel } from "@/types/level";
 
@@ -32,9 +34,12 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
     );
   }
 
-  // Get all contributions of a user for all repositories signed up on oss.gg
+  // Get the 20 most recent PRs of a user for all repositories signed up on oss.gg
   if (enrichedUserData.status.githubUserFound) {
-    // tba
+    const ossGgRepositories = await getAllRepositories();
+    const ossGgRepositoriesIds = ossGgRepositories.map((repo) => `${repo.owner}/${repo.name}`);
+    const allPRs = await getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin);
+    console.log(allPRs);
   }
 
   return (

@@ -1,123 +1,89 @@
 import "server-only";
 
 import { ZGithubApiResponseSchema } from "@/types/issue";
+import { TPullRequest, ZPullRequest } from "@/types/pullRequest";
+import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
 import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
 
-export const getMergedPullRequestsByGithubLogin = async (
+type PullRequestStatus = "open" | "merged" | "closed" | undefined;
+
+const octokit = new Octokit({ auth: GITHUB_APP_ACCESS_TOKEN });
+
+export const getPullRequestsByGithubLogin = async (
   playerRepositoryIds: string[],
-  githubLogin: string
-) => {
+  githubLogin: string,
+  status?: PullRequestStatus
+): Promise<TPullRequest[]> => {
+  console.log(`Fetching pull requests for GitHub user: ${githubLogin}`);
+
   if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
-    return Promise.resolve([]);
+    console.warn("No repository IDs provided. Returning empty array.");
+    return [];
   }
 
-  const mergedPRs: Array<{
-    logoUrl: string;
-    href: string;
-    title: string;
-    author: string;
-    key: string;
-    isIssue: boolean;
-  }> = [];
+  const pullRequests: TPullRequest[] = [];
 
-  for (const playerRepositoryId of playerRepositoryIds) {
-    await unstable_cache(
-      async () => {
-        const url = `https://api.github.com/search/issues?q=repository_id:${playerRepositoryId}+is:pull-request+is:merged+author:${githubLogin}&per_page=10&sort=created&order=desc`;
+  let statusQuery = "is:pr";
+  if (status === "open") statusQuery += " is:open";
+  else if (status === "merged") statusQuery += " is:merged";
+  else if (status === "closed") statusQuery += " is:closed -is:merged";
 
-        const headers = {
-          Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-        };
+  const repoQuery = playerRepositoryIds.map((id) => `repo:${id}`).join(" ");
+  const query = `${repoQuery} ${statusQuery} author:${githubLogin}`;
+  console.log(`Search query: ${query}`);
 
-        const response = await fetch(url, { headers });
-        const data = await response.json();
+  try {
+    const { data } = await octokit.search.issuesAndPullRequests({
+      q: query,
+      per_page: 20,
+      sort: "created",
+      order: "desc",
+    });
 
-        const validatedData = ZGithubApiResponseSchema.parse(data);
+    console.log(`Found ${data.items.length} pull requests across all repositories`);
 
-        mergedPRs.push(
-          ...validatedData.items.map((pr) => ({
-            logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-            href: pr.html_url,
-            title: pr.title,
-            author: pr.user.login,
-            key: pr.id.toString(),
-            isIssue: false,
-          }))
-        );
+    for (const pr of data.items) {
+      console.log(`Processing PR: ${pr.title}`);
 
-        return mergedPRs;
-      },
-      [`getMergedPullRequests-${playerRepositoryId}-${githubLogin}`],
-      {
-        revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+      let prStatus: "open" | "merged" | "closed";
+      if (pr.state === "open") {
+        prStatus = "open";
+      } else if (pr.pull_request?.merged_at) {
+        prStatus = "merged";
+      } else {
+        prStatus = "closed";
       }
-    )();
-  }
 
-  return mergedPRs;
-};
+      try {
+        const pullRequest: TPullRequest = ZPullRequest.parse({
+          title: pr.title,
+          href: pr.html_url,
+          author: pr.user?.login || "",
+          dateOpened: pr.created_at,
+          dateMerged: pr.pull_request?.merged_at || null,
+          dateClosed: pr.closed_at,
+          status: prStatus,
+          points: 0, // You might want to add logic here to determine points
+        });
 
-export const getOpenPullRequestsByGithubLogin = async (
-  playerRepositoryIds: string[] | null,
-  githubLogin: string
-) => {
-  if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
-    return Promise.resolve([]);
-  }
-
-  const openPRs: Array<{
-    logoUrl: string;
-    href: string;
-    title: string;
-    author: string;
-    key: string;
-    state: string | undefined;
-    draft: boolean | undefined;
-    isIssue: boolean;
-  }> = [];
-
-  for (const playerRepositoryId of playerRepositoryIds) {
-    await unstable_cache(
-      async () => {
-        const url = `https://api.github.com/search/issues?q=repository_id:${playerRepositoryId}+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
-
-        const headers = {
-          Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-        };
-
-        const response = await fetch(url, { headers });
-        const data = await response.json();
-
-        const validatedData = ZGithubApiResponseSchema.parse(data);
-
-        // Map the GitHub API response to  issue format
-        openPRs.push(
-          ...validatedData.items.map((pr) => ({
-            logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-            href: pr.html_url,
-            title: pr.title,
-            author: pr.user.login,
-            key: pr.id.toString(),
-            state: pr.state,
-            draft: pr.draft,
-            isIssue: false,
-          }))
-        );
-
-        return openPRs;
-      },
-      [`getOpenPullRequests-${playerRepositoryId}-${githubLogin}`],
-      {
-        revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+        pullRequests.push(pullRequest);
+        console.log(`Successfully processed PR: ${pr.title}`);
+      } catch (error) {
+        console.error(`Error parsing pull request: ${pr.title}`, error);
       }
-    )();
+    }
+  } catch (error) {
+    console.error(`Error fetching or processing pull requests:`, error);
   }
 
-  return openPRs;
+  console.log(`Total pull requests fetched: ${pullRequests.length}`);
+
+  // Sort pullRequests by dateOpened in descending order
+  pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
+
+  return pullRequests;
 };
 
 export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
