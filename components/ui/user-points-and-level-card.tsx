@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Avatar, AvatarImage } from "./avatar";
-import { ConditionalParagraphAssignable } from "./conditionalParagraph";
+import { ConditionalParagraphAssignable } from "./conditional-paragraph";
 import ProgressBar from "./progressBar";
 
 interface UserPointsAndLevelCardProps {

@@ -15,7 +15,7 @@ import {
   REJECT_IDENTIFIER,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
-import { assignUserPoints, getPointsForUserInRepoByRepositoryId } from "@/lib/points/service";
+import { assignUserPoints, getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
 import {
@@ -24,7 +24,6 @@ import {
 } from "@/lib/utils/levelUtils";
 import { triggerDotDevClient } from "@/trigger";
 import { TLevel } from "@/types/level";
-import { TRepository } from "@/types/repository";
 import { Webhooks } from "@octokit/webhooks";
 
 import { isMemberOfRepository } from "../services/user";
@@ -145,9 +144,9 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         const user = await getUserByGithubId(context.payload.comment.user.id);
 
         if (currentRepo && user) {
-          const userTotalPoints = await getPointsForUserInRepoByRepositoryId(currentRepo.id, user.id);
-          const { currentLevelOfUser } = findCurrentAndNextLevelOfCurrentUser(
-            currentRepo as TRepository,
+          const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
+          const { currentLevelOfUser } = await findCurrentAndNextLevelOfCurrentUser(
+            currentRepo.id,
             userTotalPoints
           ); //this just has tags that limit the user to take on task of higher level but  misses out  on tags of lower levels.
 

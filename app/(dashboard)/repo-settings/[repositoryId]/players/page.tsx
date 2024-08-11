@@ -1,4 +1,4 @@
-import UserProfileSummary from "@/components/ui/userProfileSummary";
+import UserProfileSummary from "@/components/ui/user-profile-summary";
 import { getUsersForRepository } from "@/lib/repository/service";
 
 export const metadata = {

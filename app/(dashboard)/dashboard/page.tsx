@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import UserPointsAndLevelCard from "@/components/ui/userPointsAndLevelCard";
+import UserPointsAndLevelCard from "@/components/ui/user-points-and-level-card";
 import { authOptions } from "@/lib/auth";
 import { getEnrolledRepositories } from "@/lib/enrollment/service";
 import { getCurrentUser } from "@/lib/session";
@@ -10,6 +10,7 @@ import {
 } from "@/lib/utils/levelUtils";
 import { TLevel } from "@/types/level";
 import { TPointTransaction } from "@/types/pointTransaction";
+import { TRepository } from "@/types/repository";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -49,7 +50,7 @@ export default async function DashboardPage() {
     redirect(authOptions?.pages?.signIn || "/login");
   }
 
-  const repositoriesUserIsEnrolledIn = await getEnrolledRepositories(user.id);
+  const repositoriesUserIsEnrolledIn: TRepository[] = await getEnrolledRepositories(user.id);
 
   const calculateTotalPointsForCurrentUser = (
     currentUserId: string,
@@ -93,31 +94,33 @@ export default async function DashboardPage() {
   };
 
   // Calculate total points,rank,current level for the current user in repositories they are enrolled in.
-  const pointsAndLevelsPerRepository = repositoriesUserIsEnrolledIn.map((repository) => {
-    const pointTransactions = repository.pointTransactions || [];
+  const pointsAndLevelsPerRepository = await Promise.all(
+    repositoriesUserIsEnrolledIn.map(async (repository) => {
+      const pointTransactions = repository.pointTransactions || [];
+      const totalPoints = calculateTotalPointsForCurrentUser(user.id, pointTransactions);
+      const rank = calculateRankOfCurrentUser(user.id, pointTransactions);
 
-    const totalPoints = calculateTotalPointsForCurrentUser(user.id, pointTransactions);
-    const rank = calculateRankOfCurrentUser(user.id, pointTransactions);
-    const { currentLevelOfUser, nextLevelForUser } = findCurrentAndNextLevelOfCurrentUser(
-      repository,
-      totalPoints
-    );
-    const levels = (repository?.levels as TLevel[]) || [];
-    const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
+      const { currentLevelOfUser, nextLevelForUser } = await findCurrentAndNextLevelOfCurrentUser(
+        repository.id,
+        totalPoints
+      );
 
-    const assignableTags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
+      const levels = (repository?.levels as TLevel[]) || [];
+      const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); // gets all assignable tags, whether from the current level or from lower levels.
+      const assignableTags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); // finds the current level in the modifiedTagsArray.
 
-    return {
-      id: repository.id,
-      repositoryName: repository.name,
-      points: totalPoints,
-      repositoryLogo: repository.logoUrl,
-      rank: rank,
-      currentLevelOfUser: currentLevelOfUser,
-      nextLevelForUser: nextLevelForUser,
-      assignableTags: assignableTags?.assignableIssues || [],
-    };
-  });
+      return {
+        id: repository.id,
+        repositoryName: repository.name,
+        points: totalPoints,
+        repositoryLogo: repository.logoUrl,
+        rank: rank,
+        currentLevelOfUser: currentLevelOfUser,
+        nextLevelForUser: nextLevelForUser,
+        assignableTags: assignableTags?.assignableIssues || [],
+      };
+    })
+  );
 
   return (
     <DashboardShell>

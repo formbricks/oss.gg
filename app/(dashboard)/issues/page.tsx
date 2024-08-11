@@ -1,7 +1,7 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
-import GitHubIssue from "@/components/ui/githubIssue";
+import GitHubIssue from "@/components/ui/github-issue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllOssGgIssuesOfRepo } from "@/lib/github/service";
 import { capitalizeFirstLetter } from "@/lib/utils/textformat";

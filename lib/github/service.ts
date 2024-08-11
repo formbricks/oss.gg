@@ -1,119 +1,85 @@
 import "server-only";
 
 import { ZGithubApiResponseSchema } from "@/types/issue";
+import { TPullRequest, ZPullRequest } from "@/types/pullRequest";
+import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
 import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
+import { extractPointsFromLabels } from "./utils";
 
-export const getMergedPullRequestsByGithubLogin = async (
-  repos: Array<number> | null,
-  githubLogin: string
-) => {
-  if (!repos || repos.length === 0) {
-    return Promise.resolve([]);
+type PullRequestStatus = "open" | "merged" | "closed" | undefined;
+
+const octokit = new Octokit({ auth: GITHUB_APP_ACCESS_TOKEN });
+
+export const getPullRequestsByGithubLogin = async (
+  playerRepositoryIds: string[],
+  githubLogin: string,
+  status?: PullRequestStatus
+): Promise<TPullRequest[]> => {
+  if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
+    console.warn("No repository IDs provided. Returning empty array.");
+    return [];
   }
 
-  const mergedPRs: Array<{
-    logoUrl: string;
-    href: string;
-    title: string;
-    author: string;
-    key: string;
-    isIssue: boolean;
-  }> = [];
+  const pullRequests: TPullRequest[] = [];
 
-  for (const repoId of repos) {
-    await unstable_cache(
-      async () => {
-        const url = `https://api.github.com/search/issues?q=repository_id:${repoId}+is:pull-request+is:merged+author:${githubLogin}&per_page=10&sort=created&order=desc`;
+  let statusQuery = "is:pr";
+  if (status === "open") statusQuery += " is:open";
+  else if (status === "merged") statusQuery += " is:merged";
+  else if (status === "closed") statusQuery += " is:closed -is:merged";
 
-        const headers = {
-          Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-        };
+  const repoQuery = playerRepositoryIds.map((id) => `repo:${id}`).join(" ");
+  const query = `${repoQuery} ${statusQuery} author:${githubLogin}`;
 
-        const response = await fetch(url, { headers });
-        const data = await response.json();
+  try {
+    const { data } = await octokit.search.issuesAndPullRequests({
+      q: query,
+      per_page: 20,
+      sort: "created",
+      order: "desc",
+    });
 
-        const validatedData = ZGithubApiResponseSchema.parse(data);
+    for (const pr of data.items) {
+      // console.log(`Complete PR object: ${JSON.stringify(pr, null, 2)}`);
 
-        mergedPRs.push(
-          ...validatedData.items.map((pr) => ({
-            logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-            href: pr.html_url,
-            title: pr.title,
-            author: pr.user.login,
-            key: pr.id.toString(),
-            isIssue: false,
-          }))
-        );
-
-        return mergedPRs;
-      },
-      [`getMergedPullRequests-${repoId}-${githubLogin}`],
-      {
-        revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+      let prStatus: "open" | "merged" | "closed";
+      if (pr.state === "open") {
+        prStatus = "open";
+      } else if (pr.pull_request?.merged_at) {
+        prStatus = "merged";
+      } else {
+        prStatus = "closed";
       }
-    )();
-  }
 
-  return mergedPRs;
-};
+      const prLabels = pr.labels.filter((label) => label.name !== undefined) as { name: string }[];
 
-export const getOpenPullRequestsByGithubLogin = async(repos: Array<number> | null, githubLogin: string) => {
-  if (!repos || repos.length === 0) {
-    return Promise.resolve([]);
-  }
-
-  const openPRs: Array<{
-    logoUrl: string;
-    href: string;
-    title: string;
-    author: string;
-    key: string;
-    state: string | undefined;
-    draft: boolean | undefined;
-    isIssue: boolean;
-  }> = [];
-
-  for (const repoId of repos) {
-   await  unstable_cache(
-      async () => {
-        const url = `https://api.github.com/search/issues?q=repository_id:${repoId}+is:pull-request+is:open+author:${githubLogin}&sort=created&order=desc`;
-
-        const headers = {
-          Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-        };
-
-        const response = await fetch(url, { headers });
-        const data = await response.json();
-
-        const validatedData = ZGithubApiResponseSchema.parse(data);
-
-        // Map the GitHub API response to  issue format
-        openPRs.push(...validatedData.items.map((pr) => ({
-          logoUrl: "https://avatars.githubusercontent.com/u/105877416?s=200&v=4",
-          href: pr.html_url,
+      try {
+        const pullRequest: TPullRequest = ZPullRequest.parse({
           title: pr.title,
-          author: pr.user.login,
-          key: pr.id.toString(),
-          state: pr.state,
-          draft: pr.draft,
-          isIssue: false,
-        }))
-      );
+          href: pr.html_url,
+          author: pr.user?.login || "",
+          repositoryFullName: pr.repository_url.split("/").slice(-2).join("/"),
+          dateOpened: pr.created_at,
+          dateMerged: pr.pull_request?.merged_at || null,
+          dateClosed: pr.closed_at,
+          status: prStatus,
+          points: prLabels ? extractPointsFromLabels(prLabels) : null,
+        });
 
-        return openPRs;
-      },
-      [`getOpenPullRequests-${repoId}-${githubLogin}`],
-      {
-        revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+        pullRequests.push(pullRequest);
+      } catch (error) {
+        console.error(`Error parsing pull request: ${pr.title}`, error);
       }
-    )();
+    }
+  } catch (error) {
+    console.error(`Error fetching or processing pull requests:`, error);
   }
 
-  return openPRs;
+  // Sort pullRequests by dateOpened in descending order
+  pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
+
+  return pullRequests;
 };
 
 export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
@@ -137,17 +103,6 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
 
       // Map the GitHub API response to issue format
       const openPRs = validatedData.items.map((pr) => {
-        // Map the points label as number
-        const pointsLabel = pr.labels.find((label) => label.name.includes("points"));
-
-        let points: number | null = null;
-        if (pointsLabel) {
-          const match = pointsLabel.name.match(/(\d+)/); // This regex matches any sequence of digits
-          if (match) {
-            points = parseInt(match[0], 10); // Convert the first matching group to an integer
-          }
-        }
-
         return {
           logoUrl: `https://avatars.githubusercontent.com/u/${repoData.owner.id}?s=200&v=4`,
           href: pr.html_url,
@@ -159,7 +114,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
           draft: pr.draft,
           isIssue: true,
           labels: pr.labels.map((label) => label.name),
-          points,
+          points: extractPointsFromLabels(pr.labels),
           assignee: pr.assignee ? pr.assignee.login : null,
           createdAt: pr.created_at,
           updatedAt: pr.updated_at,

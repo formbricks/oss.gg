@@ -6,7 +6,7 @@ import { capitalizeEachWord } from "lib/utils/textformat";
 import { FaCheckCircle } from "react-icons/fa";
 
 import { Avatar, AvatarImage } from "./avatar";
-import { ConditionalParagraphAssignable, ConditionalParagraphNonAssignable } from "./conditionalParagraph";
+import { ConditionalParagraphAssignable, ConditionalParagraphNonAssignable } from "./conditional-paragraph";
 import ProgressBar from "./progressBar";
 
 interface LevelDetailCardProps {

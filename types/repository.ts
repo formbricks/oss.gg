@@ -9,6 +9,7 @@ export const ZRepository = z
     id: z.string(),
     githubId: z.number().int(),
     name: z.string(),
+    owner: z.string(),
     description: z.union([z.string(), z.null()]).optional(),
     homepage: z.union([z.string(), z.null()]).optional(),
     topics: z.array(z.string()),

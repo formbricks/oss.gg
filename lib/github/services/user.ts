@@ -11,6 +11,7 @@ export const sendInstallationDetails = async (
         id: number;
         node_id: string;
         name: string;
+        owner: string;
         full_name: string;
         private: boolean;
       }[]
@@ -116,6 +117,7 @@ export const sendInstallationDetails = async (
               create: {
                 githubId: repo.id,
                 name: repo.name,
+                owner: repo.full_name.split("/")[0],
                 installationId: installationPrisma.id,
                 logoUrl: `https://avatars.githubusercontent.com/u/${installation.account.id}?s=200&v=4`,
                 default_branch: defaultBranch,
