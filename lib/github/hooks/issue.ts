@@ -166,7 +166,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
               owner,
               repo,
               issue_number: issueNumber,
-              body: `With your current level, you are not yet able to work on this issue. Please have a look on oss.gg to see which levels can work on which issues 🤓`,
+              body: `This task requires a certain experience with our repository 🤓 \n\nTo be able to work on issues like this one, you can level up by working on issues of a lower level. \n\nCheck out your current level on [oss.gg/${user.login}](https://oss.gg/${user.login})`,
             });
             return;
           }
@@ -392,7 +392,10 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
               context.payload.comment.html_url,
               ossGgRepo?.id
             );
-            comment = `Awarding ${user.login}: ${points} points!` + " " + comment;
+            comment =
+              `Awarding ${user.login}: ${points} points! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})` +
+              " " +
+              comment;
             await triggerDotDevClient.sendEvent({
               name: DISCORD_POINTS_MESSAGE_TRIGGER_ID,
               payload: {

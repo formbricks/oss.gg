@@ -121,7 +121,7 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
               labels: [newBountyLabel],
             });
             await commentOnIssue(
-              `A bounty of ${newBountyAmount} ${USD_CURRENCY_CODE} has been created. Happy hacking!`
+              `A bounty of ${newBountyAmount} ${USD_CURRENCY_CODE} has been added to this issue. Happy hacking!`
             );
           }
         }
