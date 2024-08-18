@@ -15,6 +15,7 @@ import {
   REJECT_IDENTIFIER,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
+import { createDedupedOctokit } from "@/lib/octokit/dedupedOctokit";
 import { assignUserPoints, getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
@@ -78,7 +79,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const owner = context.payload.repository.owner.login;
       const commenter = context.payload.comment.user.login;
       const installationId = context.payload.installation?.id!;
-      const octokit = getOctokitInstance(installationId);
+      const octokit = createDedupedOctokit(getOctokitInstance(installationId));
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
       if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
@@ -258,7 +259,7 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
       const repo = context.payload.repository.name;
       const owner = context.payload.repository.owner.login;
       const commenter = context.payload.comment.user.login;
-      const octokit = getOctokitInstance(context.payload.installation?.id!);
+      const octokit = createDedupedOctokit(getOctokitInstance(context.payload.installation?.id!));
 
       const isAssigned = context.payload.issue.assignees.length > 0;
       if (!isAssigned) {
@@ -330,7 +331,7 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
 export const onAwardPoints = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
-      const octokit = getOctokitInstance(context.payload.installation?.id!);
+      const octokit = createDedupedOctokit(getOctokitInstance(context.payload.installation?.id!));
       const repo = context.payload.repository.name;
       const issueCommentBody = context.payload.comment.body;
       const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
@@ -434,7 +435,7 @@ export const onRejectCommented = async (webhooks: Webhooks) => {
       const prNumber = context.payload.issue.number; //this is pr number if comment made from pr,else issue number when made from issue.
       const repo = context.payload.repository.name;
       const owner = context.payload.repository.owner.login;
-      const octokit = getOctokitInstance(context.payload.installation?.id!);
+      const octokit = createDedupedOctokit(getOctokitInstance(context.payload.installation?.id!));
       const rejectRegex = new RegExp(`${REJECT_IDENTIFIER}\\s+(.*)`, "i");
       const match = issueCommentBody.match(rejectRegex);
       const isCommentOnPullRequest = context.payload.issue.pull_request;
