@@ -101,29 +101,23 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
       const issuesData = await issuesResponse.json();
       const validatedData = ZGithubApiResponseSchema.parse(issuesData);
 
-      // Map the GitHub API response to issue format
-      const openPRs = validatedData.items.map((pr) => {
-        return {
-          logoUrl: `https://avatars.githubusercontent.com/u/${repoData.owner.id}?s=200&v=4`,
-          href: pr.html_url,
-          title: pr.title,
-          author: pr.user.login,
-          repository: repoData.name,
-          key: pr.id.toString(),
-          state: pr.state,
-          draft: pr.draft,
-          isIssue: true,
-          labels: pr.labels.map((label) => label.name),
-          points: extractPointsFromLabels(pr.labels),
-          assignee: pr.assignee ? pr.assignee.login : null,
-          createdAt: pr.created_at,
-          updatedAt: pr.updated_at,
-          closedAt: pr.closed_at,
-        };
+      // Map the GitHub API response to TPullRequest format
+      const openIssues: TPullRequest[] = validatedData.items.map((issue) => {
+        return ZPullRequest.parse({
+          title: issue.title,
+          href: issue.html_url,
+          author: issue.user.login,
+          repositoryFullName: repoData.full_name,
+          dateOpened: issue.created_at,
+          dateMerged: null, // Issues don't have a merged date
+          dateClosed: issue.closed_at,
+          status: "open", // All fetched issues are open
+          points: extractPointsFromLabels(issue.labels),
+        });
       });
-      return openPRs;
+      return openIssues;
     },
-    [`getOpenPullRequests-${repoGithubId}`],
+    [`getOpenIssues-${repoGithubId}`],
     {
       revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
     }

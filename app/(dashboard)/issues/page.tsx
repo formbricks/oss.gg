@@ -1,7 +1,6 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
-import GitHubIssue from "@/components/ui/github-issue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllOssGgIssuesOfRepo } from "@/lib/github/service";
 import { capitalizeFirstLetter } from "@/lib/utils/textformat";
@@ -64,7 +63,8 @@ export default async function IssuesPage() {
             {Object.entries(repoWithIssuesMap).map(([repoName, { issues, level }]) => (
               <TabsContent key={repoName} value={repoName}>
                 {issues.map((issue) => (
-                  <GitHubIssue key={issue.title} issue={issue} levelsInRepo={level} />
+                  <p key={issue.title}>{issue.title}</p>
+                  // <GitHubIssue key={issue.title} issue={issue} levelsInRepo={level} />
                 ))}
               </TabsContent>
             ))}
