@@ -126,6 +126,11 @@ export default function IndexPage() {
               </Link>
             </li>
             <li className="hover:underline">
+              <Link href="https://x.com/twentycrm" target="_blank" rel="noopener noreferrer">
+                @twentycrm
+              </Link>
+            </li>
+            <li className="hover:underline">
               <Link href="https://x.com/unkeydev" target="_blank" rel="noopener noreferrer">
                 @unkey
               </Link>
@@ -133,11 +138,6 @@ export default function IndexPage() {
             <li className="hover:underline">
               <Link href="https://x.com/UnInbox" target="_blank" rel="noopener noreferrer">
                 @uninbox
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link href="https://x.com/twentycrm" target="_blank" rel="noopener noreferrer">
-                @twentycrm
               </Link>
             </li>
             <li className="hover:underline">
@@ -189,6 +189,14 @@ export default function IndexPage() {
                 href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                 target="_blank"
                 rel="noopener noreferrer">
+                Twenty - os CRM
+              </Link>
+            </li>
+            <li className="hover:underline">
+              <Link
+                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                target="_blank"
+                rel="noopener noreferrer">
                 Unkey - api key management
               </Link>
             </li>
@@ -198,14 +206,6 @@ export default function IndexPage() {
                 target="_blank"
                 rel="noopener noreferrer">
                 UnInbox - os email marketing
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                Twenty - os CRM
               </Link>
             </li>
             <li className="hover:underline">
