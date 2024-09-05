@@ -12,13 +12,69 @@ export default function IndexPage() {
         <ToggleHead>prizes</ToggleHead>
         <ToggleContent>
           <ol className="ml-7 list-decimal">
-            <li>Macbook Pro 2023 M3 14&quot;</li>
-            <li>Macbook Air 2023 M3 15&quot;</li>
-            <li>iPad Pro M2</li>
-            <li>Playstation 5</li>
-            <li>AirPods Pro 3rd Gen</li>
-            <li>Mechanical Keyboard</li>
-            <li>what else</li>
+            <li>
+              <Link
+                href="https://www.apple.com/macbook-pro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                Macbook Pro 2023 M3 14&quot;
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.apple.com/macbook-air/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                Macbook Air 2023 M3 15&quot;
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.apple.com/ipad-pro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                iPad Pro M2
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.playstation.com/en-us/ps5/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                Playstation 5
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.apple.com/airpods-pro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                AirPods Pro 3rd Gen
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://epomaker.com/products/epomaker-ep84"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                EPOMAKER EP84
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://epomaker.com/products/epomaker-x-aula-f75"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                EPOMAKER x AULA F75
+              </Link>
+            </li>
             <li>what else</li>
             <li>what else</li>
             <li>a brick 🧱</li>
@@ -30,11 +86,11 @@ export default function IndexPage() {
         <ToggleContent>
           <p>
             complete{" "}
-            <Link href="/code" className="underline">
+            <Link href="/hacktoberfest/code" className="underline">
               code
             </Link>{" "}
             and{" "}
-            <Link href="/non-code" className="underline">
+            <Link href="/hacktoberfest/non-code" className="underline">
               non-code
             </Link>{" "}
             contributions to get points
@@ -98,7 +154,7 @@ export default function IndexPage() {
           <ul>
             <li className="hover:underline">
               <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                href="https://formbricks.notion.site/Formbricks-Open-Source-Forms-Surveys-798855c705cc4474ba63ceefbe048abf?pvs=4"
                 target="_blank"
                 rel="noopener noreferrer">
                 Formbricks - os forms and surveys
@@ -165,7 +221,7 @@ export default function IndexPage() {
       </Toggle>
       <h2 className="pt-4 font-bold">get started</h2>
       <p>
-        <Link href="/oss-issues" rel="noopener noreferrer" className="hover:underline">
+        <Link href="/hacktoberfest/oss-issues" rel="noopener noreferrer" className="hover:underline">
           browse available code issues
         </Link>
       </p>
