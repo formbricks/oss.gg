@@ -1,7 +1,6 @@
 "use server";
 
 import { SiteFooter } from "@/components/site-footer";
-import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/session";
 import OSSGGLogoDark from "@/public/oss-gg-logo-dark.png";
 import Image from "next/image";
@@ -21,7 +20,6 @@ export default async function ProfileLayout({ children }: ProfileLayoutProps) {
           <Link href="/">
             <Image src={OSSGGLogoDark} alt="oss gg logo" width={120} />
           </Link>
-          <Button href="/">What is oss.gg?</Button>
         </header>
       </div>
       <div className="">

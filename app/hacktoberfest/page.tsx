@@ -6,7 +6,7 @@ import { Toggle, ToggleContent, ToggleHead } from "../../components/toggle";
 
 export default function IndexPage() {
   return (
-    <div className="space-y-2 font-mono text-xs text-black underline-offset-2">
+    <div className="space-y-2 font-mono text-xs underline-offset-2">
       <h1 className="pb-2 font-bold">oss.gg hackathon 2024 🕹️</h1>
       <Toggle>
         <ToggleHead>prizes</ToggleHead>

@@ -8,7 +8,6 @@ import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
 import { TLevel } from "@/types/level";
 import { TPullRequest } from "@/types/pullRequest";
 
-import LevelList from "./level-list";
 import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
@@ -52,7 +51,7 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
     <div>
       <ProfileInfoBar githubData={enrichedUserData.githubData} />
       <div className="mt-10 grid grid-cols-4 gap-6 md:grid-cols-5">
-        <LevelList levels={userLevels} />
+        {/* <LevelList levels={userLevels} /> */}
         <PullRequestList pullRequests={pullRequests} profileName={enrichedUserData.githubData.name} />
       </div>
     </div>
