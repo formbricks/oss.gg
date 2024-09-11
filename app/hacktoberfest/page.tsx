@@ -36,7 +36,7 @@ export default function IndexPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline">
-                iPad Pro M2
+                iPhone 16 with 512GB
               </Link>
             </li>
             <li>
@@ -46,6 +46,15 @@ export default function IndexPage() {
                 rel="noopener noreferrer"
                 className="hover:underline">
                 Playstation 5
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://www.apple.com/airpods-pro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                AirPods Pro 3rd Gen
               </Link>
             </li>
             <li>
@@ -75,8 +84,15 @@ export default function IndexPage() {
                 EPOMAKER x AULA F75
               </Link>
             </li>
-            <li>what else</li>
-            <li>what else</li>
+            <li>
+              <Link
+                href="https://epomaker.com/products/epomaker-x-aula-f75"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                EPOMAKER x AULA F75
+              </Link>
+            </li>
             <li>a brick 🧱</li>
           </ol>
         </ToggleContent>
