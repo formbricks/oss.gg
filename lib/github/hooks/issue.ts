@@ -15,15 +15,10 @@ import {
   REJECT_IDENTIFIER,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
-import { assignUserPoints, getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
+import { assignUserPoints } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
-import {
-  calculateAssignabelNonAssignableIssuesForUserInALevel,
-  findCurrentAndNextLevelOfCurrentUser,
-} from "@/lib/utils/levelUtils";
 import { triggerDotDevClient } from "@/trigger";
-import { TLevel } from "@/types/level";
 import { Webhooks } from "@octokit/webhooks";
 
 import { isMemberOfRepository } from "../services/user";
@@ -139,11 +134,12 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           return;
         }
 
+        /*  
         //checking if the current level of user has the power to solve the issue on which the /assign comment was made.
         const currentRepo = await getRepositoryByGithubId(context.payload.repository.id);
         const user = await getUserByGithubId(context.payload.comment.user.id);
 
-        if (currentRepo && user) {
+       if (currentRepo && user) {
           const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
           const { currentLevelOfUser } = await findCurrentAndNextLevelOfCurrentUser(
             currentRepo.id,
@@ -169,7 +165,8 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
             });
             return;
           }
-        }
+        } */
+
         await octokit.issues.addAssignees({
           owner,
           repo,
