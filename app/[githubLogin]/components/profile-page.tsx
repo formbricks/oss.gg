@@ -11,7 +11,7 @@ import { TPullRequest } from "@/types/pullRequest";
 import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
-export default async function ProfilePage({ githubLogin }: { githubLogin: string }) {
+export default async function ProfilePage({ githubLogin, singedIn }: { githubLogin: string, singedIn: boolean }) {
   // Get & enrich the player data
   const enrichedUserData = await getEnrichedGithubUserData(githubLogin);
 
@@ -49,7 +49,7 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
 
   return (
     <div>
-      <ProfileInfoBar githubData={enrichedUserData.githubData} />
+      <ProfileInfoBar githubData={enrichedUserData.githubData} singedIn={singedIn} />
       <div className="mt-10 grid grid-cols-4 gap-6 md:grid-cols-5">
         {/* <LevelList levels={userLevels} /> */}
         <PullRequestList pullRequests={pullRequests} profileName={enrichedUserData.githubData.name} />

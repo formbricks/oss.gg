@@ -5,6 +5,7 @@ import GitHubProvider from "next-auth/providers/github";
 
 import { createAccount } from "./account/service";
 import { createUser } from "./user/service";
+import { enrollUserInAllRepositories } from "./enrollment/service";
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -17,7 +18,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }: any) {
+    async signIn({ user, account, profile, ...rest }: any) {
       if (account.type !== "oauth") {
         return false;
       }
@@ -41,12 +42,13 @@ export const authOptions: NextAuthOptions = {
             existingUserWithAccount.name === user.name &&
             existingUserWithAccount.avatarUrl === user.avatarUrl
           ) {
+            await enrollUserInAllRepositories(existingUserWithAccount.id);
             return true;
           }
 
           // user seemed to change their core details within the provider
           // update them in the database
-          await db.user.update({
+          const updatedUser = await db.user.update({
             where: {
               id: existingUserWithAccount.id,
             },
@@ -58,6 +60,8 @@ export const authOptions: NextAuthOptions = {
               avatarUrl: profile.avatar_url,
             },
           });
+
+          await enrollUserInAllRepositories(updatedUser.id);
           return true;
         }
 
@@ -71,6 +75,9 @@ export const authOptions: NextAuthOptions = {
         });
 
         await createAccount({ ...account, userId: dbUser.id });
+
+        // Enroll new user in all repositories
+        await enrollUserInAllRepositories(dbUser.id);
 
         return true;
       }
