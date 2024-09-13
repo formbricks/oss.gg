@@ -175,16 +175,24 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         });
 
         //send trigger event to wait for 36hrs then send a reminder if the user has not created a pull request
-        await triggerDotDevClient.sendEvent({
-          name: "issue.reminder",
-          payload: {
-            issueNumber,
-            repo,
-            owner,
-            commenter,
-            installationId: context.payload.installation?.id,
-          },
-        });
+        try {
+          await triggerDotDevClient.sendEvent({
+            name: "issue.reminder",
+            payload: {
+              issueNumber,
+              repo,
+              owner,
+              commenter,
+              installationId: context.payload.installation?.id,
+            },
+          });
+        } catch (error) {
+          console.error("Error sending event:", error.message);
+          if (error.response) {
+            const responseText = await error.response.text(); // Capture response text
+            console.error("Response:", responseText);
+          }
+        }
 
         await octokit.issues.createComment({
           owner,

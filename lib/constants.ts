@@ -54,7 +54,6 @@ export const OSS_GG_LABEL = "🕹️ oss.gg" as const;
 
 // Trigger.dev
 export const TRIGGER_API_KEY = env.TRIGGER_API_KEY as string;
-export const TRIGGER_API_URL = env.TRIGGER_API_URL as string;
 export const ITEMS_PER_PAGE = 50;
 
 // Storage constants

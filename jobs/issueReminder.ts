@@ -49,7 +49,7 @@ triggerDotDevClient.defineJob({
     const octokit = getOctokitInstance(installationId);
 
     //wait for 36hrs
-    await io.wait("waiting for 36hrs", 36 * 60 * 60);
+    await io.wait("waiting for 36hrs", 5);
 
     //made this a task so it doesn't get replayed
     const taskValue = await io.runTask("36-hrs", async () => {
@@ -80,7 +80,7 @@ triggerDotDevClient.defineJob({
     if (taskValue?.completed) {
       return;
     } else {
-      await io.wait("waiting for 12hrs", 12 * 60 * 60);
+      await io.wait("waiting for 12hrs", 60);
 
       await io.runTask("48-hrs", async () => {
         const pullRequest = await findPullRequestByIssueAndCommenter(
