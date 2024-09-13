@@ -23,7 +23,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (processedEvents.has(eventId)) {
-      console.log(`Event ${eventId} already processed, skipping`);
       res.status(200).end();
       return;
     }

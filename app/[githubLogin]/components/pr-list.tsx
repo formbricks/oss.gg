@@ -1,27 +1,49 @@
-import PullRequest from "@/components/ui/github-pr";
 import { TPullRequest } from "@/types/pullRequest";
+import Link from "next/link";
 import React from "react";
 
 interface PullRequestListProps {
   pullRequests: TPullRequest[];
-  profileName: string;
 }
 
-const PullRequestList: React.FC<PullRequestListProps> = ({ pullRequests, profileName }) => {
+const PullRequestList: React.FC<PullRequestListProps> = ({ pullRequests }) => {
   return (
-    <div className="col-span-4 space-y-12">
-      {pullRequests.length > 0 ? (
-        <div>
-          <h3 className="mb-2 text-xl font-medium">Contributions by {profileName}</h3>
-          {pullRequests.map((pullRequest) => (
-            <PullRequest key={pullRequest.href} pullRequest={pullRequest} />
-          ))}
-        </div>
-      ) : (
-        <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-zinc-50">
-          <p>{profileName} has not yet contributed to an oss.gg repository 🕹️</p>
-        </div>
-      )}
+    <div className="col-span-4 space-y-6">
+      <div>
+        <h2 className="mb-2 font-bold">oss.gg contributions</h2>
+        {pullRequests.some((pr) => pr.points !== null) ? (
+          <ul className="list-none space-y-2">
+            {pullRequests
+              .filter((pr) => pr.points !== null)
+              .map((pullRequest) => (
+                <li key={pullRequest.href}>
+                  <Link href={pullRequest.href} className="underline-offset-4 hover:underline">
+                    {pullRequest.repositoryFullName && <span>{pullRequest.repositoryFullName}</span>}
+                    <span> | {pullRequest.points} points 🕹️ | </span>
+                    <span>{pullRequest.title}</span>
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        ) : (
+          <p>no oss.gg hackathon contribution yet</p>
+        )}
+      </div>
+      <div>
+        <h2 className="mb-2 font-bold">previous</h2>
+        <ul className="list-none space-y-2">
+          {pullRequests
+            .filter((pr) => pr.points === null)
+            .map((pullRequest) => (
+              <li key={pullRequest.href}>
+                <Link href={pullRequest.href} className="underline-offset-4 hover:underline">
+                  {pullRequest.repositoryFullName && <span>{pullRequest.repositoryFullName}</span>}
+                  <span> | {pullRequest.title}</span>
+                </Link>
+              </li>
+            ))}
+        </ul>
+      </div>
     </div>
   );
 };

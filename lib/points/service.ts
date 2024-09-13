@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { ZId, ZOptionalNumber } from "@/types/common";
 import { DatabaseError } from "@/types/errors";
 import { TPointTransactionWithUser } from "@/types/pointTransaction";
+import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
@@ -116,4 +117,53 @@ export const getPointsForPlayerInRepoByRepositoryId = async (
     }
     throw error;
   }
+};
+
+export const getPointsAndRankPerRepository = async (repositories: TRepository[], userId: string) => {
+  return Promise.all(
+    repositories.map(async (repository) => {
+      const result = await db.pointTransaction.groupBy({
+        by: ["userId"],
+        where: { repositoryId: repository.id },
+        _sum: {
+          points: true,
+        },
+        orderBy: {
+          _sum: {
+            points: "desc",
+          },
+        },
+      });
+
+      const userPoints = result.find((user) => user.userId === userId)?._sum?.points || 0;
+      const rank = result.findIndex((user) => user.userId === userId) + 1;
+
+      return {
+        id: repository.id,
+        repositoryName: repository.name,
+        points: userPoints,
+        rank: rank,
+        repositoryLogo: repository.logoUrl,
+      };
+    })
+  );
+};
+
+export const getTotalPointsAndGlobalRank = async (userId: string) => {
+  const result = await db.pointTransaction.groupBy({
+    by: ["userId"],
+    _sum: {
+      points: true,
+    },
+    orderBy: {
+      _sum: {
+        points: "desc",
+      },
+    },
+  });
+
+  const userPoints = result.find((user) => user.userId === userId)?._sum.points || 0;
+  const rank = result.findIndex((user) => user.userId === userId) + 1;
+
+  return { totalPoints: userPoints, globalRank: rank };
 };
