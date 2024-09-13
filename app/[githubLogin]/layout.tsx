@@ -8,7 +8,7 @@ interface ProfileLayoutProps {
 
 export default async function ProfileLayout({ children }: ProfileLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between">
+    <div className="flex min-h-screen flex-col items-center justify-between p-4">
       <header />
       <main>{children}</main>
       <SiteFooter />

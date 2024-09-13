@@ -57,11 +57,12 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
 
   let totalPoints = 0;
   let globalRank = 0;
-
+  let chanceOfWinning = 0;
   if (enrichedUserData.playerData?.id) {
     const result = await getTotalPointsAndGlobalRank(enrichedUserData.playerData.id);
     totalPoints = result.totalPoints;
     globalRank = result.globalRank;
+    chanceOfWinning = result.likelihoodOfWinning;
   }
 
   const ossGgRepositories = await getAllRepositories();
@@ -75,13 +76,14 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
   }
 
   return (
-    <div className="flex flex-col items-center justify-center font-mono text-xs">
+    <div className="flex max-w-2xl flex-col items-center justify-center font-mono text-xs">
       <ProfileInfoBar
         githubData={enrichedUserData.githubData}
         totalPoints={totalPoints}
         globalRank={globalRank}
+        chanceOfWinning={chanceOfWinning}
       />
-      <div className="mt-10 grid grid-cols-4 gap-6 md:grid-cols-5">
+      <div className="mt-10 grid w-full max-w-2xl grid-cols-4 gap-6 md:grid-cols-5">
         {/* <LevelList levels={userLevels} /> */}
         <PointsAndRanks pointsAndRanks={pointsAndRanks} />
         <PullRequestList pullRequests={pullRequests} />

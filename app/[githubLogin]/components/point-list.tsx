@@ -13,17 +13,11 @@ interface PointsAndRanksProps {
 
 const PointsAndRanks: React.FC<PointsAndRanksProps> = ({ pointsAndRanks }) => {
   return (
-    <div className="space-y-4">
+    <div className="col-span-4 grid grid-cols-4 gap-4 md:col-span-1 md:grid-cols-1">
       {pointsAndRanks.map((repo, index) => (
-        <div key={repo.id} className="relative w-11/12">
+        <div key={repo.id} className="space-y-1">
           {repo.repositoryLogo && (
-            <Image
-              src={repo.repositoryLogo}
-              height={25}
-              width={25}
-              alt={`${repo.repositoryName} logo`}
-              className="mb-2"
-            />
+            <Image src={repo.repositoryLogo} height={25} width={25} alt={`${repo.repositoryName} logo`} />
           )}
           <h3 className="font-semibold">{repo.repositoryName}</h3>
           <p>points: {repo.points}</p>

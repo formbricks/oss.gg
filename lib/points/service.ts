@@ -163,7 +163,22 @@ export const getTotalPointsAndGlobalRank = async (userId: string) => {
   });
 
   const userPoints = result.find((user) => user.userId === userId)?._sum.points || 0;
+
   const rank = result.findIndex((user) => user.userId === userId) + 1;
 
-  return { totalPoints: userPoints, globalRank: rank };
+  const totalPointsInGame = result.reduce((accumulator, user) => accumulator + (user._sum.points || 0), 0);
+
+  const numberOfPrizes = 10;
+
+  const loseProbabilitySingleDraw = (totalPointsInGame - userPoints) / totalPointsInGame;
+
+  const loseProbabilityAllDraws = Math.pow(loseProbabilitySingleDraw, numberOfPrizes);
+
+  const winProbability = 1 - loseProbabilityAllDraws;
+
+  return {
+    totalPoints: userPoints,
+    globalRank: rank,
+    likelihoodOfWinning: winProbability,
+  };
 };
