@@ -1,14 +1,12 @@
 "use server";
 
 import { SiteFooter } from "@/components/site-footer";
-import { getCurrentUser } from "@/lib/session";
 
 interface ProfileLayoutProps {
   children?: React.ReactNode;
 }
 
 export default async function ProfileLayout({ children }: ProfileLayoutProps) {
-  const user = await getCurrentUser();
 
   return (
     <div className="flex min-h-screen flex-col">

@@ -74,7 +74,8 @@ export const authOptions: NextAuthOptions = {
           avatarUrl: profile.avatar_url,
         });
 
-        await createAccount({ ...account, userId: dbUser.id });
+        const { refresh_token_expires_in, ...accountInput } = account;
+        await createAccount({ ...accountInput, userId: dbUser.id });
 
         // Enroll new user in all repositories
         await enrollUserInAllRepositories(dbUser.id);
