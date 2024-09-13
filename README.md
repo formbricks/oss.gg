@@ -86,7 +86,11 @@ The `NEXTAUTH_SECRET` you can generate with the command written in the command b
   pnpm dev
 ```
 
-5. Run the Webhook Proxy
+5. Run the Webhook Proxy. To be able to do that please run this first:
+
+   `npm install -g smee-client`
+
+   and then replace the SME path in the command below before you run it:
 
 ```bash
   smee --url https://smee.io/<your-smee-path> --path /api/github-webhook --port 3000
