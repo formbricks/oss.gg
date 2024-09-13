@@ -10,6 +10,7 @@ import {
   onPullRequestOpened,
   onRejectCommented,
   onUnassignCommented,
+  onPullRequestMerged
 } from "./hooks/issue";
 
 const webhooks = new Webhooks({
@@ -30,4 +31,5 @@ export const registerHooks = async () => {
   onRejectCommented(webhooks);
   onBountyCreated(webhooks);
   onBountyPullRequestMerged(webhooks);
+  onPullRequestMerged(webhooks)
 };

@@ -27,12 +27,11 @@ import { TLevel } from "@/types/level";
 import { Webhooks } from "@octokit/webhooks";
 
 import { isMemberOfRepository } from "../services/user";
-import { extractIssueNumbers, getOctokitInstance } from "../utils";
+import { extractIssueNumbers, extractIssueNumbersFromPrBody, getOctokitInstance } from "../utils";
 
 export const onIssueOpened = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_OPENED, async (context) => {
     const projectId = context.payload.repository.id;
-
     //TODO:
     //1. check if the issue has the oss label
     //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
@@ -429,6 +428,99 @@ export const onPullRequestOpened = async (webhooks: Webhooks) => {
     return;
   });
 };
+
+export const onPullRequestMerged = async (webhooks: Webhooks) => {
+  webhooks.on(EVENT_TRIGGERS.PULL_REQUEST_CLOSED, async (context) => {
+    const pullRequest = context.payload.pull_request;
+    const repo = context.payload.repository.name;
+    const owner = context.payload.repository.owner.login;
+
+    // Early exit if the pull request was not merged
+    if (!pullRequest.merged) {
+      console.log("Pull request was not merged.");
+      return;
+    }
+
+    const octokit = getOctokitInstance(context.payload.installation?.id!);
+
+    // Parse the pull request body to find linked issues (e.g., " #123")
+    const issueNumbers = extractIssueNumbersFromPrBody(pullRequest.body!);
+    if (!issueNumbers.length) {
+      console.log("No issues are mentioned in the pull request.");
+      return;
+    }
+
+    // Check repository enrollment first
+    const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
+    if (!ossGgRepo) {
+      console.log("Repository is not enrolled in oss.gg.");
+      return;
+    }
+
+    // Loop through all the extracted issue numbers
+    for (const issueNumber of issueNumbers) {
+      try {
+        // Fetch the issue details using the GitHub API
+        const { data: issue } = await octokit.issues.get({
+          owner,
+          repo,
+          issue_number: issueNumber,
+        });
+
+        // Get the labels of the linked issue
+        const issueLabels = issue.labels.map((label: { name: string }) => label.name);
+
+        // Check if the "🕹️ oss.gg" label is present, skip if not
+        const ossLabel = issueLabels.find((label) => label.includes(OSS_GG_LABEL));
+        if (!ossLabel) {
+          console.log(`Issue #${issueNumber} does not have the 🕹️ oss.gg label. Skipping.`);
+          continue;  // Skip this issue and move to the next one
+        }
+
+        // Extract points from labels like "🕹️ 50 points", "🕹️ 100 points", etc.
+        const pointsLabel = issueLabels.find((label) => label.includes("🕹️") && label.includes("points"));
+        if (pointsLabel) {
+          // Extract number from the points label
+          const points = parseInt(pointsLabel.match(/\d+/)?.[0] || "0", 10);
+          console.log(`Points for issue #${issueNumber}:`, points);
+
+          // Fetch PR author details only if the oss.gg label is present
+          const prAuthorGithubId = pullRequest.user.id;
+          const prAuthorUsername = pullRequest.user.login;
+          const { data: prAuthorProfile } = await octokit.users.getByUsername({
+            username: prAuthorUsername,
+          });
+
+          // Fetch or create user profile only if the oss.gg label is present
+          let user = await getUserByGithubId(prAuthorGithubId);
+          if (!user) {
+            user = await createUser({
+              githubId: prAuthorGithubId,
+              login: prAuthorUsername,
+              email: prAuthorProfile.email,
+              name: prAuthorProfile.name,
+              avatarUrl: pullRequest.user.avatar_url,
+            });
+          }
+
+          // Award points to the user
+          await assignUserPoints(
+            user?.id,
+            points,
+            "Awarded points",
+            pullRequest.html_url,
+            ossGgRepo?.id
+          );
+        } else {
+          console.log(`No points label found for issue #${issueNumber}.`);
+        }
+      } catch (error) {
+        console.error(`Failed to fetch details for issue #${issueNumber}:`, error);
+      }
+    }
+  });
+};
+
 
 export const onRejectCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
