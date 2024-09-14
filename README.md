@@ -53,7 +53,32 @@ This key comes in a .pem file. Open it and copy the code enclosed in double quot
 
 <img width="607" alt="image" src="https://github.com/formbricks/oss.gg/assets/72809645/6a903710-d314-4503-8357-8cc11b756fd0">
 
-All set 👍
+### Setting up the GitHub App Permissions
+
+To let the app manage the repo on your behalf it needs some permission:
+
+Go to Permissions & events:
+<img width="309" alt="image" src="https://github.com/user-attachments/assets/768d30ca-102f-457c-9a30-aba3ab29dcd8">
+
+Set it up as follows:
+
+**Issues: Read & write**
+
+<img width="762" alt="image" src="https://github.com/user-attachments/assets/5f9fc0f0-8d0d-43f8-a971-4bf8e0fab733">
+
+**Metadata: Read only**
+
+<img width="760" alt="image" src="https://github.com/user-attachments/assets/9291bc18-e862-48e9-a6eb-4006849bfebc">
+
+**Pull requests: Read & write**
+
+<img width="762" alt="image" src="https://github.com/user-attachments/assets/1b1f2272-c03f-4d36-bdd2-4d80c72c1f77">
+
+And subscribe to the following events:
+
+<img width="777" alt="image" src="https://github.com/user-attachments/assets/2c16c165-2665-4d77-ae84-f3d74b2888cc">
+
+All set 💪
 
 ## 2. Run oss.gg server locally
 
@@ -86,7 +111,11 @@ The `NEXTAUTH_SECRET` you can generate with the command written in the command b
   pnpm dev
 ```
 
-5. Run the Webhook Proxy
+5. Run the Webhook Proxy. To be able to do that please run this first:
+
+   `npm install -g smee-client`
+
+   and then replace the SME path in the command below before you run it:
 
 ```bash
   smee --url https://smee.io/<your-smee-path> --path /api/github-webhook --port 3000
