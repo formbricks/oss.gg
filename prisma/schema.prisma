@@ -10,6 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  user
+  admin
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map(name: "created_at")
@@ -25,6 +30,7 @@ model User {
   city       String?
   state      String?
   country    String?
+  role       Role?   @default(user)
 
   account           Account?
   pointTransactions PointTransaction[]

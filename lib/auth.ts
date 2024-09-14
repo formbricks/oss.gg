@@ -4,8 +4,8 @@ import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 
 import { createAccount } from "./account/service";
-import { createUser } from "./user/service";
 import { enrollUserInAllRepositories } from "./enrollment/service";
+import { createUser } from "./user/service";
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -42,7 +42,9 @@ export const authOptions: NextAuthOptions = {
             existingUserWithAccount.name === user.name &&
             existingUserWithAccount.avatarUrl === user.avatarUrl
           ) {
-            await enrollUserInAllRepositories(existingUserWithAccount.id);
+            if (existingUserWithAccount.role === "user") {
+              await enrollUserInAllRepositories(existingUserWithAccount.id);
+            }
             return true;
           }
 
@@ -61,7 +63,10 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          await enrollUserInAllRepositories(updatedUser.id);
+          if (existingUserWithAccount.role === "user") {
+            await enrollUserInAllRepositories(updatedUser.id);
+          }
+
           return true;
         }
 
@@ -109,6 +114,7 @@ export const authOptions: NextAuthOptions = {
         email: dbUser.email,
         avatarUrl: dbUser.avatarUrl,
         login: dbUser.login,
+        role: dbUser.role,
       };
     },
     async session({ token, session }) {
@@ -118,6 +124,7 @@ export const authOptions: NextAuthOptions = {
         if (token.email) session.user.email = token.email;
         if (token.avatarUrl) session.user.avatarUrl = token.avatarUrl as string;
         if (token.login) session.user.login = token.login as string;
+        if (token.role) session.user.role = token.role as string;
       }
 
       return session;
