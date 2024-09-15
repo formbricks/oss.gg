@@ -471,11 +471,13 @@ export const onPullRequestMerged = async (webhooks: Webhooks) => {
         const ossLabel = issueLabels.find((label) => label.includes(OSS_GG_LABEL));
         if (!ossLabel) {
           console.log(`Issue #${issueNumber} does not have the 🕹️ oss.gg label. Skipping.`);
-          continue;  // Skip this issue and move to the next one
+          continue; // Skip this issue and move to the next one
         }
 
         // Extract points from labels like "🕹️ 50 points", "🕹️ 100 points", etc.
-        const pointsLabel = issueLabels.find((label) => label.includes("🕹️") && label.includes("points"));
+        const pointsLabel = issueLabels.find(
+          (label) => (label.includes("🕹️") || label.includes(":joystick:")) && label.includes("points")
+        );
         if (pointsLabel) {
           // Extract number from the points label
           const points = parseInt(pointsLabel.match(/\d+/)?.[0] || "0", 10);
@@ -501,13 +503,7 @@ export const onPullRequestMerged = async (webhooks: Webhooks) => {
           }
 
           // Award points to the user
-          await assignUserPoints(
-            user?.id,
-            points,
-            "Awarded points",
-            pullRequest.html_url,
-            ossGgRepo?.id
-          );
+          await assignUserPoints(user?.id, points, "Awarded points", pullRequest.html_url, ossGgRepo?.id);
         } else {
           console.log(`No points label found for issue #${issueNumber}.`);
         }
@@ -517,7 +513,6 @@ export const onPullRequestMerged = async (webhooks: Webhooks) => {
     }
   });
 };
-
 
 export const onRejectCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
