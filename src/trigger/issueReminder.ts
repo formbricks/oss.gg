@@ -64,7 +64,7 @@ export const issueReminderTask = task({
           owner,
           repo,
           issue_number: issueNumber,
-          body: ` @${commenter}, You have 12hrs left to create a pull request for this issue. `,
+          body: ` @${commenter}, Just a little reminder: Please open a draft PR linking this issue within 12 hours. If we can't detect a PR, you will be unassigned automatically. `,
         });
         return { completed: false };
       }
@@ -93,7 +93,7 @@ export const issueReminderTask = task({
           owner: owner,
           repo: repo,
           issue_number: issueNumber,
-          body: `@${commenter} has been unassigned from the issue, anyone can now take it up.`,
+          body: `@${commenter} has not opened a PR for this issue within 48 hours. They have been unassigned from the issue, anyone can now take it up :)`,
         });
         await octokit.issues.removeAssignees({
           owner: owner,

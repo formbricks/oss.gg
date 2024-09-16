@@ -110,8 +110,5 @@
     "overrides": {
       "undici": "5.27.0"
     }
-  },
-  "trigger.dev": {
-    "endpointId": "test-989w"
   }
 }

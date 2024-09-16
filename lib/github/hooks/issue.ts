@@ -197,7 +197,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           owner,
           repo,
           issue_number: issueNumber,
-          body: `Assigned to @${commenter}! Excited to have you ship this 🕹️`,
+          body: `Assigned to @${commenter}! You have 48 hours to open a draft PR linking this issue. If we can't detect a PR, you will be unassigned automatically. Excited to have you ship this 🕹️`,
         });
       }
 
