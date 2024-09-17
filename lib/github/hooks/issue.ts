@@ -4,7 +4,6 @@ import {
   CREATE_IDENTIFIER,
   DISCORD_AWARD_POINTS_MESSAGE,
   DISCORD_CHANNEL_ID,
-  DISCORD_POINTS_MESSAGE_TRIGGER_ID,
   EVENT_TRIGGERS,
   LEVEL_LABEL,
   ON_NEW_ISSUE,
@@ -16,10 +15,10 @@ import {
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
-import { getUser } from "@/lib/user/service";
-import { triggerDotDevClient } from "@/trigger";
+import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
+import { discordPointMessageTask } from "@/src/trigger/discordPointsMessage";
+import { issueReminderTask } from "@/src/trigger/issueReminder";
 import { Webhooks } from "@octokit/webhooks";
-
 import { isMemberOfRepository } from "../services/user";
 import { checkOssGgLabel, extractIssueNumbers, extractIssueNumbersFromPrBody, extractPointsFromLabels, filterValidLabels, getOctokitInstance, postComment, processAndComment, processUserPoints } from "../utils";
 
@@ -173,22 +172,29 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         });
 
         //send trigger event to wait for 36hrs then send a reminder if the user has not created a pull request
-        await triggerDotDevClient.sendEvent({
-          name: "issue.reminder",
-          payload: {
-            issueNumber,
-            repo,
-            owner,
-            commenter,
-            installationId: context.payload.installation?.id,
-          },
-        });
+        try {
+          if (context.payload.installation?.id) {
+            await issueReminderTask.trigger({
+              issueNumber,
+              repo,
+              owner,
+              commenter,
+              installationId: context.payload.installation.id ?? "",
+            });
+          }
+        } catch (error) {
+          console.error("Error sending event:", error.message);
+          if (error.response) {
+            const responseText = await error.response.text(); // Capture response text
+            console.error("Response:", responseText);
+          }
+        }
 
         await octokit.issues.createComment({
           owner,
           repo,
           issue_number: issueNumber,
-          body: `Assigned to @${commenter}! Excited to have you ship this 🕹️`,
+          body: `Assigned to @${commenter}! You have 48 hours to open a draft PR linking this issue. If we can't detect a PR, you will be unassigned automatically. Excited to have you ship this 🕹️`,
         });
       }
 
@@ -380,14 +386,12 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
               `Awarding ${user.login}: ${points} points! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})` +
               " " +
               comment;
-
-            await triggerDotDevClient.sendEvent({
-              name: DISCORD_POINTS_MESSAGE_TRIGGER_ID,
-              payload: {
-                channelId: DISCORD_CHANNEL_ID,
-                message: DISCORD_AWARD_POINTS_MESSAGE(user.name ?? prAuthorUsername, points),
-              },
+            
+             await discordPointMessageTask.trigger({
+              channelId: DISCORD_CHANNEL_ID,
+              message: DISCORD_AWARD_POINTS_MESSAGE(user.name ?? prAuthorUsername, points),
             });
+
           }
         }
 

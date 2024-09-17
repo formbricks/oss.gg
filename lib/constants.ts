@@ -52,9 +52,6 @@ export const GITHUB_APP_ACCESS_TOKEN = env.GITHUB_APP_ACCESS_TOKEN as string;
 
 export const OSS_GG_LABEL = "🕹️ oss.gg" as const;
 
-// Trigger.dev
-export const TRIGGER_API_KEY = env.TRIGGER_API_KEY as string;
-export const TRIGGER_API_URL = env.TRIGGER_API_URL as string;
 export const ITEMS_PER_PAGE = 50;
 
 // Storage constants
@@ -75,6 +72,5 @@ export const TREMENDOUS_CAMPAIGN_ID = env.TREMENDOUS_CAMPAIGN_ID;
 // Discord
 export const DISCORD_CHANNEL_ID = env.DISCORD_CHANNEL_ID;
 export const DISCORD_BOT_TOKEN = env.DISCORD_BOT_TOKEN;
-export const DISCORD_POINTS_MESSAGE_TRIGGER_ID = "discord.pointsMessage";
 export const DISCORD_AWARD_POINTS_MESSAGE = (username: string, points: number) =>
   `Way to go, ${username} 🎉 You've just earned ${points} points. Your contribution is invaluable to our community 🙌 Keep up the fantastic work and let's keep pushing forward! 💪`;
