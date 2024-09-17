@@ -42,7 +42,7 @@ export const issueReminderTask = task({
 
     //wait for 36hrs
     logger.info("Waiting for 36 hours");
-    await wait.for({ seconds: 5 });
+    await wait.for({ hours: 36 });
 
     //made this a task so it doesn't get replayed
     const taskValue = async () => {
@@ -74,7 +74,7 @@ export const issueReminderTask = task({
       return;
     } else {
       logger.info("waiting for 12hrs");
-      await wait.for({ seconds: 60 });
+      await wait.for({ hours: 12 });
 
       const pullRequest = await findPullRequestByIssueAndCommenter(
         octokit,
