@@ -5,10 +5,11 @@ import { TPullRequest } from "@/types/pullRequest";
 import Link from "next/link";
 
 export default async function IssuesPage() {
-  const pullRequests: TPullRequest[] = await getAllOssGgIssuesOfRepo(500289888);
+  // const pullRequests: TPullRequest[] = await getAllOssGgIssuesOfRepo(500289888);
+  const pullRequests: TPullRequest[] = await getAllOssGgIssuesOfRepo(856770427);
 
   return (
-    <div className="space-y-2 font-mono text-xs text-black">
+    <div className="space-y-2 font-mono text-xs text-white">
       <h1 className="pb-2 font-bold">issues ({pullRequests.length})</h1>
       <ul className="list-none space-y-2">
         {pullRequests.map((pullRequest) => (

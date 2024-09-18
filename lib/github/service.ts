@@ -5,7 +5,8 @@ import { TPullRequest, ZPullRequest } from "@/types/pullRequest";
 import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
-import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
+import { GITHUB_APP_ACCESS_TOKEN, OSS_GG_LABEL } from "../constants";
+import { githubCache } from "./cache";
 import { extractPointsFromLabels } from "./utils";
 
 type PullRequestStatus = "open" | "merged" | "closed" | undefined;
@@ -119,6 +120,7 @@ export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
     },
     [`getOpenIssues-${repoGithubId}`],
     {
-      revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+      tags: [githubCache.tag.byRepoGithubId(repoGithubId)],
+      revalidate: 60 * 20,
     }
   )();
