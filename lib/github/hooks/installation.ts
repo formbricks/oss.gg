@@ -12,13 +12,11 @@ type GitHubRepository = {
   private: boolean;
 };
 
-export const onInstallationCreated = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.INSTALLATION_CREATED, async (context) => {
-    const installationId = context.payload.installation.id;
-    const appId = context.payload.installation.app_id;
-    const repos = context.payload.repositories as GitHubRepository[];
-    // console.log("Installation created", installationId, appId, repos);
+export const onInstallationCreated = async (payload: any) => {
+  console.log("WEBHOOK FIRE HORA");
+  const installationId = payload.installation.id;
+  const appId = payload.installation.app_id;
+  const repos = payload.repositories as GitHubRepository[];
 
-    await sendInstallationDetails(installationId, appId, repos, context.payload.installation);
-  });
+  await sendInstallationDetails(installationId, appId, repos, payload.installation);
 };

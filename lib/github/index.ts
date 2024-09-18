@@ -39,15 +39,27 @@ import {
 // onBountyPullRequestMerged(webhooks);
 // };
 
-const typeGaurds = {
-  issue: (event: EmitterWebhookEvent["payload"]) => "issue" in event,
-};
+// const typeGaurds = {
+//   issue: (event: EmitterWebhookEvent["payload"]) => "issue" in event,
+// };
 
-export const registerHooks = async (event: EmitterWebhookEventName, body: EmitterWebhookEvent["payload"]) => {
+export const registerHooks = async (event: EmitterWebhookEventName, body: any) => {
   switch (event) {
-    case "issues.opened": {
-      if (typeGaurds.issue(body)) {
-        onIssueOpened(body as EmitterWebhookEvent["payload"]);
+    case "issues": {
+      if (body.action === "opened") {
+        onIssueOpened(body);
+      }
+    }
+
+    case "issue_comment": {
+      if (body.action === "created") {
+        onAssignCommented(body);
+      }
+    }
+
+    case "installation": {
+      if (body.action === "created") {
+        onInstallationCreated(body);
       }
     }
   }
