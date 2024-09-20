@@ -64,7 +64,7 @@ export const issueReminderTask = task({
           owner,
           repo,
           issue_number: issueNumber,
-          body: ` @${commenter}, Just a little reminder: Please open a draft PR linking this issue within 12 hours. If we can't detect a PR, you will be unassigned automatically. `,
+          body: ` @${commenter}, Just a little reminder: Please open a draft PR linking this issue within 12 hours. If we can't detect a PR in 12h, you will be unassigned automatically. `,
         });
         return { completed: false };
       }
