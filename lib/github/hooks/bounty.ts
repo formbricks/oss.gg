@@ -46,7 +46,7 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
 
       if (bountyMatch) {
         if (isPR) {
-          await commentOnIssue("Bounties can be setup in only issues, not in PRs.");
+          await commentOnIssue("Bounties can be setup in issues only, not in PRs.");
           return;
         }
 
@@ -62,7 +62,7 @@ export const onBountyCreated = async (webhooks: Webhooks) => {
         const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
         if (!ossGgRepo) {
           await commentOnIssue(
-            "If you are the repo owner, please register at oss.gg to be able to create bounties"
+            "If you are the repo owner, please register at https://oss.gg to be able to create bounties."
           );
           return;
         } else if (ossGgRepo) {
