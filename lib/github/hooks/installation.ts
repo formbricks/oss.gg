@@ -1,5 +1,5 @@
 import { EVENT_TRIGGERS } from "@/lib/constants";
-import { Webhooks } from "@octokit/webhooks";
+import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 
 import { sendInstallationDetails } from "../services/user";
 
@@ -12,8 +12,7 @@ type GitHubRepository = {
   private: boolean;
 };
 
-export const onInstallationCreated = async (payload: any) => {
-  console.log("WEBHOOK FIRE HORA");
+export const onInstallationCreated = async (payload: EmitterWebhookEvent<"installation">["payload"]) => {
   const installationId = payload.installation.id;
   const appId = payload.installation.app_id;
   const repos = payload.repositories as GitHubRepository[];

@@ -13,75 +13,81 @@ type PullRequestStatus = "open" | "merged" | "closed" | undefined;
 
 const octokit = new Octokit({ auth: GITHUB_APP_ACCESS_TOKEN });
 
-export const getPullRequestsByGithubLogin = async (
+export const getPullRequestsByGithubLogin = (
   playerRepositoryIds: string[],
   githubLogin: string,
   status?: PullRequestStatus
-): Promise<TPullRequest[]> => {
-  if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
-    console.warn("No repository IDs provided. Returning empty array.");
-    return [];
-  }
-
-  const pullRequests: TPullRequest[] = [];
-
-  let statusQuery = "is:pr";
-  if (status === "open") statusQuery += " is:open";
-  else if (status === "merged") statusQuery += " is:merged";
-  else if (status === "closed") statusQuery += " is:closed -is:merged";
-
-  const repoQuery = playerRepositoryIds.map((id) => `repo:${id}`).join(" ");
-  const query = `${repoQuery} ${statusQuery} author:${githubLogin}`;
-
-  try {
-    const { data } = await octokit.search.issuesAndPullRequests({
-      q: query,
-      per_page: 20,
-      sort: "created",
-      order: "desc",
-    });
-
-    for (const pr of data.items) {
-      // console.log(`Complete PR object: ${JSON.stringify(pr, null, 2)}`);
-
-      let prStatus: "open" | "merged" | "closed";
-      if (pr.state === "open") {
-        prStatus = "open";
-      } else if (pr.pull_request?.merged_at) {
-        prStatus = "merged";
-      } else {
-        prStatus = "closed";
+) =>
+  unstable_cache(
+    async (): Promise<TPullRequest[]> => {
+      if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
+        console.warn("No repository IDs provided. Returning empty array.");
+        return [];
       }
 
-      const prLabels = pr.labels.filter((label) => label.name !== undefined) as { name: string }[];
+      const pullRequests: TPullRequest[] = [];
+
+      let statusQuery = "is:pr";
+      if (status === "open") statusQuery += " is:open";
+      else if (status === "merged") statusQuery += " is:merged";
+      else if (status === "closed") statusQuery += " is:closed -is:merged";
+
+      const repoQuery = playerRepositoryIds.map((id) => `repo:${id}`).join(" ");
+      const query = `${repoQuery} ${statusQuery} author:${githubLogin}`;
 
       try {
-        const pullRequest: TPullRequest = ZPullRequest.parse({
-          title: pr.title,
-          href: pr.html_url,
-          author: pr.user?.login || "",
-          repositoryFullName: pr.repository_url.split("/").slice(-2).join("/"),
-          dateOpened: pr.created_at,
-          dateMerged: pr.pull_request?.merged_at || null,
-          dateClosed: pr.closed_at,
-          status: prStatus,
-          points: prLabels ? extractPointsFromLabels(prLabels) : null,
+        const { data } = await octokit.search.issuesAndPullRequests({
+          q: query,
+          per_page: 20,
+          sort: "created",
+          order: "desc",
         });
 
-        pullRequests.push(pullRequest);
+        for (const pr of data.items) {
+          let prStatus: "open" | "merged" | "closed";
+          if (pr.state === "open") {
+            prStatus = "open";
+          } else if (pr.pull_request?.merged_at) {
+            prStatus = "merged";
+          } else {
+            prStatus = "closed";
+          }
+
+          const prLabels = pr.labels.filter((label) => label.name !== undefined) as { name: string }[];
+
+          try {
+            const pullRequest: TPullRequest = ZPullRequest.parse({
+              title: pr.title,
+              href: pr.html_url,
+              author: pr.user?.login || "",
+              repositoryFullName: pr.repository_url.split("/").slice(-2).join("/"),
+              dateOpened: pr.created_at,
+              dateMerged: pr.pull_request?.merged_at || null,
+              dateClosed: pr.closed_at,
+              status: prStatus,
+              points: prLabels ? extractPointsFromLabels(prLabels) : null,
+            });
+
+            pullRequests.push(pullRequest);
+          } catch (error) {
+            console.error(`Error parsing pull request: ${pr.title}`, error);
+          }
+        }
       } catch (error) {
-        console.error(`Error parsing pull request: ${pr.title}`, error);
+        console.error(`Error fetching or processing pull requests:`, error);
       }
+
+      // Sort pullRequests by dateOpened in descending order
+      pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
+
+      return pullRequests;
+    },
+    [`getPullRequests-${githubLogin}-${status}-${playerRepositoryIds.join(",")}`],
+    {
+      tags: [githubCache.tag.byGithubLogin(githubLogin)],
+      revalidate: 60 * 20, // 20 minutes
     }
-  } catch (error) {
-    console.error(`Error fetching or processing pull requests:`, error);
-  }
-
-  // Sort pullRequests by dateOpened in descending order
-  pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
-
-  return pullRequests;
-};
+  )();
 
 export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
   unstable_cache(

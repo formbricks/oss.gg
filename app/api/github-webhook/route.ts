@@ -1,23 +1,18 @@
 import { registerHooks } from "@/lib/github";
-import { EmitterWebhookEventName } from "@octokit/webhooks";
+import { EmitterWebhookEvent, EmitterWebhookEventName } from "@octokit/webhooks";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 // Set to store processed event IDs
 const processedEvents = new Set<string>();
 
-// Flag to ensure hooks are registered only once
-let hooksRegistered = false;
-
 export async function POST(req: Request) {
   const headersList = headers();
   const eventId = headersList.get("x-github-delivery") as string;
   const githubEvent = headersList.get("x-github-event") as string;
 
-  const body = await req.json();
-
-  console.log(JSON.stringify({ eventId, githubEvent, body }, null, 2));
-
+  const body: EmitterWebhookEvent<"issue_comment" | "pull_request" | "installation">["payload"] =
+    await req.json();
   if (!eventId) {
     return NextResponse.json({ error: "Missing X-GitHub-Delivery header" }, { status: 400 });
   }
@@ -26,10 +21,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: `Event ${eventId} already processed, skipping` }, { status: 200 });
   }
 
-  if (!hooksRegistered) {
-    registerHooks(githubEvent as EmitterWebhookEventName, body);
-    hooksRegistered = true;
-  }
+  registerHooks(githubEvent as EmitterWebhookEventName, body);
 
   processedEvents.add(eventId);
   setTimeout(

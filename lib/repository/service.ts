@@ -1,12 +1,15 @@
 import { db } from "@/lib/db";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
+
+import { repositoryCache } from "./cache";
 
 /**
  * Fetches all repositories from the database.
  * @returns An array of repositories.
  */
-export const getAllRepositories = async (): Promise<TRepository[]> => {
+export const getAllRepositories = async () => {
   try {
     const repositories = await db.repository.findMany({
       where: {
@@ -28,58 +31,74 @@ export const getAllRepositories = async (): Promise<TRepository[]> => {
  * @returns A repository.
  */
 
-export const getRepositoryByGithubId = async (githubId: number) => {
-  try {
-    const repository = await db.repository.findFirst({
-      where: {
-        githubId,
-      },
-      include: {
-        installation: {
-          include: {
-            memberships: true,
+export const getRepositoryByGithubId = (githubId: number): Promise<TRepository | null> =>
+  unstable_cache(
+    async () => {
+      try {
+        const repository = await db.repository.findFirst({
+          where: {
+            githubId,
           },
-        },
-      },
-    });
-    return repository;
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error("An error occurred while fetching repository:", error.message);
-      throw new Error("Database error occurred");
+          include: {
+            installation: {
+              include: {
+                memberships: true,
+              },
+            },
+          },
+        });
+        return repository;
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error("An error occurred while fetching repository:", error.message);
+          throw new Error("Database error occurred");
+        }
+        throw error;
+      }
+    },
+    [`getRepositoryByGithubId-${githubId}`],
+    {
+      tags: [repositoryCache.tag.byGithubId(githubId)],
+      revalidate: 60 * 20,
     }
-    throw error;
-  }
-};
+  )();
 
 /**
  * Fetches one repositories from the database by id.
  * @returns A repository.
  */
 
-export const getRepositoryById = async (id: string) => {
-  try {
-    const repository = await db.repository.findFirst({
-      where: {
-        id,
-      },
-      include: {
-        installation: {
-          include: {
-            memberships: true,
+export const getRepositoryById = (id: string) =>
+  unstable_cache(
+    async () => {
+      try {
+        const repository = await db.repository.findFirst({
+          where: {
+            id,
           },
-        },
-      },
-    });
-    return repository;
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error("An error occurred while fetching repository:", error.message);
-      throw new Error("Database error occurred");
+          include: {
+            installation: {
+              include: {
+                memberships: true,
+              },
+            },
+          },
+        });
+        return repository;
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error("An error occurred while fetching repository:", error.message);
+          throw new Error("Database error occurred");
+        }
+        throw error;
+      }
+    },
+    [`getRepositoryById-${id}`],
+    {
+      tags: [repositoryCache.tag.byId(id)],
+      revalidate: 60 * 20, // Cache for 20 minutes
     }
-    throw error;
-  }
-};
+  )();
 
 /**
  * Updates a repository's configuered state
@@ -95,6 +114,7 @@ export const updateRepository = async (id: string, configuredValue: boolean) => 
   if (!updatedRepository) {
     throw new Error("Repository not found.");
   }
+  repositoryCache.revalidate({ id });
 
   return updatedRepository;
 };
@@ -104,61 +124,53 @@ export const updateRepository = async (id: string, configuredValue: boolean) => 
  * @returns The fetched repository.
  */
 
-export const fetchRepoDetails = async (id: string) => {
-  try {
-    return await db.repository.findUnique({
-      where: { id },
-    });
-  } catch (error) {
-    throw new Error(`Failed to fetch repository details: ${error}`);
-  }
-};
+export const fetchRepoDetails = (id: string) =>
+  unstable_cache(
+    async () => {
+      try {
+        return await db.repository.findUnique({
+          where: { id },
+        });
+      } catch (error) {
+        throw new Error(`Failed to fetch repository details: ${error}`);
+      }
+    },
+    [`fetchRepoDetails-${id}`],
+    {
+      tags: [repositoryCache.tag.byId(id)],
+      revalidate: 60 * 20, // Cache for 20 minutes
+    }
+  )();
 
 /**
  * Fetches all repository a user has membership for
  * @returns An array of repositories.
  */
-export const getRepositoriesForUser = async (userId: string) => {
-  try {
-    const userRepositories = await db.repository.findMany({
-      where: {
-        installation: {
-          memberships: {
-            some: {
-              userId,
+export const getRepositoriesForUser = (userId: string) =>
+  unstable_cache(
+    async (): Promise<TRepository[]> => {
+      try {
+        const userRepositories = await db.repository.findMany({
+          where: {
+            installation: {
+              memberships: {
+                some: {
+                  userId,
+                },
+              },
             },
           },
-        },
-      },
-    });
+        });
 
-    return userRepositories;
-  } catch (error) {
-    throw new Error(`Failed to get repositories for user: ${error}`);
-  }
-};
-
-/**
- * Fetches all users who are enrolled to a specific repository
- * @param repositoryId The unique identifier for the repository
- * @returns An array of users enrolled to the given repository.
- */
-
-export const getUsersForRepository = async (repositoryId: string) => {
-  try {
-    const users = await db.user.findMany({
-      where: {
-        enrollments: {
-          some: {
-            repositoryId: repositoryId,
-          },
-        },
-      },
-      include: { pointTransactions: true },
-    });
-
-    return users;
-  } catch (error) {
-    throw new Error(`Failed to get users for repository: ${error.message}`);
-  }
-};
+        return userRepositories as TRepository[];
+      } catch (error) {
+        console.error(`Failed to get repositories for user: ${error}`);
+        throw new Error("Failed to retrieve user repositories");
+      }
+    },
+    [`getRepositoriesForUser-${userId}`],
+    {
+      tags: [repositoryCache.tag.byUserId(userId)],
+      revalidate: 60 * 20, // Cache for 20 minutes
+    }
+  )();

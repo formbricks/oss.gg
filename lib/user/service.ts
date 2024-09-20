@@ -4,6 +4,7 @@ import { DatabaseError, ResourceNotFoundError } from "@/types/errors";
 import { TUser, TUserCreateInput, TUserUpdateInput, ZUser, ZUserUpdateInput } from "@/types/user";
 import { Prisma } from "@prisma/client";
 
+import { repositoryCache } from "../repository/cache";
 import { formatDateFields } from "../utils/datetime";
 import { validateInputs } from "../utils/validate";
 
@@ -107,6 +108,8 @@ export const updateUser = async (personId: string, data: TUserUpdateInput): Prom
       select: userSelection,
     });
 
+    repositoryCache.revalidate({ userId: personId });
+
     return updatedUser;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2016") {
@@ -139,4 +142,29 @@ export const createUser = async (data: TUserCreateInput): Promise<TUser> => {
   });
 
   return user;
+};
+
+/**
+ * Fetches all users who are enrolled to a specific repository
+ * @param repositoryId The unique identifier for the repository
+ * @returns An array of users enrolled to the given repository.
+ */
+
+export const getUsersForRepository = async (repositoryId: string) => {
+  try {
+    const users = await db.user.findMany({
+      where: {
+        enrollments: {
+          some: {
+            repositoryId: repositoryId,
+          },
+        },
+      },
+      include: { pointTransactions: true },
+    });
+
+    return users;
+  } catch (error) {
+    throw new Error(`Failed to get users for repository: ${error.message}`);
+  }
 };

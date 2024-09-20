@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default async function IssuesPage() {
   // const pullRequests: TPullRequest[] = await getAllOssGgIssuesOfRepo(500289888);
-  const pullRequests: TPullRequest[] = await getAllOssGgIssuesOfRepo(856770427);
+  const pullRequests: TPullRequest[] = await getAllOssGgIssuesOfRepo(856782593);
 
   return (
     <div className="space-y-2 font-mono text-xs text-white">
