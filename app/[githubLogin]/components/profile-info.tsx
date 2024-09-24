@@ -1,13 +1,16 @@
+import { Button } from "@/components/ui/button";
 import { TGithubUserData } from "@/types/githubUser";
+import { TUser } from "@/types/user";
 import Image from "next/image";
 
 import SocialLinks from "./social-links";
 
 interface ProfileInfoProps {
   githubData: TGithubUserData;
+  singedIn: boolean;
 }
 
-const ProfileInfoBar: React.FC<ProfileInfoProps> = ({ githubData }) => (
+const ProfileInfoBar: React.FC<ProfileInfoProps> = ({ githubData, singedIn }) => (
   <div className="z-40 -mt-24 grid grid-cols-5 gap-6 text-zinc-50 md:-mt-36">
     <Image
       src={githubData.avatar_url}
@@ -28,6 +31,11 @@ const ProfileInfoBar: React.FC<ProfileInfoProps> = ({ githubData }) => (
         twitterUsername={githubData.twitter_username}
         githubUrl={githubData.html_url || "https://formbricks.com/github"}
       />
+      {!singedIn && (
+        <Button href="/login" >
+          🕹️ Enroll to particiate
+        </Button>
+      )}
     </div>
   </div>
 );

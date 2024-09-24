@@ -4,6 +4,7 @@ import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 
 import { createAccount } from "./account/service";
+import { enrollUserInAllRepositories } from "./enrollment/service";
 import { createUser } from "./user/service";
 
 export const authOptions: NextAuthOptions = {
@@ -17,7 +18,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }: any) {
+    async signIn({ user, account, profile, ...rest }: any) {
       if (account.type !== "oauth") {
         return false;
       }
@@ -41,12 +42,15 @@ export const authOptions: NextAuthOptions = {
             existingUserWithAccount.name === user.name &&
             existingUserWithAccount.avatarUrl === user.avatarUrl
           ) {
+            if (existingUserWithAccount.role === "user") {
+              await enrollUserInAllRepositories(existingUserWithAccount.id);
+            }
             return true;
           }
 
           // user seemed to change their core details within the provider
           // update them in the database
-          await db.user.update({
+          const updatedUser = await db.user.update({
             where: {
               id: existingUserWithAccount.id,
             },
@@ -58,6 +62,11 @@ export const authOptions: NextAuthOptions = {
               avatarUrl: profile.avatar_url,
             },
           });
+
+          if (existingUserWithAccount.role === "user") {
+            await enrollUserInAllRepositories(updatedUser.id);
+          }
+
           return true;
         }
 
@@ -70,7 +79,11 @@ export const authOptions: NextAuthOptions = {
           avatarUrl: profile.avatar_url,
         });
 
-        await createAccount({ ...account, userId: dbUser.id });
+        const { refresh_token_expires_in, ...accountInput } = account;
+        await createAccount({ ...accountInput, userId: dbUser.id });
+
+        // Enroll new user in all repositories
+        await enrollUserInAllRepositories(dbUser.id);
 
         return true;
       }
@@ -101,6 +114,7 @@ export const authOptions: NextAuthOptions = {
         email: dbUser.email,
         avatarUrl: dbUser.avatarUrl,
         login: dbUser.login,
+        role: dbUser.role,
       };
     },
     async session({ token, session }) {
@@ -110,6 +124,7 @@ export const authOptions: NextAuthOptions = {
         if (token.email) session.user.email = token.email;
         if (token.avatarUrl) session.user.avatarUrl = token.avatarUrl as string;
         if (token.login) session.user.login = token.login as string;
+        if (token.role) session.user.role = token.role as string;
       }
 
       return session;

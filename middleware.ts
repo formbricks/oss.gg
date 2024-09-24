@@ -1,5 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import { withAuth } from "next-auth/middleware";
+import { getSession } from "next-auth/react";
 import { NextResponse } from "next/server";
 
 export default withAuth(
@@ -11,7 +12,20 @@ export default withAuth(
 
     if (isAuthPage) {
       if (isAuth) {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
+        const session = await getSession({
+          req: {
+            ...req,
+            headers: {
+              ...Object.fromEntries(req.headers),
+            },
+          },
+        });
+
+        if (session && session.user.role === "user") {
+          return NextResponse.redirect(new URL(`/${session.user.login}`, req.url));
+        } else {
+          return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
       }
 
       return null;
