@@ -8,21 +8,12 @@ export default withAuth(
     const token = await getToken({ req });
     const isAuth = !!token;
     const isAuthPage =
-      req.nextUrl.pathname.startsWith("/login") || req.nextUrl.pathname.startsWith("/register");
+      req.nextUrl.pathname.startsWith("/login") || req.nextUrl.pathname.startsWith("/signup");
 
     if (isAuthPage) {
       if (isAuth) {
-        const session = await getSession({
-          req: {
-            ...req,
-            headers: {
-              ...Object.fromEntries(req.headers),
-            },
-          },
-        });
-
-        if (session && session.user.role === "user") {
-          return NextResponse.redirect(new URL(`/${session.user.login}`, req.url));
+        if (token.role === "user") {
+          return NextResponse.redirect(new URL(`/${token.login}`, req.url));
         } else {
           return NextResponse.redirect(new URL("/dashboard", req.url));
         }
@@ -53,5 +44,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/editor/:path*", "/login", "/register"],
+  matcher: ["/dashboard/:path*", "/editor/:path*", "/login", "/signup"],
 };
