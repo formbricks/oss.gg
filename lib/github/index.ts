@@ -63,7 +63,7 @@ export const registerHooks = async (
     }
     case "pull_request": {
       if (body.action === "closed") {
-        onBountyPullRequestMerged(body as EmitterWebhookEvent<"pull_request">["payload"]);
+        onBountyPullRequestMerged(body as EmitterWebhookEvent<"pull_request.closed">["payload"]);
       }
     }
   }
