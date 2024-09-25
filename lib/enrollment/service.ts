@@ -32,13 +32,10 @@ export const enrollUserInAllRepositories = async (userId: string) => {
       data: enrollments,
       skipDuplicates: true,
     });
-
-    console.log(`User ${userId} enrolled in ${enrollments.length} repositories`);
   } catch (error) {
-    console.error("Error enrolling user in repositories:", error);
     throw error;
   }
-}
+};
 
 /**
  * Creates an enrollment for a user in a repository.
