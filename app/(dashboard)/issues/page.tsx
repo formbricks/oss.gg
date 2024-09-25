@@ -1,9 +1,5 @@
 import { DashboardHeader } from "@/components/header";
 import { DashboardShell } from "@/components/shell";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAllOssGgIssuesOfRepo } from "@/lib/github/service";
-import { capitalizeFirstLetter } from "@/lib/utils/textformat";
 
 import { getEnrolledRepositoriesAction } from "./actions";
 
@@ -15,11 +11,11 @@ export const metadata = {
 export default async function IssuesPage() {
   const enrolledRepos = await getEnrolledRepositoriesAction();
 
-  const issuesPromises = enrolledRepos.map((repo) => getAllOssGgIssuesOfRepo(repo.githubId));
-  const issuesResults = await Promise.all(issuesPromises);
-  const allOpenIssues = issuesResults.flat();
+  // const issuesPromises = enrolledRepos.map((repo) => getAllOssGgIssuesOfRepos(repo.githubId));
+  // const issuesResults = await Promise.all(issuesPromises);
+  // const allOpenIssues = issuesResults.flat();
 
-  const repoWithIssuesMap = enrolledRepos.reduce(
+  /*   const repoWithIssuesMap = enrolledRepos.reduce(
     (acc, repo, index) => {
       acc[capitalizeFirstLetter(repo.name)] = {
         issues: issuesResults[index],
@@ -33,7 +29,7 @@ export default async function IssuesPage() {
         level: [],
       },
     }
-  );
+  ); */
 
   return (
     <DashboardShell>
@@ -42,7 +38,7 @@ export default async function IssuesPage() {
         text="Comment /assign on these issues to assign yourself to these issues."
       />
       <div className="space-y-2">
-        {allOpenIssues.length === 0 ? (
+        {/*  {allOpenIssues.length === 0 ? (
           <div className="flex h-96 flex-col items-center justify-center space-y-4 rounded-md bg-muted">
             {enrolledRepos.length === 0 ? (
               <p>You are not yet enrolled in a repo yet. Enroll to play 👇</p>
@@ -69,7 +65,7 @@ export default async function IssuesPage() {
               </TabsContent>
             ))}
           </Tabs>
-        )}
+        )} */}
       </div>
     </DashboardShell>
   );
