@@ -74,5 +74,3 @@ export const DISCORD_CHANNEL_ID = env.DISCORD_CHANNEL_ID;
 export const DISCORD_BOT_TOKEN = env.DISCORD_BOT_TOKEN;
 export const DISCORD_AWARD_POINTS_MESSAGE = (username: string, points: number) =>
   `Way to go, ${username} 🎉 You've just earned ${points} points. Your contribution is invaluable to our community 🙌 Keep up the fantastic work and let's keep pushing forward! 💪`;
-
-export const OSS_GG_REPO_ID = env.OSS_GG_REPO_ID;
