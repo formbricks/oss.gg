@@ -5,30 +5,29 @@ interface RevalidateProps {
   repositoryId?: string;
 }
 
-const createTagByUserId = (userId: string): string => `users-${userId}-enrollment`;
-const createTagByRepositoryId = (repositoryId: string): string => `repositories-${repositoryId}-enrollment`;
-const createTagByUserIdAndRepositoryId = (userId: string, repositoryId: string): string =>
-  `users-${userId}-repositories-${repositoryId}-enrollment`;
-
-const revalidateEnrollmentCache = ({ userId, repositoryId }: RevalidateProps): void => {
-  if (userId) {
-    revalidateTag(createTagByUserId(userId));
-  }
-
-  if (repositoryId) {
-    revalidateTag(createTagByRepositoryId(repositoryId));
-  }
-
-  if (userId && repositoryId) {
-    revalidateTag(createTagByUserIdAndRepositoryId(userId, repositoryId));
-  }
-};
-
 export const enrollmentCache = {
   tag: {
-    byUserId: createTagByUserId,
-    byRepositoryId: createTagByRepositoryId,
-    byUserIdAndRepositoryId: createTagByUserIdAndRepositoryId,
+    byUserId(userId: string) {
+      return `users-${userId}-enrollment`;
+    },
+    byRepositoryId(repositoryId: string) {
+      return `repositories-${repositoryId}-enrollment`;
+    },
+    byUserIdAndRepositoryId(userId: string, repositoryId: string) {
+      return `users-${userId}-repositories-${repositoryId}-enrollment`;
+    },
   },
-  revalidate: revalidateEnrollmentCache,
+  revalidate({ userId, repositoryId }: RevalidateProps): void {
+    if (userId) {
+      revalidateTag(this.tag.byUserId(userId));
+    }
+
+    if (repositoryId) {
+      revalidateTag(this.tag.byRepositoryId(repositoryId));
+    }
+
+    if (userId && repositoryId) {
+      revalidateTag(this.tag.byUserIdAndRepositoryId(userId, repositoryId));
+    }
+  },
 };

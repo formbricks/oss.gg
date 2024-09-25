@@ -31,10 +31,10 @@ export const env = createEnv({
     TREMENDOUS_CAMPAIGN_ID: z.string().min(1),
     DISCORD_BOT_TOKEN: z.string(),
     DISCORD_CHANNEL_ID: z.string(),
+    OSS_GG_REPO_ID: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
-    // NEXT_PUBLIC_TRIGGER_PUBLIC_API_KEY: z.string().min(1).optional(),
   },
   runtimeEnv: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
@@ -64,5 +64,6 @@ export const env = createEnv({
     TREMENDOUS_CAMPAIGN_ID: process.env.TREMENDOUS_CAMPAIGN_ID,
     DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN,
     DISCORD_CHANNEL_ID: process.env.DISCORD_CHANNEL_ID,
+    OSS_GG_REPO_ID: process.env.OSS_GG_REPO_ID,
   },
 });

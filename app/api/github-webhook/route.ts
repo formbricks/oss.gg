@@ -11,8 +11,14 @@ export async function POST(req: Request) {
   const eventId = headersList.get("x-github-delivery") as string;
   const githubEvent = headersList.get("x-github-event") as string;
 
-  const body: EmitterWebhookEvent<"issue_comment" | "pull_request" | "installation">["payload"] =
-    await req.json();
+  let body: EmitterWebhookEvent<"issue_comment" | "pull_request" | "installation">["payload"];
+
+  try {
+    body = await req.json();
+  } catch (error) {
+    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+  }
+
   if (!eventId) {
     return NextResponse.json({ error: "Missing X-GitHub-Delivery header" }, { status: 400 });
   }
