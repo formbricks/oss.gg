@@ -7,6 +7,40 @@ import { Prisma } from "@prisma/client";
 import { validateInputs } from "../utils/validate";
 
 /**
+ * Enrolls a user in all repositories.
+ * @param userId - The ID of the user to enroll.
+ */
+
+export const enrollUserInAllRepositories = async (userId: string) => {
+  try {
+    // Get all repositories
+    const repositories = await db.repository.findMany({
+      where: {
+        configured: true,
+      },
+      select: { id: true },
+    });
+
+    // Create enrollments for each repository
+    const enrollments = repositories.map((repo) => ({
+      userId,
+      repositoryId: repo.id,
+    }));
+
+    // Use createMany to insert all enrollments in a single database operation
+    await db.enrollment.createMany({
+      data: enrollments,
+      skipDuplicates: true,
+    });
+
+    console.log(`User ${userId} enrolled in ${enrollments.length} repositories`);
+  } catch (error) {
+    console.error("Error enrolling user in repositories:", error);
+    throw error;
+  }
+}
+
+/**
  * Creates an enrollment for a user in a repository.
  * @param enrollmentData - The data needed to create the enrollment.
  * @returns The created enrollment.

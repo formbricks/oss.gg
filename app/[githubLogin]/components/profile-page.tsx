@@ -10,7 +10,7 @@ import PointsAndRanks from "./point-list";
 import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
-export default async function ProfilePage({ githubLogin }: { githubLogin: string }) {
+export default async function ProfilePage({ githubLogin, singedIn }: { githubLogin: string, singedIn: boolean }) {
   // Get & enrich the player data
   const enrichedUserData = await getEnrichedGithubUserData(githubLogin);
 

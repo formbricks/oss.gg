@@ -2,6 +2,7 @@ import { getGithubUserByLogin } from "@/lib/githubUser/service";
 import { Metadata } from "next";
 
 import ProfilePage from "./components/profile-page";
+import { getCurrentUser } from "@/lib/session";
 
 export async function generateMetadata({ params }: { params: { githubLogin: string } }): Promise<Metadata> {
   const githubUser = await getGithubUserByLogin(params.githubLogin);
@@ -10,6 +11,14 @@ export async function generateMetadata({ params }: { params: { githubLogin: stri
   };
 }
 
-export default function Page({ params }: { params: { githubLogin: string } }) {
-  return <ProfilePage githubLogin={params.githubLogin} />;
+export default async function Page({ params }: { params: { githubLogin: string } }) {
+  const sessionUser = await getCurrentUser();
+
+  let doesUserExist = false;
+
+  if (sessionUser) {
+    doesUserExist = !!sessionUser.id;
+  }
+
+  return <ProfilePage githubLogin={params.githubLogin} singedIn={doesUserExist} />;
 }

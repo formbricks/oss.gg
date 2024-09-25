@@ -6,15 +6,17 @@
     "clean": "rimraf .turbo node_modules .next",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "pnpm prisma migrate dev",
-    "db:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "db:up": "docker compose -f docker-compose.dev.yml up -d",
     "db:setup": "pnpm db:up && pnpm db:migrate:dev",
     "db:start": "pnpm db:setup",
-    "db:down": "docker-compose -f docker-compose.dev.yml down",
-    "dev": "pnpm db:start && next dev",
+    "db:down": "docker compose -f docker-compose.dev.yml down",
     "build": "next build",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "dev:next": "pnpm db:start && next dev",
+    "dev:trigger": "pnpm dlx trigger.dev@beta dev",
+    "dev": "pnpm run dev:next & pnpm run dev:trigger"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.540.0",
@@ -47,9 +49,9 @@
     "@tiptap/extension-typography": "^2.4.0",
     "@tiptap/react": "^2.4.0",
     "@tiptap/starter-kit": "^2.4.0",
-    "@trigger.dev/nextjs": "^2.3.18",
-    "@trigger.dev/react": "^2.3.18",
-    "@trigger.dev/sdk": "^2.3.18",
+    "@trigger.dev/nextjs": "3.0.0-beta.56",
+    "@trigger.dev/react": "3.0.0-beta.56",
+    "@trigger.dev/sdk": "3.0.0-beta.56",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
@@ -77,6 +79,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tremendous": "3.0.1",
     "uuid": "^9.0.1",
+    "v3": "link:@trigger.dev/sdk/v3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -88,6 +91,7 @@
     "@types/react-dom": "^18.3.0",
     "@types/react-syntax-highlighter": "^15.5.13",
     "autoprefixer": "^10.4.19",
+    "concurrently": "^9.0.1",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "^9.1.0",
@@ -106,8 +110,5 @@
     "overrides": {
       "undici": "5.27.0"
     }
-  },
-  "trigger.dev": {
-    "endpointId": "oss-gg-dev-ND8k"
   }
 }
