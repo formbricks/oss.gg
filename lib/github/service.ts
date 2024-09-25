@@ -82,43 +82,48 @@ export const getPullRequestsByGithubLogin = async (
   return pullRequests;
 };
 
-export const getAllOssGgIssuesOfRepo = (repoGithubId: number) =>
-  unstable_cache(
-    async () => {
-      const githubHeaders = {
-        Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-        Accept: "application/vnd.github.v3+json",
-      };
-      const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
-        headers: githubHeaders,
-      });
-      const repoData = await repoResponse.json();
+export const getAllOssGgIssuesOfRepos = unstable_cache(
+  async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
+    const githubHeaders = {
+      Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+    };
 
-      const issuesResponse = await fetch(
-        `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`,
-        { headers: githubHeaders }
-      );
-      const issuesData = await issuesResponse.json();
-      const validatedData = ZGithubApiResponseSchema.parse(issuesData);
-
-      // Map the GitHub API response to TPullRequest format
-      const openIssues: TPullRequest[] = validatedData.items.map((issue) => {
-        return ZPullRequest.parse({
-          title: issue.title,
-          href: issue.html_url,
-          author: issue.user.login,
-          repositoryFullName: repoData.full_name,
-          dateOpened: issue.created_at,
-          dateMerged: null, // Issues don't have a merged date
-          dateClosed: issue.closed_at,
-          status: "open", // All fetched issues are open
-          points: extractPointsFromLabels(issue.labels),
+    const allIssues = await Promise.all(
+      repoGithubIds.map(async (repoGithubId) => {
+        const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
+          headers: githubHeaders,
         });
-      });
-      return openIssues;
-    },
-    [`getOpenIssues-${repoGithubId}`],
-    {
-      revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
-    }
-  )();
+        const repoData = await repoResponse.json();
+
+        const issuesResponse = await fetch(
+          `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`,
+          { headers: githubHeaders }
+        );
+        const issuesData = await issuesResponse.json();
+        const validatedData = ZGithubApiResponseSchema.parse(issuesData);
+
+        // Map the GitHub API response to TPullRequest format
+        return validatedData.items.map((issue) =>
+          ZPullRequest.parse({
+            title: issue.title,
+            href: issue.html_url,
+            author: issue.user.login,
+            repositoryFullName: repoData.full_name,
+            dateOpened: issue.created_at,
+            dateMerged: null,
+            dateClosed: issue.closed_at,
+            status: "open",
+            points: extractPointsFromLabels(issue.labels),
+          })
+        );
+      })
+    );
+
+    return allIssues.flat();
+  },
+  [`getOpenIssues`],
+  {
+    revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+  }
+);
