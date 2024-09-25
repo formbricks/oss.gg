@@ -1,13 +1,12 @@
 "use server";
 
 import { getPullRequestsByGithubLogin } from "@/lib/github/service";
-import { getPointsForPlayerInRepoByRepositoryId } from "@/lib/points/service";
+import { getPointsAndRankPerRepository, getTotalPointsAndGlobalRank } from "@/lib/points/service";
 import { getEnrichedGithubUserData } from "@/lib/public-profile/profileData";
 import { getAllRepositories } from "@/lib/repository/service";
-import { findCurrentAndNextLevelOfCurrentUser } from "@/lib/utils/levelUtils";
-import { TLevel } from "@/types/level";
 import { TPullRequest } from "@/types/pullRequest";
 
+import PointsAndRanks from "./point-list";
 import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
@@ -16,7 +15,7 @@ export default async function ProfilePage({ githubLogin, singedIn }: { githubLog
   const enrichedUserData = await getEnrichedGithubUserData(githubLogin);
 
   // Get the level data if user is enrolled in any repositories
-  let userLevels: { currentLevelOfUser: TLevel | null; repoLogo: string }[] = [];
+  /*   let userLevels: { currentLevelOfUser: TLevel | null; repoLogo: string }[] = [];
 
   if (enrichedUserData.enrolledRepositories) {
     userLevels = await Promise.all(
@@ -35,6 +34,35 @@ export default async function ProfilePage({ githubLogin, singedIn }: { githubLog
         };
       })
     );
+  } */
+
+  let pointsAndRanks: Array<{
+    id: string;
+    repositoryName: string;
+    points: number;
+    repositoryLogo?: string; // Change this line
+  }> = [];
+
+  if (enrichedUserData.enrolledRepositories && enrichedUserData.playerData?.id) {
+    pointsAndRanks = (
+      await getPointsAndRankPerRepository(
+        enrichedUserData.enrolledRepositories,
+        enrichedUserData.playerData.id
+      )
+    ).map((item) => ({
+      ...item,
+      repositoryLogo: item.repositoryLogo || undefined,
+    }));
+  }
+
+  let totalPoints = 0;
+  let globalRank = 0;
+  let chanceOfWinning = 0;
+  if (enrichedUserData.playerData?.id) {
+    const result = await getTotalPointsAndGlobalRank(enrichedUserData.playerData.id);
+    totalPoints = result.totalPoints;
+    globalRank = result.globalRank;
+    chanceOfWinning = result.likelihoodOfWinning;
   }
 
   const ossGgRepositories = await getAllRepositories();
@@ -48,11 +76,17 @@ export default async function ProfilePage({ githubLogin, singedIn }: { githubLog
   }
 
   return (
-    <div>
-      <ProfileInfoBar githubData={enrichedUserData.githubData} singedIn={singedIn} />
-      <div className="mt-10 grid grid-cols-4 gap-6 md:grid-cols-5">
+    <div className="flex max-w-2xl flex-col items-center justify-center font-mono text-xs">
+      <ProfileInfoBar
+        githubData={enrichedUserData.githubData}
+        totalPoints={totalPoints}
+        globalRank={globalRank}
+        chanceOfWinning={chanceOfWinning}
+      />
+      <div className="mt-10 grid w-full max-w-2xl grid-cols-4 gap-6 md:grid-cols-5">
         {/* <LevelList levels={userLevels} /> */}
-        <PullRequestList pullRequests={pullRequests} profileName={enrichedUserData.githubData.name} />
+        <PointsAndRanks pointsAndRanks={pointsAndRanks} />
+        <PullRequestList pullRequests={pullRequests} />
       </div>
     </div>
   );

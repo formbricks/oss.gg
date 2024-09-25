@@ -59,11 +59,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body
-        className={cn(
-          "min-h-screen bg-background font-mono text-xs underline-offset-2 antialiased",
-          fontSans.variable
-        )}>
+      <body className={cn("min-h-screen w-full bg-background font-mono text-xs underline-offset-2 antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Toaster />
