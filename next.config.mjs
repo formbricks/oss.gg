@@ -6,12 +6,12 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
       },
       {
-        protocol: 'https',
-        hostname: 'pbs.twimg.com',
+        protocol: "https",
+        hostname: "pbs.twimg.com",
       },
     ],
   },
@@ -34,6 +34,11 @@ const nextConfig = {
       {
         source: "/marketing/founding-team",
         destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/issues",
+        destination: "/oss-issues",
         permanent: false,
       },
       {

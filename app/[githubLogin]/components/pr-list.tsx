@@ -38,7 +38,9 @@ const PullRequestList: React.FC<PullRequestListProps> = ({ pullRequests, signedU
               ))}
           </ul>
         ) : (
-          <p>no oss.gg hackathon contribution yet</p>
+          <p>
+            <i>no oss.gg hackathon contribution yet</i>
+          </p>
         )}
       </div>
       <div>

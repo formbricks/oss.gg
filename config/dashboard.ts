@@ -3,7 +3,7 @@ import { DashboardConfig } from "types";
 export const dashboardConfig: DashboardConfig = {
   mainNav: [
     { title: "Dashboard", href: "/dashboard" },
-    { title: "Open issues", href: "/issues" },
+    { title: "Open issues", href: "/oss-issues" },
     { title: "Repositories", href: "/enroll" },
     { title: "Settings", href: "/settings" },
   ],

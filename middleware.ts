@@ -1,6 +1,5 @@
 import { getToken } from "next-auth/jwt";
 import { withAuth } from "next-auth/middleware";
-import { getSession } from "next-auth/react";
 import { NextResponse } from "next/server";
 
 export default withAuth(
