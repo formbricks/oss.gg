@@ -18,7 +18,7 @@ import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { getUser } from "@/lib/user/service";
 import { discordPointMessageTask } from "@/src/trigger/discordPointsMessage";
 import { issueReminderTask } from "@/src/trigger/issueReminder";
-import { Webhooks } from "@octokit/webhooks";
+import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 
 import { isMemberOfRepository } from "../services/user";
 import {
@@ -33,119 +33,115 @@ import {
   processUserPoints,
 } from "../utils";
 
-export const onIssueOpened = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.ISSUE_OPENED, async (context) => {
-    const projectId = context.payload.repository.id;
-    //TODO:
-    //1. check if the issue has the oss label
-    //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
+export const onIssueOpened = async (payload: EmitterWebhookEvent<"issues.opened">["payload"]) => {
+  const projectId = payload.repository.id;
+  //TODO:
+  //1. check if the issue has the oss label
+  //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
 
-    // const isProjectRegistered = await getProject(projectId)
-    // if (!isProjectRegistered) {
-    //   await context.octokit.issues.createComment(
-    //     context.issue({
-    //       body: ON_REPO_NOT_REGISTERED,
-    //     })
-    //   )
-    //   return
-    // }
+  // const isProjectRegistered = await getProject(projectId)
+  // if (!isProjectRegistered) {
+  //   await octokit.issues.createComment(
+  //     issue({
+  //       body: ON_REPO_NOT_REGISTERED,
+  //     })
+  //   )
+  //   return
+  // }
 
-    const labels = context.payload.issue.labels?.map((label) => label.name);
-    const isLevelLabel = labels?.includes(LEVEL_LABEL);
+  const labels = payload.issue.labels?.map((label) => label.name);
+  const isLevelLabel = labels?.includes(LEVEL_LABEL);
 
-    if (!isLevelLabel) {
-      return;
-    }
+  if (!isLevelLabel) {
+    return;
+  }
 
-    // await sendNewIssue(
-    //   context.payload.repository.id,
-    //   context.payload.issue.user.id,
-    //   context.payload.issue.id
-    // )
+  // await sendNewIssue(
+  //   payload.repository.id,
+  //   payload.issue.user.id,
+  //   payload.issue.id
+  // )
 
-    // await context.octokit.issues.createComment(
-    //   context.issue({
-    //     body: ON_NEW_ISSUE,
-    //   })
-    // )
-  });
+  // await octokit.issues.createComment(
+  //   issue({
+  //     body: ON_NEW_ISSUE,
+  //   })
+  // )
 };
 
-export const onAssignCommented = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
-    try {
-      const issueCommentBody = context.payload.comment.body;
-      const [identifier, points] = issueCommentBody.split(" ");
-      const issueNumber = context.payload.issue.number;
-      const repo = context.payload.repository.name;
-      const owner = context.payload.repository.owner.login;
-      const commenter = context.payload.comment.user.login;
-      const installationId = context.payload.installation?.id!;
-      const octokit = getOctokitInstance(installationId);
-      const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
+export const onAssignCommented = async (payload: EmitterWebhookEvent<"issue_comment.created">["payload"]) => {
+  try {
+    const issueCommentBody = payload.comment.body;
+    const [identifier, points] = issueCommentBody.split(" ");
+    const issueNumber = payload.issue.number;
+    const repo = payload.repository.name;
+    const owner = payload.repository.owner.login;
+    const commenter = payload.comment.user.login;
+    const installationId = payload.installation?.id!;
+    const octokit = getOctokitInstance(installationId);
+    const isOssGgLabel = payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
-      if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
-        if (!isOssGgLabel) return;
+    if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
+      if (!isOssGgLabel) return;
 
-        const isAssigned = context.payload.issue.assignees.length > 0;
-        if (isAssigned) {
-          const assignee = context.payload.issue.assignees[0].login;
-          const message =
-            assignee === commenter
-              ? `This issue is already assigned to you. Let's get this shipped!`
-              : `This issue is already assigned to another person. Please find more issues [here](https://oss.gg).`;
-          await octokit.issues.createComment({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            body: message,
-          });
-          return;
-        }
-
-        //users who haven't linked the issue to the PR will be able to assign themselves again even if their pr was rejected, because their names won't be added to the "Attempted:user1" comment in the issue.
-        const allCommentsInTheIssue = await octokit.issues.listComments({
+      const isAssigned = payload.issue.assignees.length > 0;
+      if (isAssigned) {
+        const assignee = payload.issue.assignees[0].login;
+        const message =
+          assignee === commenter
+            ? `This issue is already assigned to you. Let's get this shipped!`
+            : `This issue is already assigned to another person. Please find more issues [here](https://oss.gg).`;
+        await octokit.issues.createComment({
           owner,
           repo,
           issue_number: issueNumber,
-          per_page: 100,
+          body: message,
         });
-        let { extractedUserNames } =
-          await extractUserNamesFromCommentsForRejectCommand(allCommentsInTheIssue);
+        return;
+      }
 
-        const isUserPrRejectedBefore = extractedUserNames?.includes(context.payload.comment.user.login);
-        if (isUserPrRejectedBefore) {
-          await octokit.issues.createComment({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            body: "You have already attempted this issue. We will open the issue up for a different contributor to work on. Feel free to stick around in the community and pick up a different issue.",
-          });
-          return;
-        }
+      //users who haven't linked the issue to the PR will be able to assign themselves again even if their pr was rejected, because their names won't be added to the "Attempted:user1" comment in the issue.
+      const allCommentsInTheIssue = await octokit.issues.listComments({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        per_page: 100,
+      });
+      let { extractedUserNames } = await extractUserNamesFromCommentsForRejectCommand(allCommentsInTheIssue);
 
-        const { data: userIssues } = await octokit.issues.listForRepo({
+      const isUserPrRejectedBefore = extractedUserNames?.includes(payload.comment.user.login);
+      if (isUserPrRejectedBefore) {
+        await octokit.issues.createComment({
           owner,
           repo,
-          assignee: commenter,
-          state: "open",
+          issue_number: issueNumber,
+          body: "You have already attempted this issue. We will open the issue up for a different contributor to work on. Feel free to stick around in the community and pick up a different issue.",
         });
+        return;
+      }
 
-        if (userIssues.length > 0) {
-          const assignedIssue = userIssues[0];
-          await octokit.issues.createComment({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            body: `You already have an open issue assigned to you [here](${assignedIssue.html_url}). Once that's closed or unassigned, only then we recommend you to take up more.`,
-          });
-          return;
-        }
+      const { data: userIssues } = await octokit.issues.listForRepo({
+        owner,
+        repo,
+        assignee: commenter,
+        state: "open",
+      });
 
-        /*  
+      if (userIssues.length > 0) {
+        const assignedIssue = userIssues[0];
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: `You already have an open issue assigned to you [here](${assignedIssue.html_url}). Once that's closed or unassigned, only then we recommend you to take up more.`,
+        });
+        return;
+      }
+
+      /*  
         //checking if the current level of user has the power to solve the issue on which the /assign comment was made.
-        const currentRepo = await getRepositoryByGithubId(context.payload.repository.id);
-        const user = await getUserByGithubId(context.payload.comment.user.id);
+        const currentRepo = await getRepositoryByGithubId(payload.repository.id);
+        const user = await getUserByGithubId(payload.comment.user.id);
 
        if (currentRepo && user) {
           const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
@@ -157,7 +153,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           const levels = currentRepo?.levels as TLevel[];
           const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
 
-          const labels = context.payload.issue.labels;
+          const labels = payload.issue.labels;
           const tags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
 
           const isAssignable = labels.some((label) => {
@@ -175,277 +171,272 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           }
         } */
 
-        await octokit.issues.addAssignees({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          assignees: [commenter],
-        });
+      await octokit.issues.addAssignees({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        assignees: [commenter],
+      });
 
-        //send trigger event to wait for 36hrs then send a reminder if the user has not created a pull request
-        try {
-          if (context.payload.installation?.id) {
-            await issueReminderTask.trigger({
-              issueNumber,
-              repo,
-              owner,
-              commenter,
-              installationId: context.payload.installation.id ?? "",
-            });
-          }
-        } catch (error) {
-          console.error("Error sending event:", error.message);
-          if (error.response) {
-            const responseText = await error.response.text(); // Capture response text
-            console.error("Response:", responseText);
-          }
-        }
-
-        await octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          body: `Assigned to @${commenter}! Please open a draft PR linking this issue within 48h ⚠️ If we can't detect a PR from you linking this issue in 48h, you'll be unassigned automatically 🕹️ Excited to have you ship this 🚀`,
-        });
-      }
-
-      if (identifier === CREATE_IDENTIFIER) {
-        //check if the user is a member of the repository in our database
-        const isMember = await isMemberOfRepository(commenter, installationId);
-        if (!isMember) {
-          await octokit.issues.createComment({
-            owner,
+      //send trigger event to wait for 36hrs then send a reminder if the user has not created a pull request
+      try {
+        if (payload.installation?.id) {
+          await issueReminderTask.trigger({
+            issueNumber,
             repo,
-            issue_number: issueNumber,
-            body: `@${commenter}, ${ON_USER_NOT_REGISTERED}`,
-          });
-          return;
-        }
-        if (isOssGgLabel) {
-          return;
-        } else {
-          if (isNaN(parseInt(points))) {
-            await octokit.issues.createComment({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              body: `@${commenter}, ${POINT_IS_NOT_A_NUMBER}`,
-            });
-            return;
-          }
-          await octokit.issues.addLabels({
-            owner: owner,
-            repo: repo,
-            issue_number: issueNumber,
-            labels: [OSS_GG_LABEL, `:joystick: ${points} points`],
-          });
-          await octokit.issues.createComment({
-            owner: owner,
-            repo: repo,
-            issue_number: issueNumber,
-            body: ON_NEW_ISSUE,
+            owner,
+            commenter,
+            installationId: payload.installation.id ?? "",
           });
         }
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  });
-};
-
-export const onUnassignCommented = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
-    try {
-      const issueCommentBody = context.payload.comment.body;
-      if (issueCommentBody.trim() !== UNASSIGN_IDENTIFIER) {
-        return;
-      }
-
-      const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
-      if (!isOssGgLabel) {
-        return;
-      }
-
-      const issueNumber = context.payload.issue.number;
-      const repo = context.payload.repository.name;
-      const owner = context.payload.repository.owner.login;
-      const commenter = context.payload.comment.user.login;
-      const octokit = getOctokitInstance(context.payload.installation?.id!);
-
-      const isAssigned = context.payload.issue.assignees.length > 0;
-      if (!isAssigned) {
-        await octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          body: "This issue is not assigned to anyone.",
-        });
-        return;
-      }
-
-      const assignee = context.payload.issue.assignees[0].login;
-      if (assignee === commenter) {
-        await octokit.issues.removeAssignees({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          assignees: [assignee],
-        });
-        await octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          body: "Issue unassigned.",
-        });
-        return;
-      }
-
-      const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
-      const usersThatCanUnassign = ossGgRepo?.installation.memberships.map((m) => m.userId) || [];
-      const ossGgUsers = await Promise.all(
-        usersThatCanUnassign.map(async (userId) => {
-          const user = await getUser(userId);
-          return user?.githubId;
-        })
-      );
-
-      const isUserAllowedToUnassign = ossGgUsers?.includes(context.payload.comment.user.id);
-      if (!isUserAllowedToUnassign) {
-        await octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: issueNumber,
-          body: "You cannot unassign this issue as it is not assigned to you.",
-        });
-        return;
+      } catch (error) {
+        console.error("Error sending event:", error.message);
+        if (error.response) {
+          const responseText = await error.response.text(); // Capture response text
+          console.error("Response:", responseText);
+        }
       }
 
       await octokit.issues.createComment({
         owner,
         repo,
         issue_number: issueNumber,
-        body: "Issue unassigned.",
+        body: `Assigned to @${commenter}! Please open a draft PR linking this issue within 48h ⚠️ If we can't detect a PR from you linking this issue in 48h, you'll be unassigned automatically 🕹️ Excited to have you ship this 🚀`,
       });
+    }
 
+    if (identifier === CREATE_IDENTIFIER) {
+      //check if the user is a member of the repository in our database
+      const isMember = await isMemberOfRepository(commenter, installationId);
+      if (!isMember) {
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issueNumber,
+          body: `@${commenter}, ${ON_USER_NOT_REGISTERED}`,
+        });
+        return;
+      }
+      if (isOssGgLabel) {
+        return;
+      } else {
+        if (isNaN(parseInt(points))) {
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: `@${commenter}, ${POINT_IS_NOT_A_NUMBER}`,
+          });
+          return;
+        }
+        await octokit.issues.addLabels({
+          owner: owner,
+          repo: repo,
+          issue_number: issueNumber,
+          labels: [OSS_GG_LABEL, `:joystick: ${points} points`],
+        });
+        await octokit.issues.createComment({
+          owner: owner,
+          repo: repo,
+          issue_number: issueNumber,
+          body: ON_NEW_ISSUE,
+        });
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const onUnassignCommented = async (
+  payload: EmitterWebhookEvent<"issue_comment.created">["payload"]
+) => {
+  try {
+    const issueCommentBody = payload.comment.body;
+    if (issueCommentBody.trim() !== UNASSIGN_IDENTIFIER) {
+      return;
+    }
+
+    const isOssGgLabel = payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
+    if (!isOssGgLabel) {
+      return;
+    }
+
+    const issueNumber = payload.issue.number;
+    const repo = payload.repository.name;
+    const owner = payload.repository.owner.login;
+    const commenter = payload.comment.user.login;
+    const octokit = getOctokitInstance(payload.installation?.id!);
+
+    const isAssigned = payload.issue.assignees.length > 0;
+    if (!isAssigned) {
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        body: "This issue is not assigned to anyone.",
+      });
+      return;
+    }
+
+    const assignee = payload.issue.assignees[0].login;
+    if (assignee === commenter) {
       await octokit.issues.removeAssignees({
         owner,
         repo,
         issue_number: issueNumber,
         assignees: [assignee],
       });
-    } catch (err) {
-      console.error(err);
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        body: "Issue unassigned.",
+      });
+      return;
     }
-  });
+
+    const ossGgRepo = await getRepositoryByGithubId(payload.repository.id);
+    const usersThatCanUnassign = ossGgRepo?.installation?.memberships?.map((m) => m.userId) || [];
+    const ossGgUsers = await Promise.all(
+      usersThatCanUnassign.map(async (userId) => {
+        const user = await getUser(userId);
+        return user?.githubId;
+      })
+    );
+
+    const isUserAllowedToUnassign = ossGgUsers?.includes(payload.comment.user.id);
+    if (!isUserAllowedToUnassign) {
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        body: "You cannot unassign this issue as it is not assigned to you.",
+      });
+      return;
+    }
+
+    await octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      body: "Issue unassigned.",
+    });
+
+    await octokit.issues.removeAssignees({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      assignees: [assignee],
+    });
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-export const onAwardPoints = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
-    try {
-      const repo = context.payload.repository.name;
-      const issueCommentBody = context.payload.comment.body;
-      const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
-      const match = issueCommentBody.match(awardPointsRegex);
-      const isPR = !!context.payload.issue.pull_request;
-      const issueNumber = isPR ? context.payload.issue.number : undefined;
-      const owner = context.payload.repository.owner.login;
-      let comment: string = "";
+export const onAwardPoints = async (payload: EmitterWebhookEvent<"issue_comment.created">["payload"]) => {
+  try {
+    const repo = payload.repository.name;
+    const issueCommentBody = payload.comment.body;
+    const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
+    const match = issueCommentBody.match(awardPointsRegex);
+    const isPR = !!payload.issue.pull_request;
+    const issueNumber = isPR ? payload.issue.number : undefined;
+    const owner = payload.repository.owner.login;
+    let comment: string = "";
 
-      if (match) {
-        const points = parseInt(match[1], 10);
+    if (match) {
+      const points = parseInt(match[1], 10);
 
-        if (!issueNumber) {
-          console.error("Comment is not on a PR.");
-          return;
-        }
-
-        const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
-
-        let usersThatCanAwardPoints = ossGgRepo?.installation.memberships.map((m) => m.userId);
-        if (!usersThatCanAwardPoints) {
-          throw new Error("No admins for the given repo in oss.gg!");
-        }
-        const ossGgUsers = await Promise.all(
-          usersThatCanAwardPoints.map(async (userId) => {
-            const user = await getUser(userId);
-            return user?.githubId;
-          })
-        );
-        const isUserAllowedToAwardPoints = ossGgUsers?.includes(context.payload.comment.user.id);
-        if (!isUserAllowedToAwardPoints) {
-          comment = "You are not allowed to award points! Please contact an admin.";
-        } else {
-          if (!ossGgRepo) {
-            comment = "If you are the repo owner, please register at oss.gg to be able to award points";
-          } else {
-            const prAuthorUsername = context.payload.issue.user.login;
-
-            //process user points
-            let user = await processUserPoints({
-              installationId: context.payload.installation?.id!,
-              prAuthorGithubId: context.payload.issue.user.id,
-              prAuthorUsername: prAuthorUsername,
-              avatarUrl: context.payload.issue.user.avatar_url,
-              points,
-              url: context.payload.comment.html_url,
-              repoId: ossGgRepo?.id,
-              comment,
-            });
-
-            comment =
-              `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})` +
-              " " +
-              comment;
-
-            await discordPointMessageTask.trigger({
-              channelId: DISCORD_CHANNEL_ID,
-              message: DISCORD_AWARD_POINTS_MESSAGE(user.name ?? prAuthorUsername, points),
-            });
-          }
-        }
-
-        //post comment
-        postComment({
-          installationId: context.payload.installation?.id!,
-          body: comment,
-          issueNumber: issueNumber,
-          repo,
-          owner,
-        });
+      if (!issueNumber) {
+        console.error("Comment is not on a PR.");
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      throw new Error(err);
+
+      const ossGgRepo = await getRepositoryByGithubId(payload.repository.id);
+
+      let usersThatCanAwardPoints = ossGgRepo?.installation?.memberships?.map((m) => m.userId);
+      if (!usersThatCanAwardPoints) {
+        throw new Error("No admins for the given repo in oss.gg!");
+      }
+      const ossGgUsers = await Promise.all(
+        usersThatCanAwardPoints.map(async (userId) => {
+          const user = await getUser(userId);
+          return user?.githubId;
+        })
+      );
+      const isUserAllowedToAwardPoints = ossGgUsers?.includes(payload.comment.user.id);
+      if (!isUserAllowedToAwardPoints) {
+        comment = "You are not allowed to award points! Please contact an admin.";
+      } else {
+        if (!ossGgRepo) {
+          comment = "If you are the repo owner, please register at oss.gg to be able to award points";
+        } else {
+          const prAuthorUsername = payload.issue.user.login;
+
+          //process user points
+          let user = await processUserPoints({
+            installationId: payload.installation?.id!,
+            prAuthorGithubId: payload.issue.user.id,
+            prAuthorUsername: prAuthorUsername,
+            avatarUrl: payload.issue.user.avatar_url,
+            points,
+            url: payload.comment.html_url,
+            repoId: ossGgRepo?.id,
+            comment,
+          });
+
+          comment =
+            `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})` +
+            " " +
+            comment;
+
+          await discordPointMessageTask.trigger({
+            channelId: DISCORD_CHANNEL_ID,
+            message: DISCORD_AWARD_POINTS_MESSAGE(user.name ?? prAuthorUsername, points),
+          });
+        }
+      }
+
+      //post comment
+      postComment({
+        installationId: payload.installation?.id!,
+        body: comment,
+        issueNumber: issueNumber,
+        repo,
+        owner,
+      });
     }
-  });
+  } catch (err) {
+    console.error(err);
+    throw new Error(err);
+  }
 };
 
-export const onPullRequestMerged = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.PULL_REQUEST_CLOSED, async (context) => {
-    const { pull_request: pullRequest, repository, installation } = context.payload;
+export const onPullRequestMerged = async (payload: EmitterWebhookEvent<"pull_request">["payload"]) => {
+  const { pull_request: pullRequest, repository, installation } = payload;
 
-    if (!pullRequest.merged) {
-      console.log("Pull request was not merged.");
-      return;
-    }
+  if (!pullRequest.merged) {
+    console.log("Pull request was not merged.");
+    return;
+  }
 
-    const {
-      name: repo,
-      owner: { login: owner },
-    } = repository;
-    const octokit = getOctokitInstance(installation?.id!);
+  const {
+    name: repo,
+    owner: { login: owner },
+  } = repository;
+  const octokit = getOctokitInstance(installation?.id!);
 
-    const ossGgRepo = await getRepositoryByGithubId(repository.id);
-    if (!ossGgRepo) {
-      console.log("Repository is not enrolled in oss.gg.");
-      return;
-    }
+  const ossGgRepo = await getRepositoryByGithubId(repository.id);
+  if (!ossGgRepo) {
+    console.log("Repository is not enrolled in oss.gg.");
+    return;
+  }
 
-    await processPullRequest(context, octokit, pullRequest, repo, owner, ossGgRepo.id);
-  });
+  await processPullRequest(payload, octokit, pullRequest, repo, owner, ossGgRepo.id);
 };
 
-async function processPullRequest(context, octokit, pullRequest, repo, owner, ossGgRepoId) {
+async function processPullRequest(payload, octokit, pullRequest, repo, owner, ossGgRepoId) {
   const validPrLabels = filterValidLabels(pullRequest.labels);
   const isPrOssGgLabel = checkOssGgLabel(validPrLabels);
 
@@ -453,7 +444,7 @@ async function processPullRequest(context, octokit, pullRequest, repo, owner, os
     const points = extractPointsFromLabels(validPrLabels);
     if (points) {
       await processAndComment({
-        context,
+        payload,
         pullRequest,
         repo,
         owner,
@@ -466,7 +457,7 @@ async function processPullRequest(context, octokit, pullRequest, repo, owner, os
   }
 
   console.log(`Pull request #${pullRequest.number} does not have the 🕹️ oss.gg label.`);
-  await processLinkedIssues(context, octokit, pullRequest, repo, owner, ossGgRepoId);
+  await processLinkedIssues(payload, octokit, pullRequest, repo, owner, ossGgRepoId);
 }
 
 async function processLinkedIssues(context, octokit, pullRequest, repo, owner, ossGgRepoId) {
@@ -481,7 +472,7 @@ async function processLinkedIssues(context, octokit, pullRequest, repo, owner, o
   }
 }
 
-async function processIssue(context, octokit, pullRequest, repo, owner, issueNumber, ossGgRepoId) {
+async function processIssue(payload, octokit, pullRequest, repo, owner, issueNumber, ossGgRepoId) {
   const { data: issue } = await octokit.issues.get({ owner, repo, issue_number: issueNumber });
   const validLabels = filterValidLabels(issue.labels);
 
@@ -494,7 +485,7 @@ async function processIssue(context, octokit, pullRequest, repo, owner, issueNum
   if (points) {
     console.log(`Points for issue #${issueNumber}:`, points);
     await processAndComment({
-      context,
+      payload,
       pullRequest,
       repo,
       owner,
@@ -507,151 +498,149 @@ async function processIssue(context, octokit, pullRequest, repo, owner, issueNum
   }
 }
 
-export const onRejectCommented = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
-    try {
-      const issueCommentBody = context.payload.comment.body;
-      const prNumber = context.payload.issue.number; //this is pr number if comment made from pr,else issue number when made from issue.
-      const repo = context.payload.repository.name;
-      const owner = context.payload.repository.owner.login;
-      const octokit = getOctokitInstance(context.payload.installation?.id!);
-      const rejectRegex = new RegExp(`${REJECT_IDENTIFIER}\\s+(.*)`, "i");
-      const match = issueCommentBody.match(rejectRegex);
-      const isCommentOnPullRequest = context.payload.issue.pull_request;
-      let comment: string = "";
+export const onRejectCommented = async (payload: EmitterWebhookEvent<"issue_comment.created">["payload"]) => {
+  try {
+    const issueCommentBody = payload.comment.body;
+    const prNumber = payload.issue.number; //this is pr number if comment made from pr,else issue number when made from issue.
+    const repo = payload.repository.name;
+    const owner = payload.repository.owner.login;
+    const octokit = getOctokitInstance(payload.installation?.id!);
+    const rejectRegex = new RegExp(`${REJECT_IDENTIFIER}\\s+(.*)`, "i");
+    const match = issueCommentBody.match(rejectRegex);
+    const isCommentOnPullRequest = payload.issue.pull_request;
+    let comment: string = "";
 
-      if (!match) {
-        return;
-      }
+    if (!match) {
+      return;
+    }
 
-      if (!isCommentOnPullRequest) {
+    if (!isCommentOnPullRequest) {
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: prNumber,
+        body: `The command ${REJECT_IDENTIFIER} only works in PRs, not on issues. Please use it in a Pull Request.`,
+      });
+      return;
+    }
+
+    const message = match[1];
+    const ossGgRepo = await getRepositoryByGithubId(payload.repository.id);
+
+    let usersThatCanRejectPr = ossGgRepo?.installation?.memberships?.map((m) => m.userId);
+    if (!usersThatCanRejectPr) {
+      throw new Error("No admins for the given repo in oss.gg!");
+    }
+    const ossGgUsers = await Promise.all(
+      usersThatCanRejectPr.map(async (userId) => {
+        const user = await getUser(userId);
+        return user?.githubId;
+      })
+    );
+    const isUserAllowedToRejectPr = ossGgUsers?.includes(payload.comment.user.id);
+    if (!isUserAllowedToRejectPr) {
+      comment = "You are not allowed to reject a pull request.";
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: prNumber,
+        body: comment,
+      });
+      return;
+    } else {
+      const extractIssueNumbersFromPrBody = extractIssueNumbers(payload.issue.body || "");
+      const prAuthor = payload.issue.user.login;
+      const rejectionMessage = REJECTION_MESSAGE_TEMPLATE(prAuthor, message);
+
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: prNumber,
+        body: rejectionMessage,
+      });
+
+      await octokit.pulls.update({
+        owner,
+        repo,
+        pull_number: prNumber,
+        state: "closed",
+      });
+
+      if (extractIssueNumbersFromPrBody.length === 0) {
         await octokit.issues.createComment({
           owner,
           repo,
           issue_number: prNumber,
-          body: `The command ${REJECT_IDENTIFIER} only works in PRs, not on issues. Please use it in a Pull Request.`,
-        });
-        return;
-      }
-
-      const message = match[1];
-      const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
-
-      let usersThatCanRejectPr = ossGgRepo?.installation.memberships.map((m) => m.userId);
-      if (!usersThatCanRejectPr) {
-        throw new Error("No admins for the given repo in oss.gg!");
-      }
-      const ossGgUsers = await Promise.all(
-        usersThatCanRejectPr.map(async (userId) => {
-          const user = await getUser(userId);
-          return user?.githubId;
-        })
-      );
-      const isUserAllowedToRejectPr = ossGgUsers?.includes(context.payload.comment.user.id);
-      if (!isUserAllowedToRejectPr) {
-        comment = "You are not allowed to reject a pull request.";
-        await octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: prNumber,
-          body: comment,
+          body: "This PR is not linked to an issue. Please update the issue status manually.",
         });
         return;
       } else {
-        const extractIssueNumbersFromPrBody = extractIssueNumbers(context.payload.issue.body || "");
-        const prAuthor = context.payload.issue.user.login;
-        const rejectionMessage = REJECTION_MESSAGE_TEMPLATE(prAuthor, message);
-
-        await octokit.issues.createComment({
-          owner,
-          repo,
-          issue_number: prNumber,
-          body: rejectionMessage,
-        });
-
-        await octokit.pulls.update({
-          owner,
-          repo,
-          pull_number: prNumber,
-          state: "closed",
-        });
-
-        if (extractIssueNumbersFromPrBody.length === 0) {
-          await octokit.issues.createComment({
+        extractIssueNumbersFromPrBody.forEach(async (issueNumber: number) => {
+          //assumption: taking only first 100 comments because first rejection will happen in first 100 comments.If comments are more than 100 then such heavy discussed issue mostly would be given to a core team member.Even if it is given to a non core team member, our requirements would fulfill within 100 comments.
+          const allCommentsInTheIssue = await octokit.issues.listComments({
             owner,
             repo,
-            issue_number: prNumber,
-            body: "This PR is not linked to an issue. Please update the issue status manually.",
+            issue_number: issueNumber,
+            per_page: 100,
           });
-          return;
-        } else {
-          extractIssueNumbersFromPrBody.forEach(async (issueNumber: number) => {
-            //assumption: taking only first 100 comments because first rejection will happen in first 100 comments.If comments are more than 100 then such heavy discussed issue mostly would be given to a core team member.Even if it is given to a non core team member, our requirements would fulfill within 100 comments.
-            const allCommentsInTheIssue = await octokit.issues.listComments({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              per_page: 100,
-            });
 
-            const issue = await octokit.issues.get({
-              owner,
-              repo,
-              issue_number: issueNumber,
-            });
+          const issue = await octokit.issues.get({
+            owner,
+            repo,
+            issue_number: issueNumber,
+          });
 
-            const issueAssignee = issue.data.assignees ? issue.data.assignees[0]?.login : "";
+          const issueAssignee = issue.data.assignees ? issue.data.assignees[0]?.login : "";
 
-            if (issueAssignee !== prAuthor) {
-              return;
-            }
+          if (issueAssignee !== prAuthor) {
+            return;
+          }
 
-            const { hasCommentWithAttemptedUserNames } =
-              checkFirstOccurenceForAttemptedComment(allCommentsInTheIssue);
+          const { hasCommentWithAttemptedUserNames } =
+            checkFirstOccurenceForAttemptedComment(allCommentsInTheIssue);
 
-            if (!hasCommentWithAttemptedUserNames) {
-              await octokit.issues.createComment({
-                owner,
-                repo,
-                issue_number: issueNumber,
-                body: `Attempted:${issueAssignee}`,
-              });
-            } else {
-              const { extractedUserNames, commentId } =
-                await extractUserNamesFromCommentsForRejectCommand(allCommentsInTheIssue);
-
-              extractedUserNames.push(issueAssignee);
-
-              commentId &&
-                (await octokit.issues.updateComment({
-                  owner,
-                  repo,
-                  issue_number: issueNumber,
-                  comment_id: commentId,
-                  body: `Attempted:${extractedUserNames}`,
-                }));
-            }
-
+          if (!hasCommentWithAttemptedUserNames) {
             await octokit.issues.createComment({
               owner,
               repo,
               issue_number: issueNumber,
-              body: "The issue is up for grabs again! Feel free to assign yourself using /assign.",
+              body: `Attempted:${issueAssignee}`,
             });
+          } else {
+            const { extractedUserNames, commentId } =
+              await extractUserNamesFromCommentsForRejectCommand(allCommentsInTheIssue);
 
-            await octokit.issues.removeAssignees({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              assignees: [issueAssignee],
-            });
+            extractedUserNames.push(issueAssignee);
+
+            commentId &&
+              (await octokit.issues.updateComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                comment_id: commentId,
+                body: `Attempted:${extractedUserNames}`,
+              }));
+          }
+
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: "The issue is up for grabs again! Feel free to assign yourself using /assign.",
           });
-        }
+
+          await octokit.issues.removeAssignees({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            assignees: [issueAssignee],
+          });
+        });
       }
-    } catch (err) {
-      console.error(err);
     }
-  });
+  } catch (err) {
+    console.error(err);
+  }
 };
 const extractUserNamesFromCommentsForRejectCommand = async (allCommentsInTheIssue) => {
   const { indexCommentWithAttemptedUserNames, hasCommentWithAttemptedUserNames } =

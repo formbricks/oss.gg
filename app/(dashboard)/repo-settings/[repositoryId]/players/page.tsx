@@ -1,5 +1,5 @@
 import UserProfileSummary from "@/components/ui/user-profile-summary";
-import { getUsersForRepository } from "@/lib/repository/service";
+import { getUsersForRepository } from "@/lib/user/service";
 
 export const metadata = {
   title: "Player overview",

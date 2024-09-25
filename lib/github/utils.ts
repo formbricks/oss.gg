@@ -78,7 +78,7 @@ export const extractPointsFromLabels = (labels: { name: string }[]): number | nu
 
 // Helper to process user points and post a comment
 export const processAndComment = async ({
-  context,
+  payload,
   pullRequest,
   repo,
   owner,
@@ -86,7 +86,7 @@ export const processAndComment = async ({
   issueNumber,
   ossGgRepoId,
 }: {
-  context: any;
+  payload: any;
   pullRequest: any;
   repo: string;
   owner: string;
@@ -95,7 +95,7 @@ export const processAndComment = async ({
   ossGgRepoId: string;
 }) => {
   const user = await processUserPoints({
-    installationId: context.payload.installation?.id!,
+    installationId: payload.installation?.id!,
     prAuthorGithubId: pullRequest.user.id,
     prAuthorUsername: pullRequest.user.login,
     avatarUrl: pullRequest.user.avatar_url,
@@ -109,7 +109,7 @@ export const processAndComment = async ({
 
   // Post comment on the issue or pull request
   postComment({
-    installationId: context.payload.installation?.id!,
+    installationId: payload.installation?.id!,
     body: comment,
     issueNumber: issueNumber,
     repo,
