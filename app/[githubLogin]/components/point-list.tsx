@@ -13,7 +13,7 @@ interface PointsAndRanksProps {
 
 const PointsAndRanks: React.FC<PointsAndRanksProps> = ({ pointsAndRanks }) => {
   return (
-    <div className="col-span-4 grid grid-cols-4 gap-4 md:col-span-1 md:grid-cols-1">
+    <div className="col-span-4 grid h-fit grid-cols-4 gap-4 md:col-span-1 md:grid-cols-1">
       {pointsAndRanks.map((repo, index) => (
         <div key={repo.id} className="space-y-1">
           {repo.repositoryLogo && (

@@ -35,7 +35,7 @@ export const getPullRequestsByGithubLogin = async (
   try {
     const { data } = await octokit.search.issuesAndPullRequests({
       q: query,
-      per_page: 20,
+      per_page: 99,
       sort: "created",
       order: "desc",
     });
