@@ -227,9 +227,9 @@ export default function IndexPage() {
           <p>play fair to stay in the game</p> <p>cheat or spam to get disqualified</p>
         </ToggleContent>
       </Toggle>
-      <button className="pt-4 font-bold underline underline-offset-4 hover:no-underline">
+      <p className="pt-4"><Link href="/signup" className="font-bold underline underline-offset-4 hover:no-underline">
         enroll to play
-      </button>
+      </Link></p>
     </div>
   );
 }

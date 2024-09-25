@@ -10,7 +10,7 @@ import PointsAndRanks from "./point-list";
 import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
-export default async function ProfilePage({ githubLogin, singedIn }: { githubLogin: string, singedIn: boolean }) {
+export default async function ProfilePage({ githubLogin }: { githubLogin: string; singedIn: boolean }) {
   // Get & enrich the player data
   const enrichedUserData = await getEnrichedGithubUserData(githubLogin);
 
@@ -40,19 +40,23 @@ export default async function ProfilePage({ githubLogin, singedIn }: { githubLog
     id: string;
     repositoryName: string;
     points: number;
-    repositoryLogo?: string; // Change this line
+    repositoryLogo?: string;
   }> = [];
 
   if (enrichedUserData.enrolledRepositories && enrichedUserData.playerData?.id) {
-    pointsAndRanks = (
-      await getPointsAndRankPerRepository(
+    try {
+      const result = await getPointsAndRankPerRepository(
         enrichedUserData.enrolledRepositories,
         enrichedUserData.playerData.id
-      )
-    ).map((item) => ({
-      ...item,
-      repositoryLogo: item.repositoryLogo || undefined,
-    }));
+      );
+
+      pointsAndRanks = result.map((item) => ({
+        ...item,
+        repositoryLogo: item.repositoryLogo || undefined,
+      }));
+    } catch (error) {
+      // Handle error silently or add appropriate error handling
+    }
   }
 
   let totalPoints = 0;

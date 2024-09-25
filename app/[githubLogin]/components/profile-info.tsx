@@ -33,7 +33,7 @@ const ProfileInfoBar: React.FC<ProfileInfoProps> = ({
       <div className="text-right">
         <h2 className="text-3xl font-bold">#{globalRank}</h2>
         <p className="text-xs">{totalPoints} points</p>
-        <p className="text-xs">{Math.ceil(chanceOfWinning * 100)}% chance to win</p>
+        <p className="text-xs">{isNaN(chanceOfWinning) ? "No" : `${Math.ceil(chanceOfWinning * 100)}%`} chance to win</p>
       </div>
     </div>
   </div>

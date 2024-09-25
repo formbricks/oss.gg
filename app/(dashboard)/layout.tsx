@@ -2,7 +2,7 @@ import { DashboardNav } from "@/components/nav";
 import { Logo } from "@/components/ui/logo";
 import { UserAccountNav } from "@/components/user-account-nav";
 import { dashboardConfig } from "@/config/dashboard";
-import { GITHUB_APP_SLUG, WEBAPP_URL } from "@/lib/constants";
+import { GITHUB_APP_SLUG } from "@/lib/constants";
 import { getRepositoriesForUser } from "@/lib/repository/service";
 import { getCurrentUser } from "@/lib/session";
 import { capitalizeFirstLetter } from "@/lib/utils/textformat";
@@ -54,7 +54,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
           <DashboardNav items={dashboardConfig.mainNav} userGitHubId={user.login} />
         </div>
         <div>
-          {WEBAPP_URL === "http://localhost:3000" && (
+          {user.role === "admin" && (
             <div className="mb-2">
               <ConnectGitHubAppButton
                 appInstallationUrl={`https://github.com/apps/${GITHUB_APP_SLUG}/installations/new`}
