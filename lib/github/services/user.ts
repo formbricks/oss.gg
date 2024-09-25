@@ -18,7 +18,12 @@ export const sendInstallationDetails = async (
     | undefined,
   installation: any
 ): Promise<void> => {
+  console.log(`Starting sendInstallationDetails with installationId: ${installationId}, appId: ${appId}`);
+  console.log(`Repos:`, JSON.stringify(repos, null, 2));
+  console.log(`Installation:`, JSON.stringify(installation, null, 2));
+
   try {
+    console.log(`Creating App instance with appId: ${appId}`);
     const app = new App({
       appId,
       privateKey: GITHUB_APP_PRIVATE_KEY,
@@ -26,9 +31,16 @@ export const sendInstallationDetails = async (
         secret: GITHUB_APP_WEBHOOK_SECRET!,
       },
     });
+    console.log(`App instance created successfully`);
+
+    console.log(`Getting installation Octokit for installationId: ${installationId}`);
     const octokit = await app.getInstallationOctokit(installationId);
+    console.log(`Octokit instance obtained successfully`);
 
     await db.$transaction(async (tx) => {
+      console.log(`Starting database transaction`);
+
+      console.log(`Upserting installation with githubId: ${installationId}`);
       const installationPrisma = await tx.installation.upsert({
         where: { githubId: installationId },
         update: { type: installation?.account?.type.toLowerCase() },
@@ -37,16 +49,22 @@ export const sendInstallationDetails = async (
           type: installation?.account?.type.toLowerCase(),
         },
       });
+      console.log(`Installation upserted successfully:`, installationPrisma);
 
       const userType = installation?.account?.type.toLowerCase();
+      console.log(`User type: ${userType}`);
+
       if (userType === "organization") {
+        console.log(`Processing organization members`);
         const membersOfOrg = await octokit.rest.orgs.listMembers({
           org: installation?.account?.login,
           role: "all",
         });
+        console.log(`Found ${membersOfOrg.data.length} members in the organization`);
 
         await Promise.all(
           membersOfOrg.data.map(async (member) => {
+            console.log(`Processing member: ${member.login}`);
             const newUser = await tx.user.upsert({
               where: { githubId: member.id },
               update: {},
@@ -58,6 +76,7 @@ export const sendInstallationDetails = async (
                 avatarUrl: member.avatar_url,
               },
             });
+            console.log(`User upserted:`, newUser);
 
             await tx.membership.upsert({
               where: {
@@ -73,9 +92,11 @@ export const sendInstallationDetails = async (
                 role: "member",
               },
             });
+            console.log(`Membership upserted for user: ${newUser.login}`);
           })
         );
       } else {
+        console.log(`Processing individual user`);
         const user = installation.account;
         const newUser = await tx.user.upsert({
           where: { githubId: user.id },
@@ -88,6 +109,7 @@ export const sendInstallationDetails = async (
             avatarUrl: user.avatar_url,
           },
         });
+        console.log(`User upserted:`, newUser);
 
         await tx.membership.upsert({
           where: {
@@ -103,13 +125,18 @@ export const sendInstallationDetails = async (
             role: "owner",
           },
         });
+        console.log(`Membership upserted for user: ${newUser.login}`);
       }
 
       if (repos) {
+        console.log(`Processing ${repos.length} repositories`);
         await Promise.all(
           repos.map(async (repo) => {
+            console.log(`Processing repository: ${repo.name}`);
             const defaultBranch = await getRepositoryDefaultBranch(installation.account.login, repo.name);
+            console.log(`Default branch for ${repo.name}: ${defaultBranch}`);
             const readme = await getRepositoryReadme(installation.account.login, repo.name, defaultBranch);
+            console.log(`README fetched for ${repo.name}, length: ${readme.length}`);
 
             await tx.repository.upsert({
               where: { githubId: repo.id },
@@ -124,12 +151,18 @@ export const sendInstallationDetails = async (
                 projectDescription: readme,
               },
             });
+            console.log(`Repository upserted: ${repo.name}`);
           })
         );
       }
+
+      console.log(`Database transaction completed successfully`);
     });
+
+    console.log(`sendInstallationDetails completed successfully`);
   } catch (error) {
-    console.error(`Failed to post installation details: ${error}`);
+    console.error(`Failed to post installation details:`, error);
+    console.error(`Error stack:`, error instanceof Error ? error.stack : "No stack trace available");
     throw new Error(`Failed to post installation details: ${error}`);
   }
 };
