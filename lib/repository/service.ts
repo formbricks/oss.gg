@@ -149,6 +149,8 @@ export const fetchRepoDetails = (id: string) =>
 export const getRepositoriesForUser = (userId: string) =>
   unstable_cache(
     async (): Promise<TRepository[]> => {
+      console.log(`getRepositoriesForUser called with userId: ${userId}`);
+      console.log(`Starting database transaction`);
       try {
         const userRepositories = await db.repository.findMany({
           where: {
@@ -161,7 +163,7 @@ export const getRepositoriesForUser = (userId: string) =>
             },
           },
         });
-
+        console.log(`Database transaction completed successfully`);
         return userRepositories as TRepository[];
       } catch (error) {
         console.error(`Failed to get repositories for user: ${error}`);

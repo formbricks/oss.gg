@@ -1,6 +1,7 @@
 import { GITHUB_APP_PRIVATE_KEY, GITHUB_APP_WEBHOOK_SECRET } from "@/lib/constants";
 import { db } from "@/lib/db";
 import { getRepositoryDefaultBranch, getRepositoryReadme } from "@/lib/github/services/repo";
+import { repositoryCache } from "@/lib/repository/cache";
 import { App } from "octokit";
 
 export const sendInstallationDetails = async (
@@ -94,6 +95,7 @@ export const sendInstallationDetails = async (
                   role: "member",
                 },
               });
+              repositoryCache.revalidate({ userId: newUser.id, id: installationPrisma.id });
               console.log(`Membership upserted for user: ${newUser.login}`);
             })
           );
@@ -128,6 +130,7 @@ export const sendInstallationDetails = async (
             },
           });
           console.log(`Membership upserted for user: ${newUser.login}`);
+          repositoryCache.revalidate({ userId: newUser.id, id: installationPrisma.id });
         }
 
         if (repos) {
