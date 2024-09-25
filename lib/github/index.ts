@@ -12,9 +12,8 @@ import { onInstallationCreated } from "./hooks/installation";
 import {
   onAssignCommented,
   onAwardPoints,
-  onIssueLabeled,
   onIssueOpened,
-  onPullRequestOpened,
+  onPullRequestMerged,
   onRejectCommented,
   onUnassignCommented,
 } from "./hooks/issue";
@@ -25,10 +24,8 @@ export const registerHooks = async (
 ) => {
   switch (event) {
     case "issues": {
-      if (body.action === "created") {
-        onIssueOpened(body);
-      } else if (body.action === "labeled") {
-        onIssueLabeled(body as EmitterWebhookEvent<"issues.labeled">["payload"]);
+      if (body.action === "opened") {
+        onIssueOpened(body as EmitterWebhookEvent<"issues.opened">["payload"]);
       }
     }
 
@@ -60,8 +57,8 @@ export const registerHooks = async (
       }
     }
     case "pull_request": {
-      if (body.action === "opened") {
-        onPullRequestOpened(body as EmitterWebhookEvent<"pull_request">["payload"]);
+      if (body.action === "closed") {
+        onPullRequestMerged(body as EmitterWebhookEvent<"pull_request">["payload"]);
       }
     }
     case "pull_request": {

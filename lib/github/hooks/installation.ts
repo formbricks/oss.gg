@@ -1,4 +1,3 @@
-import { EVENT_TRIGGERS } from "@/lib/constants";
 import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 
 import { sendInstallationDetails } from "../services/user";

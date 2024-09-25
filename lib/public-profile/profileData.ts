@@ -32,7 +32,7 @@ export async function getEnrichedGithubUserData(githubLogin: string): Promise<En
   const result: EnrichedUserData = {
     githubData: githubUserData || placeholderData,
     playerData: null,
-    enrolledRepositories: null,
+    enrolledRepositories: [] as TRepository[],
     status: {
       githubUserFound: !!githubUserData,
       playerFound: false,
@@ -48,7 +48,7 @@ export async function getEnrichedGithubUserData(githubLogin: string): Promise<En
       result.playerData = playerData;
       result.status.playerFound = true;
 
-      // If player was found, get enrollments
+      // If player was found, get enrolled repositories
       const enrolledRepositories = await getEnrolledRepositories(playerData.id);
 
       if (enrolledRepositories && enrolledRepositories.length > 0) {

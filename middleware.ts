@@ -1,5 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import { withAuth } from "next-auth/middleware";
+import { getSession } from "next-auth/react";
 import { NextResponse } from "next/server";
 
 export default withAuth(
@@ -7,11 +8,15 @@ export default withAuth(
     const token = await getToken({ req });
     const isAuth = !!token;
     const isAuthPage =
-      req.nextUrl.pathname.startsWith("/login") || req.nextUrl.pathname.startsWith("/register");
+      req.nextUrl.pathname.startsWith("/login") || req.nextUrl.pathname.startsWith("/signup");
 
     if (isAuthPage) {
       if (isAuth) {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
+        if (token.role === "user") {
+          return NextResponse.redirect(new URL(`/${token.login}`, req.url));
+        } else {
+          return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
       }
 
       return null;
@@ -39,5 +44,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/editor/:path*", "/login", "/register"],
+  matcher: ["/dashboard/:path*", "/editor/:path*", "/login", "/signup"],
 };

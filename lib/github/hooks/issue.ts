@@ -14,100 +14,59 @@ import {
   REJECT_IDENTIFIER,
   UNASSIGN_IDENTIFIER,
 } from "@/lib/constants";
-import { assignUserPoints } from "@/lib/points/service";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
-import { createUser, getUser, getUserByGithubId } from "@/lib/user/service";
+import { getUser } from "@/lib/user/service";
 import { discordPointMessageTask } from "@/src/trigger/discordPointsMessage";
 import { issueReminderTask } from "@/src/trigger/issueReminder";
-import { EmitterWebhookEvent } from "@octokit/webhooks";
-import { Webhooks } from "@octokit/webhooks";
+import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 
-import { githubCache } from "../cache";
 import { isMemberOfRepository } from "../services/user";
-import { extractIssueNumbers, getOctokitInstance } from "../utils";
+import {
+  checkOssGgLabel,
+  extractIssueNumbers,
+  extractIssueNumbersFromPrBody,
+  extractPointsFromLabels,
+  filterValidLabels,
+  getOctokitInstance,
+  postComment,
+  processAndComment,
+  processUserPoints,
+} from "../utils";
 
-export const onIssueOpened = async (
-  // webhooks: Webhooks
-  payload: EmitterWebhookEvent["payload"]
-) => {
-  if ("issue" in payload) {
-    const projectId = payload.repository.id;
+export const onIssueOpened = async (payload: EmitterWebhookEvent<"issues.opened">["payload"]) => {
+  const projectId = payload.repository.id;
+  //TODO:
+  //1. check if the issue has the oss label
+  //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
 
-    //TODO:
-    //1. check if the issue has the oss label
-    //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
+  // const isProjectRegistered = await getProject(projectId)
+  // if (!isProjectRegistered) {
+  //   await octokit.issues.createComment(
+  //     issue({
+  //       body: ON_REPO_NOT_REGISTERED,
+  //     })
+  //   )
+  //   return
+  // }
 
-    // const isProjectRegistered = await getProject(projectId)
-    // if (!isProjectRegistered) {
-    //   await octokit.issues.createComment(
-    //     issue({
-    //       body: ON_REPO_NOT_REGISTERED,
-    //     })
-    //   )
-    //   return
-    // }
+  const labels = payload.issue.labels?.map((label) => label.name);
+  const isLevelLabel = labels?.includes(LEVEL_LABEL);
 
-    const labels = payload.issue.labels?.map((label) => label.name);
-    const isLevelLabel = labels?.includes(LEVEL_LABEL);
-
-    const repoGithubId = payload.repository.id;
-    githubCache.revalidate({ repoGithubId });
-
-    if (!isLevelLabel) {
-      return;
-    }
-
-    // await sendNewIssue(
-    //   payload.repository.id,
-    //   payload.issue.user.id,
-    //   payload.issue.id
-    // )
-
-    // await octokit.issues.createComment(
-    //   issue({
-    //     body: ON_NEW_ISSUE,
-    //   })
-    // )
-    // webhooks.on(EVENT_TRIGGERS.ISSUE_OPENED, async (context) => {
-    //   const projectId = payload.repository.id;
-
-    //   //TODO:
-    //   //1. check if the issue has the oss label
-    //   //2. if it has the OSS label find all the users that are currently subscribed to the repo, have the right points/permission, then send them an email
-
-    //   // const isProjectRegistered = await getProject(projectId)
-    //   // if (!isProjectRegistered) {
-    //   //   await octokit.issues.createComment(
-    //   //     issue({
-    //   //       body: ON_REPO_NOT_REGISTERED,
-    //   //     })
-    //   //   )
-    //   //   return
-    //   // }
-
-    //   const labels = payload.issue.labels?.map((label) => label.name);
-    //   const isLevelLabel = labels?.includes(LEVEL_LABEL);
-
-    //   const repoGithubId = payload.repository.id;
-    //   githubCache.revalidate({ repoGithubId });
-
-    //   if (!isLevelLabel) {
-    //     return;
-    //   }
-
-    //   // await sendNewIssue(
-    //   //   payload.repository.id,
-    //   //   payload.issue.user.id,
-    //   //   payload.issue.id
-    //   // )
-
-    //   // await octokit.issues.createComment(
-    //   //   issue({
-    //   //     body: ON_NEW_ISSUE,
-    //   //   })
-    //   // )
-    // });
+  if (!isLevelLabel) {
+    return;
   }
+
+  // await sendNewIssue(
+  //   payload.repository.id,
+  //   payload.issue.user.id,
+  //   payload.issue.id
+  // )
+
+  // await octokit.issues.createComment(
+  //   issue({
+  //     body: ON_NEW_ISSUE,
+  //   })
+  // )
 };
 
 export const onAssignCommented = async (payload: EmitterWebhookEvent<"issue_comment.created">["payload"]) => {
@@ -131,12 +90,12 @@ export const onAssignCommented = async (payload: EmitterWebhookEvent<"issue_comm
         const message =
           assignee === commenter
             ? `This issue is already assigned to you. Let's get this shipped!`
-            : `This issue is already assigned to another person. Please find more issues [here](https://oss.gg/issues).`;
+            : `This issue is already assigned to another person. Please find more issues [here](https://oss.gg).`;
         await octokit.issues.createComment({
           owner,
           repo,
           issue_number: issueNumber,
-          body: `Assigned to @${commenter}! You have 48 hours to open a draft PR linking this issue. If we can't detect a PR, you will be unassigned automatically. Excited to have you ship this 🕹️`,
+          body: message,
         });
         return;
       }
@@ -179,6 +138,39 @@ export const onAssignCommented = async (payload: EmitterWebhookEvent<"issue_comm
         return;
       }
 
+      /*  
+        //checking if the current level of user has the power to solve the issue on which the /assign comment was made.
+        const currentRepo = await getRepositoryByGithubId(payload.repository.id);
+        const user = await getUserByGithubId(payload.comment.user.id);
+
+       if (currentRepo && user) {
+          const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
+          const { currentLevelOfUser } = await findCurrentAndNextLevelOfCurrentUser(
+            currentRepo.id,
+            userTotalPoints
+          ); //this just has tags that limit the user to take on task of higher level but  misses out  on tags of lower levels.
+
+          const levels = currentRepo?.levels as TLevel[];
+          const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
+
+          const labels = payload.issue.labels;
+          const tags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
+
+          const isAssignable = labels.some((label) => {
+            return tags?.assignableIssues.includes(label.name);
+          });
+
+          if (!isAssignable) {
+            await octokit.issues.createComment({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              body: `This task requires a certain experience with our repository 🤓 \n\nTo be able to work on issues like this one, you can level up by working on issues of a lower level. \n\nCheck out your current level on [oss.gg/${user.login}](https://oss.gg/${user.login})`,
+            });
+            return;
+          }
+        } */
+
       await octokit.issues.addAssignees({
         owner,
         repo,
@@ -209,7 +201,7 @@ export const onAssignCommented = async (payload: EmitterWebhookEvent<"issue_comm
         owner,
         repo,
         issue_number: issueNumber,
-        body: `Assigned to @${commenter}! Excited to have you ship this 🕹️`,
+        body: `Assigned to @${commenter}! Please open a draft PR linking this issue within 48h ⚠️ If we can't detect a PR from you linking this issue in 48h, you'll be unassigned automatically 🕹️ Excited to have you ship this 🚀`,
       });
     }
 
@@ -342,17 +334,8 @@ export const onUnassignCommented = async (
   }
 };
 
-export const onIssueLabeled = async (payload: EmitterWebhookEvent<"issues.labeled">["payload"]) => {
-  try {
-    githubCache.revalidate({ repoGithubId: payload.repository.id });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 export const onAwardPoints = async (payload: EmitterWebhookEvent<"issue_comment.created">["payload"]) => {
   try {
-    const octokit = getOctokitInstance(payload.installation?.id!);
     const repo = payload.repository.name;
     const issueCommentBody = payload.comment.body;
     const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
@@ -360,7 +343,6 @@ export const onAwardPoints = async (payload: EmitterWebhookEvent<"issue_comment.
     const isPR = !!payload.issue.pull_request;
     const issueNumber = isPR ? payload.issue.number : undefined;
     const owner = payload.repository.owner.login;
-
     let comment: string = "";
 
     if (match) {
@@ -390,27 +372,25 @@ export const onAwardPoints = async (payload: EmitterWebhookEvent<"issue_comment.
         if (!ossGgRepo) {
           comment = "If you are the repo owner, please register at oss.gg to be able to award points";
         } else {
-          const prAuthorGithubId = payload.issue.user.id;
           const prAuthorUsername = payload.issue.user.login;
-          const { data: prAuthorProfile } = await octokit.users.getByUsername({
-            username: prAuthorUsername,
+
+          //process user points
+          let user = await processUserPoints({
+            installationId: payload.installation?.id!,
+            prAuthorGithubId: payload.issue.user.id,
+            prAuthorUsername: prAuthorUsername,
+            avatarUrl: payload.issue.user.avatar_url,
+            points,
+            url: payload.comment.html_url,
+            repoId: ossGgRepo?.id,
+            comment,
           });
-          let user = await getUserByGithubId(prAuthorGithubId);
-          if (!user) {
-            user = await createUser({
-              githubId: prAuthorGithubId,
-              login: prAuthorUsername,
-              email: prAuthorProfile.email,
-              name: prAuthorProfile.name,
-              avatarUrl: payload.issue.user.avatar_url,
-            });
-            comment = "Please register at oss.gg to be able to claim your rewards.";
-          }
-          await assignUserPoints(user?.id, points, "Awarded points", payload.comment.html_url, ossGgRepo?.id);
+
           comment =
-            `Awarding ${user.login}: ${points} points! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})` +
+            `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})` +
             " " +
             comment;
+
           await discordPointMessageTask.trigger({
             channelId: DISCORD_CHANNEL_ID,
             message: DISCORD_AWARD_POINTS_MESSAGE(user.name ?? prAuthorUsername, points),
@@ -418,9 +398,11 @@ export const onAwardPoints = async (payload: EmitterWebhookEvent<"issue_comment.
         }
       }
 
-      await octokit.issues.createComment({
+      //post comment
+      postComment({
+        installationId: payload.installation?.id!,
         body: comment,
-        issue_number: issueNumber,
+        issueNumber: issueNumber,
         repo,
         owner,
       });
@@ -431,14 +413,90 @@ export const onAwardPoints = async (payload: EmitterWebhookEvent<"issue_comment.
   }
 };
 
-export const onPullRequestOpened = async (payload: EmitterWebhookEvent<"pull_request">["payload"]) => {
-  const pullRequestUser = payload.pull_request.user;
-  const body = payload.pull_request.body;
-  const issueNumber = extractIssueNumbers(body!);
-  // create a comment on the issue that a PR has been opened
+export const onPullRequestMerged = async (payload: EmitterWebhookEvent<"pull_request">["payload"]) => {
+  const { pull_request: pullRequest, repository, installation } = payload;
 
-  return;
+  if (!pullRequest.merged) {
+    console.log("Pull request was not merged.");
+    return;
+  }
+
+  const {
+    name: repo,
+    owner: { login: owner },
+  } = repository;
+  const octokit = getOctokitInstance(installation?.id!);
+
+  const ossGgRepo = await getRepositoryByGithubId(repository.id);
+  if (!ossGgRepo) {
+    console.log("Repository is not enrolled in oss.gg.");
+    return;
+  }
+
+  await processPullRequest(payload, octokit, pullRequest, repo, owner, ossGgRepo.id);
 };
+
+async function processPullRequest(payload, octokit, pullRequest, repo, owner, ossGgRepoId) {
+  const validPrLabels = filterValidLabels(pullRequest.labels);
+  const isPrOssGgLabel = checkOssGgLabel(validPrLabels);
+
+  if (isPrOssGgLabel) {
+    const points = extractPointsFromLabels(validPrLabels);
+    if (points) {
+      await processAndComment({
+        payload,
+        pullRequest,
+        repo,
+        owner,
+        points,
+        issueNumber: pullRequest.number,
+        ossGgRepoId,
+      });
+      return;
+    }
+  }
+
+  console.log(`Pull request #${pullRequest.number} does not have the 🕹️ oss.gg label.`);
+  await processLinkedIssues(payload, octokit, pullRequest, repo, owner, ossGgRepoId);
+}
+
+async function processLinkedIssues(context, octokit, pullRequest, repo, owner, ossGgRepoId) {
+  const issueNumbers = extractIssueNumbersFromPrBody(pullRequest.body!);
+  if (!issueNumbers.length) {
+    console.log("No issues are mentioned in the pull request.");
+    return;
+  }
+
+  for (const issueNumber of issueNumbers) {
+    await processIssue(context, octokit, pullRequest, repo, owner, issueNumber, ossGgRepoId);
+  }
+}
+
+async function processIssue(payload, octokit, pullRequest, repo, owner, issueNumber, ossGgRepoId) {
+  const { data: issue } = await octokit.issues.get({ owner, repo, issue_number: issueNumber });
+  const validLabels = filterValidLabels(issue.labels);
+
+  if (!checkOssGgLabel(validLabels)) {
+    console.log(`Issue #${issueNumber} does not have the 🕹️ oss.gg label. Skipping.`);
+    return;
+  }
+
+  const points = extractPointsFromLabels(validLabels);
+  if (points) {
+    console.log(`Points for issue #${issueNumber}:`, points);
+    await processAndComment({
+      payload,
+      pullRequest,
+      repo,
+      owner,
+      points,
+      issueNumber: pullRequest.number,
+      ossGgRepoId,
+    });
+  } else {
+    console.log(`No points label found for issue #${issueNumber}.`);
+  }
+}
 
 export const onRejectCommented = async (payload: EmitterWebhookEvent<"issue_comment.created">["payload"]) => {
   try {
@@ -447,10 +505,11 @@ export const onRejectCommented = async (payload: EmitterWebhookEvent<"issue_comm
     const repo = payload.repository.name;
     const owner = payload.repository.owner.login;
     const octokit = getOctokitInstance(payload.installation?.id!);
-    const rejectRegex = new RegExp(`${REJECT_IDENTIFIER}\\s*(.*)?`, "i");
+    const rejectRegex = new RegExp(`${REJECT_IDENTIFIER}\\s+(.*)`, "i");
     const match = issueCommentBody.match(rejectRegex);
     const isCommentOnPullRequest = payload.issue.pull_request;
     let comment: string = "";
+
     if (!match) {
       return;
     }

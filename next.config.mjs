@@ -4,7 +4,16 @@ import "./env.mjs";
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["avatars.githubusercontent.com", "pbs.twimg.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
+      },
+    ],
   },
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client"],
@@ -18,10 +27,14 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/figma",
-        destination:
-          "https://www.figma.com/file/usCYaOpv13zMpvjEVc5z0Z/oss.gg-web-app?type=design&node-id=0%3A1&mode=design&t=DnQbQCeApQQoXDbT-1",
+        source: "/marketing",
+        destination: "/",
         permanent: true,
+      },
+      {
+        source: "/marketing/founding-team",
+        destination: "/",
+        permanent: false,
       },
       {
         source: "/github",

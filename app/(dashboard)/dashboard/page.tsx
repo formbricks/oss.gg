@@ -63,6 +63,7 @@ export default async function DashboardPage() {
       return acc;
     }, 0);
   };
+
   const calculateRankOfCurrentUser = (currentUserId: string, pointTransactions: TPointTransaction[]) => {
     // Create an object to store the total points for each user enrolled in the repositories that the current user is in.
     const totalPointsOfAllUsersInTheRepo = {};

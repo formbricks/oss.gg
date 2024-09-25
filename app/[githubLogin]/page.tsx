@@ -10,6 +10,6 @@ export async function generateMetadata({ params }: { params: { githubLogin: stri
   };
 }
 
-export default function Page({ params }: { params: { githubLogin: string } }) {
+export default async function Page({ params }: { params: { githubLogin: string } }) {
   return <ProfilePage githubLogin={params.githubLogin} />;
 }

@@ -1,8 +1,12 @@
+import { TPostComment, TUserPoints } from "@/types/githubUser";
+import { TUser } from "@/types/user";
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/rest";
 import crypto from "node:crypto";
 
-import { GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY } from "../constants";
+import { GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, OSS_GG_LABEL } from "../constants";
+import { assignUserPoints } from "../points/service";
+import { createUser, getUserByGithubId } from "../user/service";
 
 export const getOctokitInstance = (installationId: number) => {
   if (!installationId) {
@@ -40,21 +44,18 @@ export const extractIssueNumbers = (body: string): number[] => {
 };
 
 export const extractIssueNumbersFromPrBody = (body: string): number[] => {
-  // Refer: https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue
-  // Regex pattern to match both full URLs and shorthand references to issues
-  const pattern =
-    /\b(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\b\s+(?:https:\/\/github\.com\/\w+\/\w+\/issues\/(\d+)|#(\d+))/gi;
+  // Regex pattern to match '#' followed by one or more digits
+  const pattern = /#(\d+)/g;
 
   // Find matches and extract issue numbers
-  const issueSet = new Set<number>(); // Using a Set to ensure uniqueness
+  const issueSet = new Set<number>();
   let match;
   while ((match = pattern.exec(body)) !== null) {
-    // Adding the issue number to the Set, match[2] for full URL, match[3] for shorthand
-    const issueNumber = match[2] || match[3];
-    issueSet.add(Number(issueNumber));
+    const issueNumber = Number(match[1]);
+    issueSet.add(issueNumber);
   }
-  const uniqueIssues = Array.from(issueSet);
-  return uniqueIssues;
+
+  return Array.from(issueSet);
 };
 
 /**
@@ -74,3 +75,95 @@ export const extractPointsFromLabels = (labels: { name: string }[]): number | nu
 
   return null;
 };
+
+// Helper to process user points and post a comment
+export const processAndComment = async ({
+  payload,
+  pullRequest,
+  repo,
+  owner,
+  points,
+  issueNumber,
+  ossGgRepoId,
+}: {
+  payload: any;
+  pullRequest: any;
+  repo: string;
+  owner: string;
+  points: number;
+  issueNumber: number;
+  ossGgRepoId: string;
+}) => {
+  const user = await processUserPoints({
+    installationId: payload.installation?.id!,
+    prAuthorGithubId: pullRequest.user.id,
+    prAuthorUsername: pullRequest.user.login,
+    avatarUrl: pullRequest.user.avatar_url,
+    points,
+    url: pullRequest.html_url,
+    repoId: ossGgRepoId,
+    comment: "",
+  });
+
+  const comment = `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})`;
+
+  // Post comment on the issue or pull request
+  postComment({
+    installationId: payload.installation?.id!,
+    body: comment,
+    issueNumber: issueNumber,
+    repo,
+    owner,
+  });
+};
+
+export const processUserPoints = async ({
+  installationId,
+  prAuthorGithubId,
+  prAuthorUsername,
+  avatarUrl,
+  points,
+  url,
+  repoId,
+  comment,
+}: TUserPoints): Promise<TUser> => {
+  const octokit = getOctokitInstance(installationId!);
+
+  const { data: prAuthorProfile } = await octokit.users.getByUsername({
+    username: prAuthorUsername,
+  });
+
+  // Fetch or create user profile only if the oss.gg label is present
+  let user = await getUserByGithubId(prAuthorGithubId);
+  if (!user) {
+    user = await createUser({
+      githubId: prAuthorGithubId,
+      login: prAuthorUsername,
+      email: prAuthorProfile.email,
+      name: prAuthorProfile.name,
+      avatarUrl: avatarUrl,
+    });
+    comment = "Please register at oss.gg to be able to claim your rewards.";
+  }
+
+  // Award points to the user
+  await assignUserPoints(user?.id, points, "Awarded points", url, repoId);
+
+  return user;
+};
+
+export const postComment = async ({ installationId, body, issueNumber, repo, owner }: TPostComment) => {
+  const octokit = getOctokitInstance(installationId!);
+  await octokit.issues.createComment({
+    body,
+    issue_number: issueNumber,
+    repo,
+    owner,
+  });
+};
+
+export const filterValidLabels = (labels: any[]) =>
+  labels.filter((label: any) => typeof label === "object" && label.name);
+
+export const checkOssGgLabel = (labels: any[]) =>
+  labels.some((label: { name: string }) => label.name === OSS_GG_LABEL);

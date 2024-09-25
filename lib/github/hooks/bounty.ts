@@ -8,6 +8,7 @@ import {
   BOUNTY_EMOJI,
   BOUNTY_IDENTIFIER,
   BOUNTY_LABEL_REGEX,
+  EVENT_TRIGGERS,
   OSS_GG_LABEL,
   USD_CURRENCY_CODE,
 } from "@/lib/constants";
@@ -26,7 +27,7 @@ export const onBountyCreated = async (payload: EmitterWebhookEvent<"issue_commen
     const octokit = getOctokitInstance(payload.installation?.id!);
     const repo = payload.repository.name;
     const issueCommentBody = payload.comment.body;
-    const bountyCommentRegex = new RegExp(`${BOUNTY_IDENTIFIER}\\s*(.*)?`);
+    const bountyCommentRegex = new RegExp(`${BOUNTY_IDENTIFIER}\\s+(\\d+)`);
     const bountyMatch = issueCommentBody.match(bountyCommentRegex);
     const isPR = Boolean(payload.issue.pull_request);
     const issueNumber = payload.issue.number;
@@ -44,7 +45,7 @@ export const onBountyCreated = async (payload: EmitterWebhookEvent<"issue_commen
 
     if (bountyMatch) {
       if (isPR) {
-        await commentOnIssue("Bounties can be setup in only issues, not in PRs.");
+        await commentOnIssue("Bounties can be setup in issues only, not in PRs.");
         return;
       }
 
@@ -60,7 +61,7 @@ export const onBountyCreated = async (payload: EmitterWebhookEvent<"issue_commen
       const ossGgRepo = await getRepositoryByGithubId(payload.repository.id);
       if (!ossGgRepo) {
         await commentOnIssue(
-          "If you are the repo owner, please register at oss.gg to be able to create bounties"
+          "If you are the repo owner, please register at https://oss.gg to be able to create bounties."
         );
         return;
       } else if (ossGgRepo) {
@@ -132,7 +133,9 @@ export const onBountyCreated = async (payload: EmitterWebhookEvent<"issue_commen
  * Handles the event when a bounty pull request is merged.
  * @param webhooks - The Webhooks instance.
  */
-export const onBountyPullRequestMerged = async (payload: EmitterWebhookEvent<"pull_request">["payload"]) => {
+export const onBountyPullRequestMerged = async (
+  payload: EmitterWebhookEvent<"pull_request.closed">["payload"]
+) => {
   try {
     const octokit = getOctokitInstance(payload.installation?.id!);
     const repo = payload.repository.name;

@@ -102,11 +102,11 @@ export default function IndexPage() {
         <ToggleContent>
           <p>
             complete{" "}
-            <Link href="/hacktoberfest/code" className="underline">
+            <Link href="/code" className="underline">
               code
             </Link>{" "}
             and{" "}
-            <Link href="/hacktoberfest/non-code" className="underline">
+            <Link href="/non-code" className="underline">
               non-code
             </Link>{" "}
             contributions to get points
@@ -122,13 +122,13 @@ export default function IndexPage() {
         <ToggleContent>
           <ul>
             <li className="hover:underline">
-              <Link href="https://x.com/formbricks" target="_blank" rel="noopener noreferrer">
-                @formbricks
+              <Link href="https://x.com/dubdotco" target="_blank" rel="noopener noreferrer">
+                @dubdotco
               </Link>
             </li>
             <li className="hover:underline">
-              <Link href="https://x.com/papermarkio" target="_blank" rel="noopener noreferrer">
-                @papermark
+              <Link href="https://x.com/formbricks" target="_blank" rel="noopener noreferrer">
+                @formbricks
               </Link>
             </li>
             <li className="hover:underline">
@@ -137,8 +137,13 @@ export default function IndexPage() {
               </Link>
             </li>
             <li className="hover:underline">
-              <Link href="https://x.com/dubdotco" target="_blank" rel="noopener noreferrer">
-                @dubdotco
+              <Link href="https://x.com/openbb_finance" target="_blank" rel="noopener noreferrer">
+                @openbb_finance
+              </Link>
+            </li>
+            <li className="hover:underline">
+              <Link href="https://x.com/papermarkio" target="_blank" rel="noopener noreferrer">
+                @papermark
               </Link>
             </li>
             <li className="hover:underline">
@@ -151,93 +156,16 @@ export default function IndexPage() {
                 @unkey
               </Link>
             </li>
-            <li className="hover:underline">
-              <Link href="https://x.com/UnInbox" target="_blank" rel="noopener noreferrer">
-                @uninbox
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link href="https://x.com/openbb_finance" target="_blank" rel="noopener noreferrer">
-                @openbb_finance
-              </Link>
-            </li>
           </ul>
         </ToggleContent>
       </Toggle>
       <Toggle>
         <ToggleHead>side quests and challenges</ToggleHead>
-        <ToggleContent>
-          <ul>
-            <li className="hover:underline">
-              <Link
-                href="https://formbricks.notion.site/Formbricks-Open-Source-Forms-Surveys-798855c705cc4474ba63ceefbe048abf?pvs=4"
-                target="_blank"
-                rel="noopener noreferrer">
-                Formbricks - os forms and surveys
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                Papermark - os document sharing
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                Hanko - os authentication
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                dub.co - os link management
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                Twenty - os CRM
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                Unkey - api key management
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                UnInbox - os email marketing
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                target="_blank"
-                rel="noopener noreferrer">
-                OpenBB - os investment research
-              </Link>
-            </li>
-          </ul>
-        </ToggleContent>
+        <ToggleContent>to be announced</ToggleContent>
       </Toggle>
       <h2 className="pt-4 font-bold">get started</h2>
-      <p>
-        <Link href="/hacktoberfest/oss-issues" rel="noopener noreferrer" className="hover:underline">
+      {/*       <p>
+        <Link href="/oss-issues" rel="noopener noreferrer" className="hover:underline">
           browse available code issues
         </Link>
       </p>
@@ -249,8 +177,10 @@ export default function IndexPage() {
           className="hover:underline">
           browse all side quests
         </Link>
-      </p>
-      <p>track progress on oss.gg/[yourGitHubName]</p>
+      </p> */}
+      <Link href="/signup" rel="noopener noreferrer" className="hover:underline">
+        sign up to get started
+      </Link>
 
       <h2 className="pt-4 font-bold">faq</h2>
       <Toggle>
@@ -297,6 +227,9 @@ export default function IndexPage() {
           <p>play fair to stay in the game</p> <p>cheat or spam to get disqualified</p>
         </ToggleContent>
       </Toggle>
+      <p className="pt-4"><Link href="/signup" className="font-bold underline underline-offset-4 hover:no-underline">
+        enroll to play
+      </Link></p>
     </div>
   );
 }
