@@ -32,6 +32,7 @@ export const sendInstallationDetails = async (
     console.log(`Octokit instance created for installationId: ${installationId}`);
 
     console.log(`Starting database transaction for installationId: ${installationId}`);
+    console.log(installation);
     const installationPrisma = await db.installation.upsert({
       where: { githubId: installationId },
       update: { type: installation?.account?.type.toLowerCase() },
