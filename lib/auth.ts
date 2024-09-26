@@ -17,6 +17,15 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.GITHUB_APP_CLIENT_SECRET,
     }),
   ],
+  cookies: {
+    sessionToken: {
+      name: "hackathon-2024.session-token",
+      // Looks like this isn't optional, but it will merge with the default
+      // cookies from nextauth
+      // https://github.com/nextauthjs/next-auth/blob/5e5a7fc5b41ea2e7e687f5c6e6d89c7967609dcb/packages/core/src/lib/utils/cookie.ts#L58
+      options: {},
+    }
+  },
   callbacks: {
     async signIn({ user, account, profile, ...rest }: any) {
       if (account.type !== "oauth") {
