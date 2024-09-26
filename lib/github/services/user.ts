@@ -45,6 +45,8 @@ export const sendInstallationDetails = async (
         create: {
           githubId: installationId,
           type: userType,
+          memberships: {},
+          repositories: {},
         },
       });
       console.log(`Installation upserted successfully:`, JSON.stringify(installationPrisma, null, 2));
