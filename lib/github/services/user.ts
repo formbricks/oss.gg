@@ -28,6 +28,7 @@ export const sendInstallationDetails = async (
       },
     });
     const octokit = await app.getInstallationOctokit(installationId);
+    console.log(octokit);
     console.log(`Octokit instance created for installationId: ${installationId}`);
 
     await db.$transaction(async (tx) => {
