@@ -32,7 +32,9 @@ export const sendInstallationDetails = async (
     console.log(`Octokit instance created for installationId: ${installationId}`);
 
     console.log(`Starting database transaction for installationId: ${installationId}`);
-    console.log(`Installation data:`, JSON.stringify(installation, null, 2));
+    console.log({ installationId });
+    console.log(installation?.account?.type.toLowerCase());
+    console.log(installation?.account?.type.toLowerCase());
     let installationPrisma;
     try {
       installationPrisma = await db.installation.upsert({
