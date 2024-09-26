@@ -12,7 +12,7 @@ type GitHubRepository = {
 };
 
 export const onInstallationCreated = async (payload: EmitterWebhookEvent<"installation">["payload"]) => {
-  const installationId = payload.installation.id;
+  const installationId = payload.installation.target_id;
   const appId = payload.installation.app_id;
   const repos = payload.repositories as GitHubRepository[];
 
