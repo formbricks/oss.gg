@@ -18,6 +18,7 @@ export const sendInstallationDetails = async (
     | undefined,
   installation: any
 ): Promise<void> => {
+  console.log(`Starting sendInstallationDetails for installationId: ${installationId}`);
   try {
     const app = new App({
       appId,
@@ -27,8 +28,10 @@ export const sendInstallationDetails = async (
       },
     });
     const octokit = await app.getInstallationOctokit(installationId);
+    console.log(`Octokit instance created for installationId: ${installationId}`);
 
     await db.$transaction(async (tx) => {
+      console.log(`Starting database transaction for installationId: ${installationId}`);
       const installationPrisma = await tx.installation.upsert({
         where: { githubId: installationId },
         update: { type: installation?.account?.type.toLowerCase() },
@@ -37,16 +40,21 @@ export const sendInstallationDetails = async (
           type: installation?.account?.type.toLowerCase(),
         },
       });
+      console.log(`Installation upserted: ${installationPrisma.id}`);
 
       const userType = installation?.account?.type.toLowerCase();
+      console.log(`User type: ${userType}`);
       if (userType === "organization") {
+        console.log(`Processing organization members for ${installation?.account?.login}`);
         const membersOfOrg = await octokit.rest.orgs.listMembers({
           org: installation?.account?.login,
           role: "all",
         });
+        console.log(`Found ${membersOfOrg.data.length} members in the organization`);
 
         await Promise.all(
           membersOfOrg.data.map(async (member) => {
+            console.log(`Processing member: ${member.login}`);
             const newUser = await tx.user.upsert({
               where: { githubId: member.id },
               update: {},
@@ -76,6 +84,7 @@ export const sendInstallationDetails = async (
           })
         );
       } else {
+        console.log(`Processing individual user: ${installation.account.login}`);
         const user = installation.account;
         const newUser = await tx.user.upsert({
           where: { githubId: user.id },
@@ -106,8 +115,10 @@ export const sendInstallationDetails = async (
       }
 
       if (repos) {
+        console.log(`Processing ${repos.length} repositories`);
         await Promise.all(
           repos.map(async (repo) => {
+            console.log(`Processing repository: ${repo.name}`);
             const defaultBranch = await getRepositoryDefaultBranch(installation.account.login, repo.name);
             const readme = await getRepositoryReadme(installation.account.login, repo.name, defaultBranch);
 
@@ -126,8 +137,11 @@ export const sendInstallationDetails = async (
             });
           })
         );
+      } else {
+        console.log("No repositories to process");
       }
     });
+    console.log(`Completed sendInstallationDetails for installationId: ${installationId}`);
   } catch (error) {
     console.error(`Failed to post installation details: ${error}`);
     throw new Error(`Failed to post installation details: ${error}`);
