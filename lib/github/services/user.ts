@@ -32,16 +32,23 @@ export const sendInstallationDetails = async (
     console.log(`Octokit instance created for installationId: ${installationId}`);
 
     console.log(`Starting database transaction for installationId: ${installationId}`);
-    console.log(installation);
-    const installationPrisma = await db.installation.upsert({
-      where: { githubId: installationId },
-      update: { type: installation?.account?.type.toLowerCase() },
-      create: {
-        githubId: installationId,
-        type: installation?.account?.type.toLowerCase(),
-      },
-    });
-    console.log(`Installation upserted: ${installationPrisma.id}`);
+    console.log(`Installation data:`, JSON.stringify(installation, null, 2));
+    let installationPrisma;
+    try {
+      installationPrisma = await db.installation.upsert({
+        where: { githubId: installationId },
+        update: { type: installation?.account?.type.toLowerCase() },
+        create: {
+          githubId: installationId,
+          type: installation?.account?.type.toLowerCase(),
+        },
+      });
+      console.log(`Installation upserted successfully:`, JSON.stringify(installationPrisma, null, 2));
+    } catch (error) {
+      console.error(`Error upserting installation:`, error);
+      console.error(`Error details:`, JSON.stringify(error, null, 2));
+      throw error; // Re-throw the error to stop execution if needed
+    }
 
     const userType = installation?.account?.type.toLowerCase();
     console.log(`User type: ${userType}`);
