@@ -38,19 +38,6 @@ export const sendInstallationDetails = async (
     let installationPrisma;
 
     const userType = installation?.account?.type.toLowerCase() === "user" ? "user" : "organization"; // You can handle other cases as needed
-    try {
-      installationPrisma = await db.installation.create({
-        data: {
-          githubId: installationId,
-          type: userType,
-        },
-      });
-      console.log(`Installation upserted successfully:`, JSON.stringify(installationPrisma, null, 2));
-    } catch (error) {
-      console.error(`Error upserting installation:`, error);
-      console.error(`Error details:`, JSON.stringify(error, null, 2));
-      throw error; // Re-throw the error to stop execution if needed
-    }
 
     console.log(`User type: ${userType}`);
     if (userType === "organization") {
