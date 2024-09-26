@@ -19,7 +19,7 @@ import {
 } from "./hooks/issue";
 
 export const registerHooks = async (
-  event: string,
+  event: EmitterWebhookEventName,
   body: EmitterWebhookEvent<"issue_comment.created" | "pull_request" | "installation" | "issues">["payload"]
 ) => {
   switch (event) {
