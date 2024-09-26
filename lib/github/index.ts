@@ -27,6 +27,7 @@ export const registerHooks = async (
       if (body.action === "opened") {
         onIssueOpened(body as EmitterWebhookEvent<"issues.opened">["payload"]);
       }
+      break;
     }
 
     case "issue_comment": {
@@ -55,15 +56,18 @@ export const registerHooks = async (
       if (body.action === "created") {
         onInstallationCreated(body as EmitterWebhookEvent<"installation">["payload"]);
       }
+      break;
     }
-    case "pull_request": {
-      if (body.action === "closed") {
-        onPullRequestMerged(body as EmitterWebhookEvent<"pull_request">["payload"]);
-      }
+    case "pull_request":
+      {
+        if (body.action === "closed") {
+          onPullRequestMerged(body as EmitterWebhookEvent<"pull_request">["payload"]);
+        }
 
-      if (body.action === "closed") {
-        onBountyPullRequestMerged(body as EmitterWebhookEvent<"pull_request.closed">["payload"]);
+        if (body.action === "closed") {
+          onBountyPullRequestMerged(body as EmitterWebhookEvent<"pull_request.closed">["payload"]);
+        }
       }
-    }
+      break;
   }
 };
