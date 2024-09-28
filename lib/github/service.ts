@@ -5,14 +5,14 @@ import { TPullRequest, ZPullRequest } from "@/types/pullRequest";
 import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
-import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
+import { GITHUB_APP_ACCESS_TOKEN, OSS_GG_LABEL } from "../constants";
 import { extractPointsFromLabels } from "./utils";
 
 type PullRequestStatus = "open" | "merged" | "closed" | undefined;
 
 const octokit = new Octokit({ auth: GITHUB_APP_ACCESS_TOKEN });
 
-export const getPullRequestsByGithubLogin = async (
+const fetchPullRequestsByGithubLogin = async (
   playerRepositoryIds: string[],
   githubLogin: string,
   status?: PullRequestStatus
@@ -41,8 +41,6 @@ export const getPullRequestsByGithubLogin = async (
     });
 
     for (const pr of data.items) {
-      // console.log(`Complete PR object: ${JSON.stringify(pr, null, 2)}`);
-
       let prStatus: "open" | "merged" | "closed";
       if (pr.state === "open") {
         prStatus = "open";
@@ -76,13 +74,18 @@ export const getPullRequestsByGithubLogin = async (
     console.error(`Error fetching or processing pull requests:`, error);
   }
 
-  // Sort pullRequests by dateOpened in descending order
   pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
 
   return pullRequests;
 };
 
-export const getAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
+export const getPullRequestsByGithubLogin = unstable_cache(
+  fetchPullRequestsByGithubLogin,
+  ["fetchPullRequestsByGithubLogin"],
+  { revalidate: 60 }
+);
+
+const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
   const githubHeaders = {
     Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
     Accept: "application/vnd.github.v3+json",
@@ -102,7 +105,6 @@ export const getAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise
       const issuesData = await issuesResponse.json();
       const validatedData = ZGithubApiResponseSchema.parse(issuesData);
 
-      // Map the GitHub API response to TPullRequest format
       return validatedData.items.map((issue) =>
         ZPullRequest.parse({
           title: issue.title,
@@ -121,3 +123,9 @@ export const getAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise
 
   return allIssues.flat();
 };
+
+export const getAllOssGgIssuesOfRepos = unstable_cache(
+  fetchAllOssGgIssuesOfRepos,
+  ["fetchAllOssGgIssuesOfRepos"],
+  { revalidate: 60 }
+);
