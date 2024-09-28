@@ -11,7 +11,7 @@ import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
 export default async function ProfilePage({ githubLogin }: { githubLogin: string }) {
-  // Get & enrich the player data
+  // needs work, we should cache enrolled repositories and invalidate the cache on a new enrollment
   const enrichedUserData = await getEnrichedGithubUserData(githubLogin);
 
   let pointsAndRanks: Array<{
@@ -23,6 +23,7 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
 
   if (enrichedUserData.enrolledRepositories && enrichedUserData.playerData?.id) {
     try {
+      // needs work, we should invalidate the cache on new point transaction for the user
       const result = await getPointsAndRankPerRepository(
         enrichedUserData.enrolledRepositories,
         enrichedUserData.playerData.id
@@ -39,18 +40,21 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
   let globalRank = 0;
   let chanceOfWinning = 0;
   if (enrichedUserData.playerData?.id) {
+    // needs work, we should invalidate the cache on new point transaction for the user
     const result = await getTotalPointsAndGlobalRank(enrichedUserData.playerData.id);
     totalPoints = result.totalPoints;
     globalRank = result.globalRank;
     chanceOfWinning = result.likelihoodOfWinning;
   }
 
+  // needs work, we should invalidate the cache on new repository activation which happens in handleActivation in repoSelector.tsx
   const ossGgRepositories = await getAllRepositories();
 
   let pullRequests = [] as TPullRequest[];
 
   if (enrichedUserData.status.githubUserFound) {
     const ossGgRepositoriesIds = ossGgRepositories.map((repo) => `${repo.owner}/${repo.name}`);
+    // needs work (see comment in service)
     pullRequests = await getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin);
   }
 

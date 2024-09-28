@@ -79,6 +79,7 @@ const fetchPullRequestsByGithubLogin = async (
   return pullRequests;
 };
 
+// this doesn't make sense as is. We could invalidate the cache in new point transaction for the user.
 export const getPullRequestsByGithubLogin = unstable_cache(
   fetchPullRequestsByGithubLogin,
   ["fetchPullRequestsByGithubLogin"],
@@ -124,6 +125,7 @@ const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPul
   return allIssues.flat();
 };
 
+// this cahing makes sense imo so we have 60 requests / hour to the github api
 export const getAllOssGgIssuesOfRepos = unstable_cache(
   fetchAllOssGgIssuesOfRepos,
   ["fetchAllOssGgIssuesOfRepos"],
