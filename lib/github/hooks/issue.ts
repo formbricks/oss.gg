@@ -2,8 +2,6 @@ import {
   ASSIGN_IDENTIFIER,
   AWARD_POINTS_IDENTIFIER,
   CREATE_IDENTIFIER,
-  DISCORD_AWARD_POINTS_MESSAGE,
-  DISCORD_CHANNEL_ID,
   EVENT_TRIGGERS,
   LEVEL_LABEL,
   ON_NEW_ISSUE,
@@ -16,7 +14,6 @@ import {
 } from "@/lib/constants";
 import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { getUser } from "@/lib/user/service";
-import { discordPointMessageTask } from "@/src/trigger/discordPointsMessage";
 import { issueReminderTask } from "@/src/trigger/issueReminder";
 import { Webhooks } from "@octokit/webhooks";
 
@@ -396,11 +393,6 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
               `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})` +
               " " +
               comment;
-
-            await discordPointMessageTask.trigger({
-              channelId: DISCORD_CHANNEL_ID,
-              message: DISCORD_AWARD_POINTS_MESSAGE(user.name ?? prAuthorUsername, points),
-            });
           }
         }
 

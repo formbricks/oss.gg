@@ -1,4 +1,4 @@
-import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL } from "@/lib/constants";
+import { GITHUB_APP_ACCESS_TOKEN } from "@/lib/constants";
 import { TGithubUserData, ZGithubUserData } from "@/types/githubUser";
 // Adjust the import path as needed
 import { Octokit } from "@octokit/rest";
@@ -36,6 +36,6 @@ export const getGithubUserByLogin = (githubLogin: string): Promise<TGithubUserDa
     [`getGithubUserByLogin-${githubLogin}`],
     {
       tags: [githubUserCache.tag.byGithubLogin(githubLogin)],
-      revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
+      revalidate: 60 * 60 * 24 * 7, // 1 week
     }
   )();
