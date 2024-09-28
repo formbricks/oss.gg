@@ -5,14 +5,14 @@ import { TPullRequest, ZPullRequest } from "@/types/pullRequest";
 import { Octokit } from "@octokit/rest";
 import { unstable_cache } from "next/cache";
 
-import { GITHUB_APP_ACCESS_TOKEN, GITHUB_CACHE_REVALIDATION_INTERVAL, OSS_GG_LABEL } from "../constants";
+import { GITHUB_APP_ACCESS_TOKEN, OSS_GG_LABEL } from "../constants";
 import { extractPointsFromLabels } from "./utils";
 
 type PullRequestStatus = "open" | "merged" | "closed" | undefined;
 
 const octokit = new Octokit({ auth: GITHUB_APP_ACCESS_TOKEN });
 
-export const getPullRequestsByGithubLogin = async (
+const fetchPullRequestsByGithubLogin = async (
   playerRepositoryIds: string[],
   githubLogin: string,
   status?: PullRequestStatus
@@ -41,8 +41,6 @@ export const getPullRequestsByGithubLogin = async (
     });
 
     for (const pr of data.items) {
-      // console.log(`Complete PR object: ${JSON.stringify(pr, null, 2)}`);
-
       let prStatus: "open" | "merged" | "closed";
       if (pr.state === "open") {
         prStatus = "open";
@@ -76,54 +74,58 @@ export const getPullRequestsByGithubLogin = async (
     console.error(`Error fetching or processing pull requests:`, error);
   }
 
-  // Sort pullRequests by dateOpened in descending order
   pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
 
   return pullRequests;
 };
 
+export const getPullRequestsByGithubLogin = unstable_cache(
+  fetchPullRequestsByGithubLogin,
+  ["fetchPullRequestsByGithubLogin"],
+  { revalidate: 60 }
+);
+
+const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
+  const githubHeaders = {
+    Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
+    Accept: "application/vnd.github.v3+json",
+  };
+
+  const allIssues = await Promise.all(
+    repoGithubIds.map(async (repoGithubId) => {
+      const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
+        headers: githubHeaders,
+      });
+      const repoData = await repoResponse.json();
+
+      const issuesResponse = await fetch(
+        `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`,
+        { headers: githubHeaders }
+      );
+      const issuesData = await issuesResponse.json();
+      const validatedData = ZGithubApiResponseSchema.parse(issuesData);
+
+      return validatedData.items.map((issue) =>
+        ZPullRequest.parse({
+          title: issue.title,
+          href: issue.html_url,
+          author: issue.user.login,
+          repositoryFullName: repoData.full_name,
+          dateOpened: issue.created_at,
+          dateMerged: null,
+          dateClosed: issue.closed_at,
+          status: "open",
+          points: extractPointsFromLabels(issue.labels),
+        })
+      );
+    })
+  );
+
+  return allIssues.flat();
+};
+
 export const getAllOssGgIssuesOfRepos = unstable_cache(
-  async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
-    const githubHeaders = {
-      Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
-      Accept: "application/vnd.github.v3+json",
-    };
-
-    const allIssues = await Promise.all(
-      repoGithubIds.map(async (repoGithubId) => {
-        const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
-          headers: githubHeaders,
-        });
-        const repoData = await repoResponse.json();
-
-        const issuesResponse = await fetch(
-          `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`,
-          { headers: githubHeaders }
-        );
-        const issuesData = await issuesResponse.json();
-        const validatedData = ZGithubApiResponseSchema.parse(issuesData);
-
-        // Map the GitHub API response to TPullRequest format
-        return validatedData.items.map((issue) =>
-          ZPullRequest.parse({
-            title: issue.title,
-            href: issue.html_url,
-            author: issue.user.login,
-            repositoryFullName: repoData.full_name,
-            dateOpened: issue.created_at,
-            dateMerged: null,
-            dateClosed: issue.closed_at,
-            status: "open",
-            points: extractPointsFromLabels(issue.labels),
-          })
-        );
-      })
-    );
-
-    return allIssues.flat();
-  },
-  [`getOpenIssues`],
-  {
-    revalidate: GITHUB_CACHE_REVALIDATION_INTERVAL,
-  }
+  fetchAllOssGgIssuesOfRepos,
+  ["fetchAllOssGgIssuesOfRepos"],
+  { revalidate: 60 }
 );
