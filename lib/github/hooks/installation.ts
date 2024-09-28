@@ -1,5 +1,4 @@
-import { EVENT_TRIGGERS } from "@/lib/constants";
-import { Webhooks } from "@octokit/webhooks";
+import { EmitterWebhookEvent } from "@octokit/webhooks";
 
 import { sendInstallationDetails } from "../services/user";
 
@@ -12,12 +11,20 @@ type GitHubRepository = {
   private: boolean;
 };
 
-export const onInstallationCreated = async (webhooks: Webhooks) => {
-  webhooks.on(EVENT_TRIGGERS.INSTALLATION_CREATED, async (context) => {
-    const installationId = context.payload.installation.id;
-    const appId = context.payload.installation.app_id;
-    const repos = context.payload.repositories as GitHubRepository[];
+export const onInstallationCreated = async (payload: EmitterWebhookEvent<"installation">["payload"]) => {
+  console.log("onInstallationCreated called with payload:", JSON.stringify(payload, null, 2));
 
-    await sendInstallationDetails(installationId, appId, repos, context.payload.installation);
-  });
+  const installationId = payload.installation.id;
+  const appId = payload.installation.app_id;
+  const repos = payload.repositories as GitHubRepository[];
+
+  console.log(`Processing installation: ${installationId}, appId: ${appId}, repos: ${repos.length}`);
+
+  try {
+    await sendInstallationDetails(installationId, appId, repos, payload.installation);
+    console.log("sendInstallationDetails completed successfully");
+  } catch (error) {
+    console.error("Error in sendInstallationDetails:", error);
+    throw error;
+  }
 };

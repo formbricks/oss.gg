@@ -3,8 +3,35 @@ import { TEnrollment, TEnrollmentInput, ZEnrollmentInput } from "@/types/enrollm
 import { DatabaseError } from "@/types/errors";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 import { validateInputs } from "../utils/validate";
+import { enrollmentCache } from "./cache";
+
+export const getEnrollment = async (userId: string, repositoryId: string) =>
+  unstable_cache(
+    async () => {
+      try {
+        const enrollment = await db.enrollment.findFirst({
+          where: {
+            userId,
+            repositoryId,
+          },
+        });
+
+        return enrollment;
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new DatabaseError(error.message);
+        }
+        throw error;
+      }
+    },
+    [`getEnrollment-${userId}-${repositoryId}`],
+    {
+      tags: [enrollmentCache.tag.byUserIdAndRepositoryId(userId, repositoryId)],
+    }
+  )();
 
 /**
  * Enrolls a user in all repositories.
@@ -48,12 +75,7 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
 
   try {
     // Check if enrollment already exists
-    const existingEnrollment = await db.enrollment.findFirst({
-      where: {
-        userId: enrollmentData.userId,
-        repositoryId: enrollmentData.repositoryId,
-      },
-    });
+    const existingEnrollment = await getEnrollment(enrollmentData.userId, enrollmentData.repositoryId);
 
     if (existingEnrollment) {
       throw new Error("Enrollment already exists.");
@@ -61,6 +83,11 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
 
     const enrollment = await db.enrollment.create({
       data: enrollmentData,
+    });
+
+    enrollmentCache.revalidate({
+      userId: enrollmentData.userId,
+      repositoryId: enrollmentData.repositoryId,
     });
 
     return enrollment;
@@ -89,6 +116,11 @@ export const deleteEnrollment = async (userId: string, repositoryId: string): Pr
         },
       },
     });
+
+    enrollmentCache.revalidate({
+      userId,
+      repositoryId,
+    });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       throw new DatabaseError(error.message);
@@ -104,15 +136,23 @@ export const deleteEnrollment = async (userId: string, repositoryId: string): Pr
  * @returns A boolean indicating whether the user is enrolled.
  */
 
-export const hasEnrollmentForRepository = async (userId: string, repositoryId: string): Promise<boolean> => {
-  const count = await db.enrollment.count({
-    where: {
-      userId,
-      repositoryId,
+export const hasEnrollmentForRepository = async (userId: string, repositoryId: string): Promise<boolean> =>
+  unstable_cache(
+    async () => {
+      const count = await db.enrollment.count({
+        where: {
+          userId,
+          repositoryId,
+        },
+      });
+
+      return count > 0;
     },
-  });
-  return count > 0;
-};
+    [`hasEnrollmentForRepository-${userId}-${repositoryId}`],
+    {
+      tags: [enrollmentCache.tag.byUserIdAndRepositoryId(userId, repositoryId)],
+    }
+  )();
 
 /**
  * Retrieves an array of repositories that a user is enrolled in.
@@ -121,32 +161,39 @@ export const hasEnrollmentForRepository = async (userId: string, repositoryId: s
  * a repository the user is enrolled in. The array is empty if the user has no enrollments.
  */
 
-export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> => {
-  const enrolledRepositories = await db.repository.findMany({
-    where: {
-      enrollments: {
-        some: {
-          userId: userId,
+export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> =>
+  unstable_cache(
+    async () => {
+      const enrolledRepositories = await db.repository.findMany({
+        where: {
+          enrollments: {
+            some: {
+              userId: userId,
+            },
+          },
         },
-      },
-    },
-    select: {
-      id: true,
-      githubId: true,
-      name: true,
-      description: true,
-      homepage: true,
-      configured: true,
-      topics: true,
-      installation: true,
-      installationId: true,
-      pointTransactions: true,
-      enrollments: true,
-      logoUrl: true,
-      levels: true,
-      owner: true,
-    },
-  });
+        select: {
+          id: true,
+          githubId: true,
+          name: true,
+          description: true,
+          homepage: true,
+          configured: true,
+          topics: true,
+          installation: true,
+          installationId: true,
+          pointTransactions: true,
+          enrollments: true,
+          logoUrl: true,
+          levels: true,
+          owner: true,
+        },
+      });
 
-  return enrolledRepositories;
-};
+      return enrolledRepositories;
+    },
+    [`getEnrolledRepositories-${userId}`],
+    {
+      tags: [enrollmentCache.tag.byUserId(userId)],
+    }
+  )();
