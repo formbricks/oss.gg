@@ -396,17 +396,33 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
           }
         }
 
-        //post comment
-        postComment({
-          installationId: context.payload.installation?.id!,
+        // Add logging before posting comment
+        console.log("Attempting to post comment:", {
+          installationId: context.payload.installation?.id,
           body: comment,
           issueNumber: issueNumber,
           repo,
           owner,
         });
+
+        // Wrap postComment in a try-catch block
+        try {
+          await postComment({
+            installationId: context.payload.installation?.id!,
+            body: comment,
+            issueNumber: issueNumber,
+            repo,
+            owner,
+          });
+          console.log("Comment posted successfully");
+        } catch (postCommentError) {
+          console.error("Error posting comment:", postCommentError);
+          // Optionally, you can rethrow the error if you want it to be caught by the outer catch block
+          // throw postCommentError;
+        }
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error in onAwardPoints:", err);
       throw new Error(err);
     }
   });
