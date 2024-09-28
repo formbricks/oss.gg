@@ -1,6 +1,6 @@
 # oss.gg 🕹️
 
-Thanks for your interest in contributing to oss.gg
+Thanks for your interest in contributing to oss.gg 🎉
 
 In this manual we'll walk you through the steps you need to take to get oss.gg and your own GitHub app up and running. It consists of four parts:
 
