@@ -85,28 +85,46 @@ export const getPullRequestsByGithubLogin = unstable_cache(
   { revalidate: 60 }
 );
 
+const fetchRepoData = async (repoGithubId: number, headers: HeadersInit) => {
+  const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
+    headers,
+  });
+  return await repoResponse.json();
+};
+
+const getCachedRepoData = unstable_cache(fetchRepoData, ["github-repo-data"], {
+  revalidate: 60 * 60 * 24 * 7,
+});
+
 const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
   const githubHeaders = {
     Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
     Accept: "application/vnd.github.v3+json",
   };
 
+  console.log(`Fetching issues for ${repoGithubIds.length} repositories`);
+
   const allIssues = await Promise.all(
     repoGithubIds.map(async (repoGithubId) => {
-      const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
-        headers: githubHeaders,
-      });
-      const repoData = await repoResponse.json();
+      console.log(`Fetching repo data for GitHub ID: ${repoGithubId}`);
+      const repoData = await getCachedRepoData(repoGithubId, githubHeaders);
+      console.log(`Repo data fetched for ${repoData.full_name}`);
 
-      const issuesResponse = await fetch(
-        `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`,
-        { headers: githubHeaders }
-      );
+      const issuesUrl = `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`;
+      console.log(`Fetching issues from: ${issuesUrl}`);
+
+      const issuesResponse = await fetch(issuesUrl, { headers: githubHeaders });
+      console.log(`Issues response status: ${issuesResponse.status}`);
+
       const issuesData = await issuesResponse.json();
-      const validatedData = ZGithubApiResponseSchema.parse(issuesData);
+      console.log(`Fetched ${issuesData.total_count} issues for ${repoData.full_name}`);
 
-      return validatedData.items.map((issue) =>
-        ZPullRequest.parse({
+      const validatedData = ZGithubApiResponseSchema.parse(issuesData);
+      console.log(`Validated ${validatedData.items.length} issues`);
+
+      return validatedData.items.map((issue) => {
+        console.log(`Processing issue: ${issue.title}`);
+        return ZPullRequest.parse({
           title: issue.title,
           href: issue.html_url,
           author: issue.user.login,
@@ -116,12 +134,15 @@ const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPul
           dateClosed: issue.closed_at,
           status: "open",
           points: extractPointsFromLabels(issue.labels),
-        })
-      );
+        });
+      });
     })
   );
 
-  return allIssues.flat();
+  const flattenedIssues = allIssues.flat();
+  console.log(`Total issues fetched and processed: ${flattenedIssues.length}`);
+
+  return flattenedIssues;
 };
 
 export const getAllOssGgIssuesOfRepos = unstable_cache(
