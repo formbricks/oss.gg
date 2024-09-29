@@ -116,6 +116,13 @@ const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPul
       const issuesResponse = await fetch(issuesUrl, { headers: githubHeaders });
       console.log(`Issues response status: ${issuesResponse.status}`);
 
+      const rateLimit = issuesResponse.headers.get("X-RateLimit-Limit");
+      const rateRemaining = issuesResponse.headers.get("X-RateLimit-Remaining");
+      const rateReset = issuesResponse.headers.get("X-RateLimit-Reset");
+      console.log(
+        `Rate Limit: ${rateLimit}, Remaining: ${rateRemaining}, Reset: ${new Date(parseInt(rateReset ?? "0") * 1000)}`
+      );
+
       const issuesData = await issuesResponse.json();
       console.log(`Fetched ${issuesData.total_count} issues for ${repoData.full_name}`);
 
