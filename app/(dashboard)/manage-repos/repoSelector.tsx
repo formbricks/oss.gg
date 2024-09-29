@@ -6,6 +6,7 @@ import { TRepository } from "@/types/repository";
 import { useCallback, useEffect, useState } from "react";
 
 import { activateRepoAction, deactivateRepoAction, fetchRepoDetailsAction } from "./actions";
+import { cacheTags, revalidate } from "@/lib/cache";
 
 interface RepoSelectorProps {
   repo: TRepository;
@@ -57,6 +58,7 @@ export const RepoSelector: React.FC<RepoSelectorProps> = ({ repo: initialRepo })
         });
       }
       await fetchRepoDetails();
+      await revalidate(cacheTags.ossggRepos())
     } catch (error) {
       console.error("Error changing repository activation status", error);
       toast({

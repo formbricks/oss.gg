@@ -7,7 +7,7 @@ import crypto from "node:crypto";
 import { GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, OSS_GG_LABEL } from "../constants";
 import { assignUserPoints } from "../points/service";
 import { createUser, getUserByGithubId } from "../user/service";
-
+import { cacheTags, revalidate } from "@/lib/cache"
 export const getOctokitInstance = (installationId: number) => {
   if (!installationId) {
     throw new Error("No installation id provided");
@@ -148,6 +148,8 @@ export const processUserPoints = async ({
 
   // Award points to the user
   await assignUserPoints(user?.id, points, "Awarded points", url, repoId);
+  await revalidate(cacheTags.pointsAndRank(user!.id))
+  await revalidate(cacheTags.ossggRepos(user!.id))
 
   return user;
 };
