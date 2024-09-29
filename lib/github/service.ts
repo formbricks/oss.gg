@@ -85,32 +85,19 @@ export const getPullRequestsByGithubLogin = unstable_cache(
   { revalidate: 60 }
 );
 
-const fetchRepoData = async (repoGithubId: number, headers: HeadersInit) => {
-  const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
-    headers,
-  });
-  return await repoResponse.json();
-};
-
-const getCachedRepoData = unstable_cache(fetchRepoData, ["github-repo-data"], {
-  revalidate: 60 * 60 * 24 * 7,
-});
-
-const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
+const fetchAllOssGgIssuesOfRepos = async (
+  repos: { id: number; fullName: string }[]
+): Promise<TPullRequest[]> => {
   const githubHeaders = {
     Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
     Accept: "application/vnd.github.v3+json",
   };
 
-  console.log(`Fetching issues for ${repoGithubIds.length} repositories`);
+  console.log(`Fetching issues for ${repos.length} repositories`);
 
   const allIssues = await Promise.all(
-    repoGithubIds.map(async (repoGithubId) => {
-      console.log(`Fetching repo data for GitHub ID: ${repoGithubId}`);
-      const repoData = await getCachedRepoData(repoGithubId, githubHeaders);
-      console.log(`Repo data fetched for ${repoData.full_name}`);
-
-      const issuesUrl = `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`;
+    repos.map(async (repo) => {
+      const issuesUrl = `https://api.github.com/search/issues?q=repo:${repo.fullName}+is:issue+is:open+label:"${OSS_GG_LABEL}"+no:assignee&sort=created&order=desc`;
       console.log(`Fetching issues from: ${issuesUrl}`);
 
       const issuesResponse = await fetch(issuesUrl, { headers: githubHeaders });
@@ -124,7 +111,7 @@ const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPul
       );
 
       const issuesData = await issuesResponse.json();
-      console.log(`Fetched ${issuesData.total_count} issues for ${repoData.full_name}`);
+      console.log(`Fetched ${issuesData.total_count} issues for ${repo.fullName}`);
 
       const validatedData = ZGithubApiResponseSchema.parse(issuesData);
       console.log(`Validated ${validatedData.items.length} issues`);
@@ -135,7 +122,7 @@ const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPul
           title: issue.title,
           href: issue.html_url,
           author: issue.user.login,
-          repositoryFullName: repoData.full_name,
+          repositoryFullName: repo.fullName,
           dateOpened: issue.created_at,
           dateMerged: null,
           dateClosed: issue.closed_at,
@@ -152,8 +139,12 @@ const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPul
   return flattenedIssues;
 };
 
-export const getAllOssGgIssuesOfRepos = unstable_cache(
-  fetchAllOssGgIssuesOfRepos,
-  ["fetchAllOssGgIssuesOfRepos"],
-  { revalidate: 60 }
-);
+export const getAllOssGgIssuesOfRepos = (repos: { id: number; fullName: string }[]) =>
+  unstable_cache(
+    async () => {
+      console.log(`Cache MISS for getAllOssGgIssuesOfRepos`);
+      return fetchAllOssGgIssuesOfRepos(repos);
+    },
+    [`fetchAllOssGgIssuesOfRepos-${repos.map((r) => r.id).join("-")}`],
+    { revalidate: 60 }
+  )();
