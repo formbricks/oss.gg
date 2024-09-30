@@ -1,12 +1,11 @@
 import { registerHooks } from "@/lib/github";
 import { EmitterWebhookEvent, EmitterWebhookEventName } from "@octokit/webhooks";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Set to store processed event IDs
 const processedEvents = new Set<string>();
-const dynamic = "force-dynamic";
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const headersList = headers();
   const eventId = headersList.get("x-github-delivery") as string;
   const githubEvent = headersList.get("x-github-event") as string;
@@ -27,7 +26,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: `Event ${eventId} already processed, skipping` }, { status: 200 });
   }
 
-  registerHooks(githubEvent as EmitterWebhookEventName, body);
+  await registerHooks(githubEvent as EmitterWebhookEventName, body);
 
   processedEvents.add(eventId);
   setTimeout(
