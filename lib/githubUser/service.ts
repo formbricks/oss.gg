@@ -15,6 +15,9 @@ export const getGithubUserByLogin = (githubLogin: string): Promise<TGithubUserDa
           username: githubLogin,
         });
 
+        const rateLimit = await octokit.rest.rateLimit.get();
+        console.log("Rate limit info:", rateLimit.data);
+
         // Map the API response to our TGithubUserData type
         const mappedData = {
           name: data.name || githubLogin, // Use login as fallback if name is null
@@ -28,8 +31,15 @@ export const getGithubUserByLogin = (githubLogin: string): Promise<TGithubUserDa
         const validatedData = ZGithubUserData.parse(mappedData);
 
         return validatedData;
-      } catch (error) {
-        console.error("Error fetching or validating GitHub user data:", error);
+      } catch (error: any) {
+        // Check for specific error codes
+        if (error.status === 401) {
+          console.error("Authentication failed. Invalid or expired token:", error);
+        } else if (error.status === 403 && error.response?.headers["x-ratelimit-remaining"] === "0") {
+          console.error("Rate limit exceeded for unauthenticated requests:", error);
+        } else {
+          console.error("Error fetching or validating GitHub user data:", error);
+        }
         return false;
       }
     },
