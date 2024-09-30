@@ -1,16 +1,23 @@
-"use server";
-
 import { getPullRequestsByGithubLogin } from "@/lib/github/service";
 import { getPointsAndRankPerRepository, getTotalPointsAndGlobalRank } from "@/lib/points/service";
 import { getEnrichedGithubUserData } from "@/lib/public-profile/profileData";
 import { getAllRepositories } from "@/lib/repository/service";
 import { TPullRequest } from "@/types/pullRequest";
+import { Suspense } from "react";
 
 import PointsAndRanks from "./point-list";
 import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
 
-export default async function ProfilePage({ githubLogin }: { githubLogin: string }) {
+export default function ProfilePage({ githubLogin }: { githubLogin: string }) {
+  return (
+    <Suspense fallback={<div>hang tight while we&apos;re loading all of that juicy data for ya...</div>}>
+      <ProfilePageContent githubLogin={githubLogin} />
+    </Suspense>
+  );
+}
+
+async function ProfilePageContent({ githubLogin }: { githubLogin: string }) {
   // Get & enrich the player data
   const enrichedUserData = await getEnrichedGithubUserData(githubLogin);
 
@@ -63,7 +70,6 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
         chanceOfWinning={chanceOfWinning}
       />
       <div className="mt-10 grid w-full max-w-2xl grid-cols-4 gap-6 md:grid-cols-5">
-        {/* <LevelList levels={userLevels} /> */}
         <PointsAndRanks pointsAndRanks={pointsAndRanks} />
         <PullRequestList pullRequests={pullRequests} signedUp={enrichedUserData.status.playerFound} />
       </div>
