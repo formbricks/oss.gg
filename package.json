@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "clean": "rimraf .turbo node_modules .next",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "pnpm prisma migrate dev",
