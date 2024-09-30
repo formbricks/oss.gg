@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
 
   console.log("registerHooks");
-  registerHooks(githubEvent as EmitterWebhookEventName, body);
+  await registerHooks(githubEvent as EmitterWebhookEventName, body);
 
   return NextResponse.json({ message: `Event ${eventId} processed` }, { status: 200 });
 }
