@@ -20,7 +20,7 @@ import { discordPointMessageTask } from "@/src/trigger/discordPointsMessage";
 import { issueReminderTask } from "@/src/trigger/issueReminder";
 import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 
-import { isMemberOfRepository } from "../services/user";
+import { isMemberOfRepository } from "../user";
 import {
   checkOssGgLabel,
   extractIssueNumbers,

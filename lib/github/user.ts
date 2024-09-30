@@ -1,6 +1,6 @@
 import { GITHUB_APP_PRIVATE_KEY, GITHUB_APP_WEBHOOK_SECRET } from "@/lib/constants";
 import { db } from "@/lib/db";
-import { getRepositoryDefaultBranch, getRepositoryReadme } from "@/lib/github/services/repo";
+import { getRepositoryDefaultBranch, getRepositoryReadme } from "@/lib/github/repo";
 import { App } from "octokit";
 
 export const sendInstallationDetails = async (
