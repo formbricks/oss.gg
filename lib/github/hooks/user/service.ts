@@ -59,75 +59,75 @@ export const sendInstallationDetails = async (
 
     const userType = installation?.account?.type.toLowerCase();
     console.log(`User type: ${userType}`);
-    // if (userType === "organization") {
-    //   console.log(`Processing organization members for ${installation?.account?.login}`);
-    //   const membersOfOrg = await octokit.rest.orgs.listMembers({
-    //     org: installation?.account?.login,
-    //     role: "all",
-    //   });s
-    //   console.log(`Found ${membersOfOrg.data.length} members in the organization`);
+    if (userType === "organization") {
+      console.log(`Processing organization members for ${installation?.account?.login}`);
+      const membersOfOrg = await octokit.rest.orgs.listMembers({
+        org: installation?.account?.login,
+        role: "all",
+      });
+      console.log(`Found ${membersOfOrg.data.length} members in the organization`);
 
-    //   await Promise.all(
-    //     membersOfOrg.data.map(async (member) => {
-    //       console.log(`Processing member: ${member.login}`);
-    //       const newUser = await db.user.upsert({
-    //         where: { githubId: member.id },
-    //         update: {},
-    //         create: {
-    //           githubId: member.id,
-    //           login: member.login,
-    //           name: member.name,
-    //           email: member.email,
-    //           avatarUrl: member.avatar_url,
-    //         },
-    //       });
+      await Promise.all(
+        membersOfOrg.data.map(async (member) => {
+          console.log(`Processing member: ${member.login}`);
+          const newUser = await db.user.upsert({
+            where: { githubId: member.id },
+            update: {},
+            create: {
+              githubId: member.id,
+              login: member.login,
+              name: member.name,
+              email: member.email,
+              avatarUrl: member.avatar_url,
+            },
+          });
 
-    //       await db.membership.upsert({
-    //         where: {
-    //           userId_installationId: {
-    //             userId: newUser.id,
-    //             installationId: installationPrisma.id,
-    //           },
-    //         },
-    //         update: {},
-    //         create: {
-    //           userId: newUser.id,
-    //           installationId: installationPrisma.id,
-    //           role: "member",
-    //         },
-    //       });
-    //     })
-    //   );
-    // } else {
-    //   console.log(`Processing individual user: ${installation.account.login}`);
-    //   const user = installation.account;
-    //   const newUser = await db.user.upsert({
-    //     where: { githubId: user.id },
-    //     update: {},
-    //     create: {
-    //       githubId: user.id,
-    //       login: user.login,
-    //       name: user.name,
-    //       email: user.email,
-    //       avatarUrl: user.avatar_url,
-    //     },
-    //   });
+          await db.membership.upsert({
+            where: {
+              userId_installationId: {
+                userId: newUser.id,
+                installationId: installationPrisma.id,
+              },
+            },
+            update: {},
+            create: {
+              userId: newUser.id,
+              installationId: installationPrisma.id,
+              role: "member",
+            },
+          });
+        })
+      );
+    } else {
+      console.log(`Processing individual user: ${installation.account.login}`);
+      const user = installation.account;
+      const newUser = await db.user.upsert({
+        where: { githubId: user.id },
+        update: {},
+        create: {
+          githubId: user.id,
+          login: user.login,
+          name: user.name,
+          email: user.email,
+          avatarUrl: user.avatar_url,
+        },
+      });
 
-    //   await db.membership.upsert({
-    //     where: {
-    //       userId_installationId: {
-    //         userId: newUser.id,
-    //         installationId: installationPrisma.id,
-    //       },
-    //     },
-    //     update: {},
-    //     create: {
-    //       userId: newUser.id,
-    //       installationId: installationPrisma.id,
-    //       role: "owner",
-    //     },
-    //   });
-    // }
+      await db.membership.upsert({
+        where: {
+          userId_installationId: {
+            userId: newUser.id,
+            installationId: installationPrisma.id,
+          },
+        },
+        update: {},
+        create: {
+          userId: newUser.id,
+          installationId: installationPrisma.id,
+          role: "owner",
+        },
+      });
+    }
 
     // if (repos) {
     //   console.log(`Processing ${repos.length} repositories`);

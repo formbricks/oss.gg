@@ -25,12 +25,14 @@ export const registerHooks = async (
   switch (event) {
     case "issues": {
       if (body.action === "opened") {
+        console.log("issues opened");
         onIssueOpened(body as EmitterWebhookEvent<"issues.opened">["payload"]);
       }
       break;
     }
 
     case "issue_comment": {
+      console.log("issue_comment");
       if (body.action === "created") {
         const payload = body as EmitterWebhookEvent<"issue_comment.created">["payload"];
         const commentBody = payload.comment.body;
@@ -61,6 +63,7 @@ export const registerHooks = async (
     }
     case "pull_request":
       {
+        console.log("pull_request");
         if (body.action === "closed") {
           onPullRequestMerged(body as EmitterWebhookEvent<"pull_request">["payload"]);
         }
