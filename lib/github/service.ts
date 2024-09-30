@@ -17,6 +17,10 @@ const fetchPullRequestsByGithubLogin = async (
   githubLogin: string,
   status?: PullRequestStatus
 ): Promise<TPullRequest[]> => {
+  console.log(`Fetching pull requests for GitHub login: ${githubLogin}`);
+  console.log(`Repositories to check: ${playerRepositoryIds.join(", ")}`);
+  console.log(`Status filter: ${status || "all"}`);
+
   if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
     console.warn("No repository IDs provided. Returning empty array.");
     return [];
@@ -24,57 +28,83 @@ const fetchPullRequestsByGithubLogin = async (
 
   const pullRequests: TPullRequest[] = [];
 
-  let statusQuery = "is:pr";
-  if (status === "open") statusQuery += " is:open";
-  else if (status === "merged") statusQuery += " is:merged";
-  else if (status === "closed") statusQuery += " is:closed -is:merged";
+  for (const repoId of playerRepositoryIds) {
+    console.log(`Processing repository: ${repoId}`);
+    const [owner, repo] = repoId.split("/");
+    let page = 1;
+    let hasNextPage = true;
 
-  const repoQuery = playerRepositoryIds.map((id) => `repo:${id}`).join(" ");
-  const query = `${repoQuery} ${statusQuery} author:${githubLogin}`;
-
-  try {
-    const { data } = await octokit.search.issuesAndPullRequests({
-      q: query,
-      per_page: 99,
-      sort: "created",
-      order: "desc",
-    });
-
-    for (const pr of data.items) {
-      let prStatus: "open" | "merged" | "closed";
-      if (pr.state === "open") {
-        prStatus = "open";
-      } else if (pr.pull_request?.merged_at) {
-        prStatus = "merged";
-      } else {
-        prStatus = "closed";
-      }
-
-      const prLabels = pr.labels.filter((label) => label.name !== undefined) as { name: string }[];
-
+    while (hasNextPage && page <= 2) {
+      // Fetch up to 2 pages (200 PRs)
+      console.log(`Fetching page ${page} for ${repoId}`);
       try {
-        const pullRequest: TPullRequest = ZPullRequest.parse({
-          title: pr.title,
-          href: pr.html_url,
-          author: pr.user?.login || "",
-          repositoryFullName: pr.repository_url.split("/").slice(-2).join("/"),
-          dateOpened: pr.created_at,
-          dateMerged: pr.pull_request?.merged_at || null,
-          dateClosed: pr.closed_at,
-          status: prStatus,
-          points: prLabels ? extractPointsFromLabels(prLabels) : null,
+        const { data } = await octokit.pulls.list({
+          owner,
+          repo,
+          state: status === "merged" ? "closed" : status || "all",
+          sort: "created",
+          direction: "desc",
+          per_page: 100,
+          page,
         });
 
-        pullRequests.push(pullRequest);
+        console.log(`Fetched ${data.length} pull requests for ${repoId} (page ${page})`);
+
+        for (const pr of data) {
+          if (pr.user?.login !== githubLogin) {
+            console.log(`Skipping PR by ${pr.user?.login}, not matching ${githubLogin}`);
+            continue;
+          }
+
+          let prStatus: "open" | "merged" | "closed";
+          if (pr.state === "open") {
+            prStatus = "open";
+          } else if (pr.merged_at) {
+            prStatus = "merged";
+          } else {
+            prStatus = "closed";
+          }
+
+          if (status && prStatus !== status) {
+            console.log(`Skipping PR with status ${prStatus}, not matching filter ${status}`);
+            continue;
+          }
+
+          try {
+            const pullRequest: TPullRequest = ZPullRequest.parse({
+              title: pr.title,
+              href: pr.html_url,
+              author: pr.user?.login || "",
+              repositoryFullName: repoId,
+              dateOpened: pr.created_at,
+              dateMerged: pr.merged_at || null,
+              dateClosed: pr.closed_at,
+              status: prStatus,
+              points: pr.labels ? extractPointsFromLabels(pr.labels) : null,
+            });
+
+            console.log(`Adding PR: ${pullRequest.title} (${pullRequest.status})`);
+            pullRequests.push(pullRequest);
+          } catch (error) {
+            console.error(`Error parsing pull request: ${pr.title}`, error);
+          }
+        }
+
+        hasNextPage = data.length === 100;
+        page++;
       } catch (error) {
-        console.error(`Error parsing pull request: ${pr.title}`, error);
+        console.error(`Error fetching pull requests for ${repoId} (page ${page}):`, error);
+        hasNextPage = false;
       }
     }
-  } catch (error) {
-    console.error(`Error fetching or processing pull requests:`, error);
   }
 
+  console.log(`Total pull requests fetched: ${pullRequests.length}`);
   pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
+  console.log("Pull requests sorted by date opened (descending)");
+
+  const rateLimit = await octokit.rest.rateLimit.get();
+  console.log("Rate limit info:", rateLimit.data);
 
   return pullRequests;
 };
@@ -82,7 +112,7 @@ const fetchPullRequestsByGithubLogin = async (
 export const getPullRequestsByGithubLogin = unstable_cache(
   fetchPullRequestsByGithubLogin,
   ["fetchPullRequestsByGithubLogin"],
-  { revalidate: 60 }
+  { revalidate: 60 * 5 }
 );
 
 const fetchAllOssGgIssuesOfRepos = async (
