@@ -145,6 +145,6 @@ export const getAllOssGgIssuesOfRepos = (repos: { id: number; fullName: string }
       console.log(`Cache MISS for getAllOssGgIssuesOfRepos`);
       return fetchAllOssGgIssuesOfRepos(repos);
     },
-    [`fetchAllOssGgIssuesOfRepos-${repos.map((r) => r.id).join("-")}`],
+    [`getAllOssGgIssuesOfRepos-${repos.map((r) => r.id).join("-")}`],
     { revalidate: 60 }
   )();
