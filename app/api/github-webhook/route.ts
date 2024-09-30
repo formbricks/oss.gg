@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 // Set to store processed event IDs
 const processedEvents = new Set<string>();
-
+const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const headersList = headers();
   const eventId = headersList.get("x-github-delivery") as string;
