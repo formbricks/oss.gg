@@ -40,7 +40,7 @@ export const sendInstallationDetails = async (
     const type = installation?.account?.type.toLowerCase() === "user" ? "user" : "organization"; // You can handle other cases as needed
     try {
       console.log({ db });
-      installationPrisma = db.installation.upsert({
+      installationPrisma = await db.installation.upsert({
         where: { githubId: installationId },
         update: { type: installation?.account?.type.toLowerCase() },
         create: {
