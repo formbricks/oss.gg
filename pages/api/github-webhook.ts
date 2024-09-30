@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Set to store processed event IDs
 const processedEvents = new Set<string>();
-export async function POST(req: NextRequest) {
+export default async function POST(req: NextRequest) {
   const headersList = headers();
   const eventId = headersList.get("x-github-delivery") as string;
   const githubEvent = headersList.get("x-github-event") as string;
