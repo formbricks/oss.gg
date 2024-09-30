@@ -3,8 +3,6 @@ import { getAllRepositories } from "@/lib/repository/service";
 import { TPullRequest } from "@/types/pullRequest";
 import Link from "next/link";
 
-export const revalidate = 120;
-
 export default async function IssuesPage() {
   const ossGgRepositories = await getAllRepositories();
   const pullRequests: TPullRequest[] = await getAllOssGgIssuesOfRepos(

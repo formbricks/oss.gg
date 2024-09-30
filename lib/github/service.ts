@@ -145,6 +145,11 @@ export const getAllOssGgIssuesOfRepos = (repos: { id: number; fullName: string }
       console.log(`Cache MISS for getAllOssGgIssuesOfRepos`);
       return await fetchAllOssGgIssuesOfRepos(repos);
     },
-    [`getAllOssGgIssuesOfRepos-${repos.map((r) => r.id).join("-")}`],
+    [
+      `getAllOssGgIssuesOfRepos-${repos
+        .map((r) => r.id)
+        .sort((a, b) => a - b)
+        .join("-")}`,
+    ],
     { revalidate: 120 }
   )();
