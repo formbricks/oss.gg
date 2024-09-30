@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: `Event ${eventId} already processed, skipping` }, { status: 200 });
   }
 
-  await registerHooks(githubEvent as EmitterWebhookEventName, body);
+  registerHooks(githubEvent as EmitterWebhookEventName, body);
 
   processedEvents.add(eventId);
   setTimeout(
