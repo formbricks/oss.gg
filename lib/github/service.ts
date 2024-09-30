@@ -143,8 +143,8 @@ export const getAllOssGgIssuesOfRepos = (repos: { id: number; fullName: string }
   unstable_cache(
     async () => {
       console.log(`Cache MISS for getAllOssGgIssuesOfRepos`);
-      return fetchAllOssGgIssuesOfRepos(repos);
+      return await fetchAllOssGgIssuesOfRepos(repos);
     },
     [`getAllOssGgIssuesOfRepos-${repos.map((r) => r.id).join("-")}`],
-    { revalidate: 60 }
+    { revalidate: 120 }
   )();
