@@ -4,7 +4,7 @@ import { Toggle, ToggleContent, ToggleHead } from "../../../components/toggle";
 
 export default function CodePage() {
   return (
-    <div className="space-y-2 font-mono text-xs text-black">
+    <div className="space-y-2 font-mono text-xs">
       <h1 className="pb-2 font-bold">non-code contributions</h1>
       <p>there are two types: side quests and challenges</p>
       <Toggle>

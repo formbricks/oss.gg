@@ -80,47 +80,71 @@ export const getPullRequestsByGithubLogin = async (
 };
 
 
-const fetchAllOssGgIssuesOfRepos = async (repoGithubIds: number[]): Promise<TPullRequest[]> => {
+const fetchAllOssGgIssuesOfRepos = async (
+  repos: { id: number; fullName: string }[]
+): Promise<TPullRequest[]> => {
   const githubHeaders = {
     Authorization: `Bearer ${GITHUB_APP_ACCESS_TOKEN}`,
     Accept: "application/vnd.github.v3+json",
   };
 
+  console.log(`Fetching issues for ${repos.length} repositories`);
+
   const allIssues = await Promise.all(
-    repoGithubIds.map(async (repoGithubId) => {
-      const repoResponse = await fetch(`https://api.github.com/repositories/${repoGithubId}`, {
-        headers: githubHeaders,
-      });
-      const repoData = await repoResponse.json();
+    repos.map(async (repo) => {
+      const issuesUrl = `https://api.github.com/search/issues?q=repo:${repo.fullName}+is:issue+is:open+label:"${OSS_GG_LABEL}"+no:assignee&sort=created&order=desc`;
+      console.log(`Fetching issues from: ${issuesUrl}`);
 
-      const issuesResponse = await fetch(
-        `https://api.github.com/search/issues?q=repo:${repoData.full_name}+is:issue+is:open+label:"${OSS_GG_LABEL}"&sort=created&order=desc`,
-        { headers: githubHeaders }
+      const issuesResponse = await fetch(issuesUrl, { headers: githubHeaders });
+      console.log(`Issues response status: ${issuesResponse.status}`);
+
+      const rateLimit = issuesResponse.headers.get("X-RateLimit-Limit");
+      const rateRemaining = issuesResponse.headers.get("X-RateLimit-Remaining");
+      const rateReset = issuesResponse.headers.get("X-RateLimit-Reset");
+      console.log(
+        `Rate Limit: ${rateLimit}, Remaining: ${rateRemaining}, Reset: ${new Date(parseInt(rateReset ?? "0") * 1000)}`
       );
-      const issuesData = await issuesResponse.json();
-      const validatedData = ZGithubApiResponseSchema.parse(issuesData);
 
-      return validatedData.items.map((issue) =>
-        ZPullRequest.parse({
+      const issuesData = await issuesResponse.json();
+      console.log(`Fetched ${issuesData.total_count} issues for ${repo.fullName}`);
+
+      const validatedData = ZGithubApiResponseSchema.parse(issuesData);
+      console.log(`Validated ${validatedData.items.length} issues`);
+
+      return validatedData.items.map((issue) => {
+        console.log(`Processing issue: ${issue.title}`);
+        return ZPullRequest.parse({
           title: issue.title,
           href: issue.html_url,
           author: issue.user.login,
-          repositoryFullName: repoData.full_name,
+          repositoryFullName: repo.fullName,
           dateOpened: issue.created_at,
           dateMerged: null,
           dateClosed: issue.closed_at,
           status: "open",
           points: extractPointsFromLabels(issue.labels),
-        })
-      );
+        });
+      });
     })
   );
 
-  return allIssues.flat();
+  const flattenedIssues = allIssues.flat();
+  console.log(`Total issues fetched and processed: ${flattenedIssues.length}`);
+
+  return flattenedIssues;
 };
 
-export const getAllOssGgIssuesOfRepos = unstable_cache(
-  fetchAllOssGgIssuesOfRepos,
-  ["fetchAllOssGgIssuesOfRepos"],
-  { revalidate: 60 }
-);
+export const getAllOssGgIssuesOfRepos = (repos: { id: number; fullName: string }[]) =>
+  unstable_cache(
+    async () => {
+      console.log(`Cache MISS for getAllOssGgIssuesOfRepos`);
+      return await fetchAllOssGgIssuesOfRepos(repos);
+    },
+    [
+      `getAllOssGgIssuesOfRepos-${repos
+        .map((r) => r.id)
+        .sort((a, b) => a - b)
+        .join("-")}`,
+    ],
+    { revalidate: 120 }
+  )();

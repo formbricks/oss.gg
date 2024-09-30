@@ -343,18 +343,12 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
       const issueCommentBody = context.payload.comment.body;
       const awardPointsRegex = new RegExp(`${AWARD_POINTS_IDENTIFIER}\\s+(\\d+)`);
       const match = issueCommentBody.match(awardPointsRegex);
-      const isPR = !!context.payload.issue.pull_request;
-      const issueNumber = isPR ? context.payload.issue.number : undefined;
+      const issueNumber = context.payload.issue.number;
       const owner = context.payload.repository.owner.login;
       let comment: string = "";
 
       if (match) {
         const points = parseInt(match[1], 10);
-
-        if (!issueNumber) {
-          console.error("Comment is not on a PR.");
-          return;
-        }
 
         const ossGgRepo = await getRepositoryByGithubId(context.payload.repository.id);
 
@@ -375,13 +369,13 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
           if (!ossGgRepo) {
             comment = "If you are the repo owner, please register at oss.gg to be able to award points";
           } else {
-            const prAuthorUsername = context.payload.issue.user.login;
+            const authorUsername = context.payload.issue.user.login;
 
             //process user points
             let user = await processUserPoints({
               installationId: context.payload.installation?.id!,
               prAuthorGithubId: context.payload.issue.user.id,
-              prAuthorUsername: prAuthorUsername,
+              prAuthorUsername: authorUsername,
               avatarUrl: context.payload.issue.user.avatar_url,
               points,
               url: context.payload.comment.html_url,
