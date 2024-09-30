@@ -68,9 +68,6 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
     const enrollment = await db.enrollment.create({
       data: enrollmentData,
     });
-    // we need a username
-    // await revalidate(cacheTags.enrichedProfile(enrollmentData.userId))
-
     return enrollment;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
