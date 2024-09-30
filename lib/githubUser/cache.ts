@@ -1,13 +1,13 @@
 import { revalidateTag } from "next/cache";
 
-interface RevalidateProps {
+type RevalidateProps = {
   githubLogin?: string;
 }
 
 export const githubUserCache = {
-  tag: {
+  tags: {
     byGithubLogin(githubLogin: string) {
-      return `github-users-${githubLogin}`;
+      return [`github-users-${githubLogin}`];
     },
   },
   revalidate({ githubLogin }: RevalidateProps): void {

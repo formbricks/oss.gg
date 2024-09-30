@@ -9,15 +9,10 @@ import { TPullRequest } from "@/types/pullRequest";
 import PointsAndRanks from "./point-list";
 import PullRequestList from "./pr-list";
 import ProfileInfoBar from "./profile-info";
-import { cacheTags, withCache } from "@/lib/cache"
 
 export default async function ProfilePage({ githubLogin }: { githubLogin: string }) {
   // Get & enrich the player data
-  const enrichedUserData = await withCache(
-    () => getEnrichedGithubUserData(githubLogin),
-    cacheTags.enrichedProfile(githubLogin),
-    { revalidate: 60 }
-  )
+  const enrichedUserData = await getEnrichedGithubUserData(githubLogin)
   let pointsAndRanks: Array<{
     id: string;
     repositoryName: string;
@@ -28,15 +23,9 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
   if (enrichedUserData.enrolledRepositories && enrichedUserData.playerData?.id) {
     try {
 
-      const result = await withCache(
-        () => getPointsAndRankPerRepository(
-          enrichedUserData.enrolledRepositories,
-          enrichedUserData.playerData.id
-        ),
-        cacheTags.pointsAndRank(
-          enrichedUserData.playerData.id,
-        ),
-        { revalidate: 60 },
+      const result = await getPointsAndRankPerRepository(
+        enrichedUserData.enrolledRepositories,
+        enrichedUserData.playerData.id
       )
 
       pointsAndRanks = result.map((item) => ({
@@ -56,16 +45,13 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
     chanceOfWinning = result.likelihoodOfWinning;
   }
 
-  const ossGgRepositories = await withCache(() => getAllRepositories(), cacheTags.ossggRepos(), { revalidate: 60 })
+  const ossGgRepositories = await getAllRepositories()
 
   let pullRequests = [] as TPullRequest[];
 
   if (enrichedUserData.status.githubUserFound) {
     const ossGgRepositoriesIds = ossGgRepositories.map((repo) => `${repo.owner}/${repo.name}`);
-    pullRequests = await withCache(() => getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin),
-      cacheTags.pullRequests(githubLogin),
-      { revalidate: 60 }
-    )
+    pullRequests = await getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin)
   }
 
   return (

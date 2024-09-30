@@ -1,13 +1,13 @@
 import { GITHUB_APP_ACCESS_TOKEN } from "@/lib/constants";
-import { TGithubUserData, ZGithubUserData } from "@/types/githubUser";
+import { type TGithubUserData, ZGithubUserData } from "@/types/githubUser";
 // Adjust the import path as needed
 import { Octokit } from "@octokit/rest";
-import { unstable_cache } from "next/cache";
 
 import { githubUserCache } from "./cache";
+import { withCache } from "@/lib/cache";
 
 export const getGithubUserByLogin = (githubLogin: string): Promise<TGithubUserData | false> =>
-  unstable_cache(
+  withCache(
     async () => {
       try {
         const octokit = new Octokit({ auth: `token ${GITHUB_APP_ACCESS_TOKEN}` });
@@ -33,9 +33,8 @@ export const getGithubUserByLogin = (githubLogin: string): Promise<TGithubUserDa
         return false;
       }
     },
-    [`getGithubUserByLogin-${githubLogin}`],
+    githubUserCache.tags.byGithubLogin(githubLogin),
     {
-      tags: [githubUserCache.tag.byGithubLogin(githubLogin)],
-      revalidate: 60 * 60 * 24 * 7, // 1 week
+      revalidate: 7 * 24 * 60 * 60, // 7 days
     }
-  )();
+  )

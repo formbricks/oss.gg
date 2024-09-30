@@ -7,15 +7,15 @@ interface RevalidateProps {
 }
 
 export const userCache = {
-  tag: {
+  tags: {
     byId(id: string) {
-      return `users-${id}`;
+      return [`users-${id}`];
     },
     byLogin(login: string) {
-      return `users-${login}`;
+      return [`users-${login}`];
     },
     byGithubId(githubId: number) {
-      return `users-${githubId}`;
+      return [`users-${githubId}`];
     },
   },
   revalidate({ id, login, githubId }: RevalidateProps): void {

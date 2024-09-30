@@ -4,7 +4,7 @@ import { DatabaseError } from "@/types/errors";
 import { TPointTransactionWithUser } from "@/types/pointTransaction";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
-import { unstable_cache } from "next/cache";
+import { withCache } from "@/lib/cache";
 
 import { DEFAULT_CACHE_REVALIDATION_INTERVAL, ITEMS_PER_PAGE } from "../constants";
 import { validateInputs } from "../utils/validate";
@@ -38,6 +38,7 @@ export const assignUserPoints = async (
         repositoryId,
       },
     });
+    pointsCache.revalidate({ userId, repositoryId })
     return pointsUpdated;
   } catch (error) {
     throw error;
@@ -48,7 +49,7 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
   repositoryId: string,
   page?: number
 ): Promise<TPointTransactionWithUser[]> => {
-  const points = await unstable_cache(
+  const points = await withCache(
     async () => {
       validateInputs([repositoryId, ZId], [page, ZOptionalNumber]);
       try {
@@ -60,18 +61,18 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
           u."avatarUrl",
           u.login,
           SUM(pt.points)::int AS points
-        FROM 
-          point_transactions pt 
-        JOIN 
-          users u ON pt."userId" = u.id 
-        WHERE 
+        FROM
+          point_transactions pt
+        JOIN
+          users u ON pt."userId" = u.id
+        WHERE
           pt."repositoryId" = ${repositoryId}
         GROUP BY
           pt."userId",
           u.name,
           u."avatarUrl",
           u.login
-        ORDER BY 
+        ORDER BY
           points DESC
         LIMIT ${page ? ITEMS_PER_PAGE : 0}
         OFFSET ${page ? ITEMS_PER_PAGE * (page - 1) : 0}
@@ -85,20 +86,18 @@ export const getPointsOfUsersInRepoByRepositoryId = async (
         throw error;
       }
     },
-
-    [`getPointsOfUsersInRepoByRepositoryId-${repositoryId}-${page}`],
+    pointsCache.tags.byRepositoryId(repositoryId, page),
     {
-      tags: [pointsCache.tag.byRepositoryId(repositoryId)],
-      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
+      revalidate: 60 * 60,
     }
-  )();
+  )
   return points;
 };
 
 export const getPointsForPlayerInRepoByRepositoryId = async (
   playerRepositoryId: string,
   playerId: string
-): Promise<number> => {
+): Promise<number> => withCache(async () => {
   try {
     const playerPoints = await db.pointTransaction.aggregate({
       where: {
@@ -117,39 +116,46 @@ export const getPointsForPlayerInRepoByRepositoryId = async (
     }
     throw error;
   }
-};
+}, pointsCache.tags.byPointsForPlayerInRepoByRepositoryId(playerId, playerRepositoryId), {
+  revalidate: 60 * 60,
+})
 
 export const getPointsAndRankPerRepository = async (repositories: TRepository[], userId: string) => {
   return Promise.all(
     repositories.map(async (repository) => {
-      const result = await db.pointTransaction.groupBy({
-        by: ["userId"],
-        where: { repositoryId: repository.id },
-        _sum: {
-          points: true,
-        },
-        orderBy: {
+      return await withCache(async () => {
+        const result = await db.pointTransaction.groupBy({
+          by: ["userId"],
+          where: { repositoryId: repository.id },
           _sum: {
-            points: "desc",
+            points: true,
           },
-        },
-      });
+          orderBy: {
+            _sum: {
+              points: "desc",
+            },
+          },
+        });
 
-      const userPoints = result.find((user) => user.userId === userId)?._sum?.points || 0;
-      const rank = result.findIndex((user) => user.userId === userId) + 1;
+        const userPoints = result.find((user) => user.userId === userId)?._sum?.points || 0;
+        const rank = result.findIndex((user) => user.userId === userId) + 1;
 
-      return {
-        id: repository.id,
-        repositoryName: repository.name,
-        points: userPoints,
-        rank: rank,
-        repositoryLogo: repository.logoUrl,
-      };
+        return {
+          id: repository.id,
+          repositoryName: repository.name,
+          points: userPoints,
+          rank: rank,
+          repositoryLogo: repository.logoUrl,
+        };
+      },
+        pointsCache.tags.getPointsAndRankPerRepository(userId, repository.id),
+        { revalidate: 60 * 60 }
+      )
     })
   );
 };
 
-export const getTotalPointsAndGlobalRank = async (userId: string) => {
+export const getTotalPointsAndGlobalRank = async (userId: string) => withCache(async () => {
   const result = await db.pointTransaction.groupBy({
     by: ["userId"],
     _sum: {
@@ -181,4 +187,6 @@ export const getTotalPointsAndGlobalRank = async (userId: string) => {
     globalRank: rank,
     likelihoodOfWinning: winProbability,
   };
-};
+}, pointsCache.tags.rankByPlayerId(userId), {
+  revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL,
+})

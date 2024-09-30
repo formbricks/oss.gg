@@ -1,12 +1,14 @@
 import { db } from "@/lib/db";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
+import { withCache } from "../cache";
+import { repositoryCache } from "./cache";
 
 /**
  * Fetches all repositories from the database.
  * @returns An array of repositories.
  */
-export const getAllRepositories = async (): Promise<TRepository[]> => {
+export const getAllRepositories = async (): Promise<TRepository[]> => withCache(async () => {
   try {
     const repositories = await db.repository.findMany({
       where: {
@@ -21,13 +23,14 @@ export const getAllRepositories = async (): Promise<TRepository[]> => {
     }
     throw error;
   }
-};
+}, repositoryCache.tags.all(), {
+  revalidate: 24 * 60 * 60
+})
 
 /**
  * Fetches one repositories from the database by GitHub Id.
  * @returns A repository.
  */
-
 export const getRepositoryByGithubId = async (githubId: number) => {
   try {
     const repository = await db.repository.findFirst({
