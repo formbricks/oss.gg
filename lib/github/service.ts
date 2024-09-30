@@ -12,7 +12,7 @@ type PullRequestStatus = "open" | "merged" | "closed" | undefined;
 
 const octokit = new Octokit({ auth: GITHUB_APP_ACCESS_TOKEN });
 
-const fetchPullRequestsByGithubLogin = async (
+export const getPullRequestsByGithubLogin = async (
   playerRepositoryIds: string[],
   githubLogin: string,
   status?: PullRequestStatus
@@ -79,11 +79,6 @@ const fetchPullRequestsByGithubLogin = async (
   return pullRequests;
 };
 
-export const getPullRequestsByGithubLogin = unstable_cache(
-  fetchPullRequestsByGithubLogin,
-  ["fetchPullRequestsByGithubLogin"],
-  { revalidate: 60 }
-);
 
 const fetchAllOssGgIssuesOfRepos = async (
   repos: { id: number; fullName: string }[]

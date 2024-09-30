@@ -12,8 +12,7 @@ import ProfileInfoBar from "./profile-info";
 
 export default async function ProfilePage({ githubLogin }: { githubLogin: string }) {
   // Get & enrich the player data
-  const enrichedUserData = await getEnrichedGithubUserData(githubLogin);
-
+  const enrichedUserData = await getEnrichedGithubUserData(githubLogin)
   let pointsAndRanks: Array<{
     id: string;
     repositoryName: string;
@@ -23,16 +22,17 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
 
   if (enrichedUserData.enrolledRepositories && enrichedUserData.playerData?.id) {
     try {
+
       const result = await getPointsAndRankPerRepository(
         enrichedUserData.enrolledRepositories,
         enrichedUserData.playerData.id
-      );
+      )
 
       pointsAndRanks = result.map((item) => ({
         ...item,
         repositoryLogo: item.repositoryLogo || undefined,
       }));
-    } catch (error) {}
+    } catch (error) { }
   }
 
   let totalPoints = 0;
@@ -45,13 +45,13 @@ export default async function ProfilePage({ githubLogin }: { githubLogin: string
     chanceOfWinning = result.likelihoodOfWinning;
   }
 
-  const ossGgRepositories = await getAllRepositories();
+  const ossGgRepositories = await getAllRepositories()
 
   let pullRequests = [] as TPullRequest[];
 
   if (enrichedUserData.status.githubUserFound) {
     const ossGgRepositoriesIds = ossGgRepositories.map((repo) => `${repo.owner}/${repo.name}`);
-    pullRequests = await getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin);
+    pullRequests = await getPullRequestsByGithubLogin(ossGgRepositoriesIds, githubLogin)
   }
 
   return (

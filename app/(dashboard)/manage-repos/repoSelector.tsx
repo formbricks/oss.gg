@@ -6,12 +6,17 @@ import { TRepository } from "@/types/repository";
 import { useCallback, useEffect, useState } from "react";
 
 import { activateRepoAction, deactivateRepoAction, fetchRepoDetailsAction } from "./actions";
+import { cacheTags, revalidate } from "@/lib/cache";
+import { enrolledRepositoriesCache } from "@/lib/enrollment/cache";
+import { repositoryCache } from "@/lib/repository/cache";
 
 interface RepoSelectorProps {
   repo: TRepository;
+  // required for cache revalidation
+  userId: string
 }
 
-export const RepoSelector: React.FC<RepoSelectorProps> = ({ repo: initialRepo }) => {
+export const RepoSelector: React.FC<RepoSelectorProps> = ({ repo: initialRepo, userId }) => {
   const { toast } = useToast();
   const [repo, setRepo] = useState<TRepository>(initialRepo);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +62,8 @@ export const RepoSelector: React.FC<RepoSelectorProps> = ({ repo: initialRepo })
         });
       }
       await fetchRepoDetails();
+      enrolledRepositoriesCache.revalidate({ userId })
+      repositoryCache.revalidate({})
     } catch (error) {
       console.error("Error changing repository activation status", error);
       toast({

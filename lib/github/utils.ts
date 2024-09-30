@@ -7,7 +7,6 @@ import crypto from "node:crypto";
 import { GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, OSS_GG_LABEL } from "../constants";
 import { assignUserPoints } from "../points/service";
 import { createUser, getUserByGithubId } from "../user/service";
-
 export const getOctokitInstance = (installationId: number) => {
   if (!installationId) {
     throw new Error("No installation id provided");

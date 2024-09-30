@@ -3,7 +3,8 @@ import { ZId } from "@/types/common";
 import { DatabaseError, ResourceNotFoundError } from "@/types/errors";
 import { TUser, TUserCreateInput, TUserUpdateInput, ZUser, ZUserUpdateInput } from "@/types/user";
 import { Prisma } from "@prisma/client";
-
+import { withCache } from "@/lib/cache";
+import { userCache } from "./cache";
 import { formatDateFields } from "../utils/datetime";
 import { validateInputs } from "../utils/validate";
 
@@ -44,30 +45,35 @@ export const getUser = async (id: string): Promise<TUser | null> => {
   }
 };
 
-export const getPlayerByLogin = async (login: string): Promise<TUser | null> => {
-  try {
-    const user = await db.user.findFirst({
-      where: {
-        login,
-      },
-      select: userSelection,
-    });
-    if (!user) {
-      return null;
-    }
+export const getPlayerByLogin = async (login: string): Promise<TUser | null> => withCache(
+  async () => {
+    try {
+      const user = await db.user.findFirst({
+        where: {
+          login,
+        },
+        select: userSelection,
+      });
+      if (!user) {
+        return null;
+      }
 
-    return {
-      ...user,
-      ...formatDateFields(user, ZUser),
-    };
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      throw new DatabaseError(error.message);
-    }
+      return {
+        ...user,
+        ...formatDateFields(user, ZUser),
+      };
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        throw new DatabaseError(error.message);
+      }
 
-    throw error;
-  }
-};
+      throw error;
+    }
+  },
+  userCache.tags.byLogin(login),
+  {
+    revalidate: 7 * 24 * 60 * 60,
+  })
 
 export const getUserByGithubId = async (githubId: number): Promise<TUser | null> => {
   try {

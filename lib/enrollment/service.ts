@@ -5,7 +5,8 @@ import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
 
 import { validateInputs } from "../utils/validate";
-
+import { revalidate, cacheTags, withCache } from "@/lib/cache"
+import { enrolledRepositoriesCache } from "./cache";
 /**
  * Enrolls a user in all repositories.
  * @param userId - The ID of the user to enroll.
@@ -32,6 +33,11 @@ export const enrollUserInAllRepositories = async (userId: string) => {
       data: enrollments,
       skipDuplicates: true,
     });
+
+
+    // we need a username
+    // await revalidate(cacheTags.enrichedProfile(userId))
+
   } catch (error) {
     throw error;
   }
@@ -62,7 +68,6 @@ export const createEnrollment = async (enrollmentData: TEnrollmentInput): Promis
     const enrollment = await db.enrollment.create({
       data: enrollmentData,
     });
-
     return enrollment;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -89,6 +94,8 @@ export const deleteEnrollment = async (userId: string, repositoryId: string): Pr
         },
       },
     });
+    await revalidate(cacheTags.enrichedProfile(userId))
+
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       throw new DatabaseError(error.message);
@@ -121,7 +128,7 @@ export const hasEnrollmentForRepository = async (userId: string, repositoryId: s
  * a repository the user is enrolled in. The array is empty if the user has no enrollments.
  */
 
-export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> => {
+export const getEnrolledRepositories = async (userId: string): Promise<TRepository[]> => withCache(async () => {
   const enrolledRepositories = await db.repository.findMany({
     where: {
       enrollments: {
@@ -149,4 +156,9 @@ export const getEnrolledRepositories = async (userId: string): Promise<TReposito
   });
 
   return enrolledRepositories;
-};
+},
+  enrolledRepositoriesCache.tags.byUserId(userId),
+  {
+    revalidate: 24 * 60 * 60,
+  }
+)
