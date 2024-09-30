@@ -1,5 +1,3 @@
-"use server";
-
 import { getAllOssGgIssuesOfRepos } from "@/lib/github/service";
 import { getAllRepositories } from "@/lib/repository/service";
 import { TPullRequest } from "@/types/pullRequest";
