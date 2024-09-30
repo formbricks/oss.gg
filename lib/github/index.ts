@@ -54,6 +54,7 @@ export const registerHooks = async (
 
     case "installation": {
       if (body.action === "created") {
+        console.log("installation created");
         onInstallationCreated(body as EmitterWebhookEvent<"installation">["payload"]);
       }
       break;

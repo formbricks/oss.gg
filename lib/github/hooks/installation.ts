@@ -15,6 +15,6 @@ export const onInstallationCreated = async (payload: EmitterWebhookEvent<"instal
   const installationId = payload.installation.id;
   const appId = payload.installation.app_id;
   const repos = payload.repositories as GitHubRepository[];
-
+  console.log("onInstallationCreated");
   await sendInstallationDetails(installationId, appId, repos, payload.installation);
 };

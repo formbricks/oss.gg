@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   if (processedEvents.has(eventId)) {
     return NextResponse.json({ message: `Event ${eventId} already processed, skipping` }, { status: 200 });
   }
-
+  console.log("registerHooks");
   registerHooks(githubEvent as EmitterWebhookEventName, body);
 
   processedEvents.add(eventId);
