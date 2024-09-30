@@ -1,6 +1,6 @@
 import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 
-import { sendInstallationDetails } from "../user";
+import { sendInstallationDetails } from "./user/service";
 
 type GitHubRepository = {
   id: number;
