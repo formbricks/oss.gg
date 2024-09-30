@@ -20,7 +20,6 @@ import { discordPointMessageTask } from "@/src/trigger/discordPointsMessage";
 import { issueReminderTask } from "@/src/trigger/issueReminder";
 import { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks";
 
-import { isMemberOfRepository } from "../user";
 import {
   checkOssGgLabel,
   extractIssueNumbers,
@@ -32,6 +31,7 @@ import {
   processAndComment,
   processUserPoints,
 } from "../utils";
+import { isMemberOfRepository } from "./user/service";
 
 export const onIssueOpened = async (payload: EmitterWebhookEvent<"issues.opened">["payload"]) => {
   const projectId = payload.repository.id;
