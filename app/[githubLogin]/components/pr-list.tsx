@@ -21,7 +21,7 @@ const PullRequestList: React.FC<PullRequestListProps> = ({ pullRequests, signedU
       )}
       <div>
         <h2 className="mb-2 font-bold">oss.gg hacktoberfest 2024</h2>
-        {pullRequests.some((pr) => pr.points !== null) && signedUp ? (
+        {pullRequests.some((pr) => pr.points !== null) ? (
           <ul className="list-none space-y-2">
             {pullRequests
               .filter((pr) => pr.points !== null)

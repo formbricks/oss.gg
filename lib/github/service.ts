@@ -100,6 +100,7 @@ const fetchPullRequestsByGithubLogin = async (
   }
 
   console.log(`Total pull requests fetched: ${pullRequests.length}`);
+  console.log(`pullRequests: ${JSON.stringify(pullRequests, null, 2)}`);
   pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
   console.log("Pull requests sorted by date opened (descending)");
 
