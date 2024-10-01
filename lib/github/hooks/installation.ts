@@ -1,6 +1,7 @@
 import { EmitterWebhookEvent } from "@octokit/webhooks";
 
 import { sendInstallationDetails } from "../services/user";
+import { githubCache } from "./cache";
 
 type GitHubRepository = {
   id: number;
@@ -15,6 +16,8 @@ export const onInstallationCreated = async (payload: EmitterWebhookEvent<"instal
   const installationId = payload.installation.id;
   const appId = payload.installation.app_id;
   const repos = payload.repositories as GitHubRepository[];
-
+  repos.forEach((repo) => {
+    githubCache.revalidate({ repositoryId: repo.id });
+  });
   await sendInstallationDetails(installationId, appId, repos, payload.installation);
 };
