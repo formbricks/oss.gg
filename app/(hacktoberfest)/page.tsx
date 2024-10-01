@@ -159,28 +159,11 @@ export default function IndexPage() {
           </ul>
         </ToggleContent>
       </Toggle>
-      <Toggle>
-        <ToggleHead>side quests and challenges</ToggleHead>
-        <ToggleContent>to be announced</ToggleContent>
-      </Toggle>
-      <h2 className="pt-4 font-bold">get started</h2>
-      {/*       <p>
-        <Link href="/oss-issues" rel="noopener noreferrer" className="hover:underline">
-          browse available code issues
+      <p className="pt-4">
+        <Link href="/signup" className="font-bold underline underline-offset-4 hover:no-underline">
+          signup to play
         </Link>
       </p>
-      <p>
-        <Link
-          target="_blank"
-          href="https://formbricks.notion.site/Placeholder-2aa60ea4053247579e2f89cbb5cbe58f?pvs=4"
-          rel="noopener noreferrer"
-          className="hover:underline">
-          browse all side quests
-        </Link>
-      </p> */}
-      <Link href="/signup" rel="noopener noreferrer" className="hover:underline">
-        sign up to get started
-      </Link>
 
       <h2 className="pt-4 font-bold">faq</h2>
       <Toggle>
@@ -227,9 +210,70 @@ export default function IndexPage() {
           <p>play fair to stay in the game</p> <p>cheat or spam to get disqualified</p>
         </ToggleContent>
       </Toggle>
-      <p className="pt-4"><Link href="/signup" className="font-bold underline underline-offset-4 hover:no-underline">
-        enroll to play
-      </Link></p>
+      <h2 className="pt-4 font-bold">directory</h2>
+      <p>
+        <Link href="/oss-issues" rel="noopener noreferrer" className="hover:underline">
+          browse code issues
+        </Link>
+      </p>
+      <Toggle>
+        <ToggleHead>side quests and challenges</ToggleHead>
+        <ToggleContent>
+          <ul>
+            <li className="hover:underline">
+              <Link
+                href="https://formbricks.notion.site/Formbricks-Hacktoberfest-Side-Quests-Challenges-798855c705cc4474ba63ceefbe048abf?pvs=4"
+                target="_blank"
+                rel="noopener noreferrer">
+                formbricks
+              </Link>
+            </li>
+            <li className="hover:underline">
+              <Link href="https://go.hanko.io/ossgg-2024" target="_blank" rel="noopener noreferrer">
+                hanko
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="https://github.com/OpenBB-finance/OpenBB/issues/6705"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                openbb
+              </Link>{" "}
+              +{" "}
+              <Link
+                href="https://github.com/OpenBB-finance/OpenBB/tree/develop/oss.gg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline">
+                instructions
+              </Link>
+            </li>
+            <li className="hover:underline">
+              <Link
+                href="https://mfts.notion.site/Papermark-Hacktoberfest-Side-Quests-Challenges-111d3f870f008033935efe9f7702a3dc?pvs=25"
+                target="_blank"
+                rel="noopener noreferrer">
+                papermark
+              </Link>
+            </li>
+            <li className="hover:underline">
+              <Link
+                href="https://bonapara.notion.site/Twenty-side-quests-10c11d84170380479870e751990f4462?pvs=4"
+                target="_blank"
+                rel="noopener noreferrer">
+                twenty
+              </Link>
+            </li>
+            <li className="hover:underline">
+              <Link href="https://go.unkey.com/ossgg-challenges" target="_blank" rel="noopener noreferrer">
+                unkey
+              </Link>
+            </li>
+          </ul>
+        </ToggleContent>
+      </Toggle>
     </div>
   );
 }
