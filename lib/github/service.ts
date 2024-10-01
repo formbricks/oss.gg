@@ -125,6 +125,6 @@ export const getOssIssuesForRepo = (repositoryId: number, fullName: string): Pro
         });
       });
     },
-    [`fetchIssuesForRepo-${repositoryId}-${fullName}`],
+    [`getOssIssuesForRepo-${repositoryId}-${fullName}`],
     { tags: [githubCache.tag.byRepositoryId(repositoryId)] }
   )();
