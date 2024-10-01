@@ -14,7 +14,7 @@ export const ZGithubLabelSchema = z.object({
   description: z.string().nullable(),
 });
 
-export const ZGithubPrIssueSchema = z.object({
+export const ZGithubIssue = z.object({
   html_url: z.string(),
   title: z.string(),
   user: ZGithubUserSchema,
@@ -29,7 +29,7 @@ export const ZGithubPrIssueSchema = z.object({
 });
 
 export const ZGithubApiResponseSchema = z.object({
-  items: z.array(ZGithubPrIssueSchema),
+  items: z.array(ZGithubIssue),
 });
 
 export const ZMappedDataSchema = z.object({
@@ -49,3 +49,4 @@ export const ZMappedDataSchema = z.object({
 
 export type TGithubApiResponse = z.infer<typeof ZGithubApiResponseSchema>;
 export type TMappedData = z.infer<typeof ZMappedDataSchema>;
+export type TGithubIssue = z.infer<typeof ZGithubIssue>;
