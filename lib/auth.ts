@@ -35,6 +35,12 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (existingUserWithAccount) {
+
+          if (!existingUserWithAccount.account) {
+            const { refresh_token_expires_in, ...accountInput } = account;
+            await createAccount({ ...accountInput, userId: existingUserWithAccount.id });
+          }
+
           // User with this provider found
           // check if email & metadata is still the same
           if (
