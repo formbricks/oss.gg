@@ -6,7 +6,7 @@ In this manual we'll walk you through the steps you need to take to get oss.gg a
 
 1. GitHub SSO Configuration (make the login with GitHub work)
 2. oss.gg Github App Setup (setup your own version of the oss.gg GitHub app)
-3. Run oss.gg server locally
+3. Run oss.gg server locallyy
 4. Start the local instance of oss.gg with your GitHub test app and install oss.gg on test repository
 
 ## 1. GitHub Personal Access Token
