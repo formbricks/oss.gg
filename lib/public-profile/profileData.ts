@@ -1,10 +1,13 @@
 import { TGithubUserData } from "@/types/githubUser";
 import { TRepository } from "@/types/repository";
 import { TUser } from "@/types/user";
+import { PrismaClient } from "@prisma/client";
 
 import { getEnrolledRepositories } from "../enrollment/service";
 import { getGithubUserByLogin } from "../githubUser/service";
 import { getPlayerByLogin } from "../user/service";
+
+const db = new PrismaClient();
 
 type EnrichedUserData = {
   githubData: TGithubUserData;
@@ -14,6 +17,7 @@ type EnrichedUserData = {
     githubUserFound: boolean;
     playerFound: boolean;
     isEnrolled: boolean;
+    hasAccount: boolean; // Add this new status
   };
 };
 const placeholderData = {
@@ -37,17 +41,26 @@ export async function getEnrichedGithubUserData(githubLogin: string): Promise<En
       githubUserFound: !!githubUserData,
       playerFound: false,
       isEnrolled: false,
+      hasAccount: false, // Initialize hasAccount to false
     },
   };
 
   // If GitHub user was found, try to get player data
   if (githubUserData) {
     const playerData = await getPlayerByLogin(githubLogin);
+    console.log("playerData:", playerData); // Debug log
 
-    if (playerData) {
+    if (playerData !== null) {
+      // Check if the player has an associated account
+      const hasAccount =
+        (await db.account.findUnique({
+          where: { userId: playerData.id },
+          select: { id: true },
+        })) !== null;
+
       result.playerData = playerData;
       result.status.playerFound = true;
-
+      result.status.hasAccount = hasAccount;
       // If player was found, get enrolled repositories
       const enrolledRepositories = await getEnrolledRepositories(playerData.id);
 
@@ -55,6 +68,9 @@ export async function getEnrichedGithubUserData(githubLogin: string): Promise<En
         result.enrolledRepositories = enrolledRepositories;
         result.status.isEnrolled = true;
       }
+    } else {
+      result.status.playerFound = false;
+      result.status.hasAccount = false;
     }
   }
 

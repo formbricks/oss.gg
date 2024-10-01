@@ -71,7 +71,7 @@ async function ProfilePageContent({ githubLogin }: { githubLogin: string }) {
       />
       <div className="mt-10 grid w-full max-w-2xl grid-cols-4 gap-6 md:grid-cols-5">
         <PointsAndRanks pointsAndRanks={pointsAndRanks} />
-        <PullRequestList pullRequests={pullRequests} signedUp={enrichedUserData.status.playerFound} />
+        <PullRequestList pullRequests={pullRequests} signedUp={enrichedUserData.status.hasAccount} />
       </div>
     </div>
   );
