@@ -5,11 +5,13 @@ import Link from "next/link";
 
 export default async function IssuesPage() {
   const ossGgRepositories = await getAllRepositories();
-  const issues: TPullRequest[] = (
-    await Promise.all(
-      ossGgRepositories.map((repo) => getOssIssuesForRepo(repo.githubId, `${repo.owner}/${repo.name}`))
-    )
-  ).flat();
+
+  const issuesPromises = ossGgRepositories.map((repo) =>
+    getOssIssuesForRepo(repo.githubId, `${repo.owner}/${repo.name}`)
+  );
+
+  const issuesArrays = await Promise.all(issuesPromises);
+  const issues: TPullRequest[] = issuesArrays.flat();
 
   return (
     <div className="space-y-2 font-mono text-xs">
