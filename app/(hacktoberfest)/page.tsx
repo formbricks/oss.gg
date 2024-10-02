@@ -221,6 +221,11 @@ export default function IndexPage() {
         <ToggleContent>
           <ul>
             <li className="hover:underline">
+              <Link href="https://d.to/ossgg-side-quests" target="_blank" rel="noopener noreferrer">
+                dub
+              </Link>
+            </li>
+            <li className="hover:underline">
               <Link
                 href="https://formbricks.notion.site/Formbricks-Hacktoberfest-Side-Quests-Challenges-798855c705cc4474ba63ceefbe048abf?pvs=4"
                 target="_blank"
