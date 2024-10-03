@@ -94,27 +94,37 @@ export const processAndComment = async ({
   issueNumber: number;
   ossGgRepoId: string;
 }) => {
-  const user = await processUserPoints({
-    installationId: context.payload.installation?.id!,
-    prAuthorGithubId: pullRequest.user.id,
-    prAuthorUsername: pullRequest.user.login,
-    avatarUrl: pullRequest.user.avatar_url,
-    points,
-    url: pullRequest.html_url,
-    repoId: ossGgRepoId,
-    comment: "",
-  });
+  console.log(`Starting processAndComment for PR #${issueNumber} in ${owner}/${repo}`);
 
-  const comment = `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})`;
+  try {
+    const user = await processUserPoints({
+      installationId: context.payload.installation?.id!,
+      prAuthorGithubId: pullRequest.user.id,
+      prAuthorUsername: pullRequest.user.login,
+      avatarUrl: pullRequest.user.avatar_url,
+      points,
+      url: pullRequest.html_url,
+      repoId: ossGgRepoId,
+      comment: "",
+    });
 
-  // Post comment on the issue or pull request
-  postComment({
-    installationId: context.payload.installation?.id!,
-    body: comment,
-    issueNumber: issueNumber,
-    repo,
-    owner,
-  });
+    console.log(`User points processed for ${user.login}`);
+
+    const comment = `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})`;
+
+    await postComment({
+      installationId: context.payload.installation?.id!,
+      body: comment,
+      issueNumber: issueNumber,
+      repo,
+      owner,
+    });
+
+    console.log(`Comment posted successfully for PR #${issueNumber}`);
+  } catch (error) {
+    console.error(`Error in processAndComment for PR #${issueNumber}:`, error);
+    throw error; // Re-throw the error to be handled by the caller
+  }
 };
 
 export const processUserPoints = async ({
@@ -152,14 +162,28 @@ export const processUserPoints = async ({
   return user;
 };
 
-export const postComment = async ({ installationId, body, issueNumber, repo, owner }: TPostComment) => {
+// Update the postComment function to return a promise and add logging
+export const postComment = async ({
+  installationId,
+  body,
+  issueNumber,
+  repo,
+  owner,
+}: TPostComment): Promise<void> => {
+  console.log(`Attempting to post comment on ${owner}/${repo}#${issueNumber}`);
   const octokit = getOctokitInstance(installationId!);
-  await octokit.issues.createComment({
-    body,
-    issue_number: issueNumber,
-    repo,
-    owner,
-  });
+  try {
+    await octokit.issues.createComment({
+      body,
+      issue_number: issueNumber,
+      repo,
+      owner,
+    });
+    console.log(`Comment posted successfully on ${owner}/${repo}#${issueNumber}`);
+  } catch (error) {
+    console.error(`Error posting comment on ${owner}/${repo}#${issueNumber}:`, error);
+    throw error;
+  }
 };
 
 export const filterValidLabels = (labels: any[]) =>
