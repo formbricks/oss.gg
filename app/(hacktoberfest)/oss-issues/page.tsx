@@ -39,7 +39,7 @@ export default async function IssuesPage() {
 
   return (
     <div className="space-y-2 font-mono text-xs">
-      <h1 className="pb-2 font-bold">available issues</h1>
+      <h1 className="pb-2 font-bold">browse open issues</h1>
       <ul className="list-none space-y-2">
         {issueLists.map((pullRequest) => (
           <li key={pullRequest.href}>

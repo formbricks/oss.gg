@@ -170,23 +170,18 @@ export default function IndexPage() {
         <ToggleHead>how to submit a non-code contribution via GitHub</ToggleHead>
         <ToggleContent>
           <ol className="list-decimal space-y-1 pl-5">
-            <li>open an issue for your contribution. Use the side quest template.</li>
-            <li>comment with /assign to assign yourself</li>
-            <li>open a PR where you reference your issue</li>
-            <li>in each repo you&apos;ll find a folder called &quot;oss.gg hackathon&quot;</li>
-            <li>
-              in each folder, there&apos;s one .txt file for each side quest. here we keep track of each
-              submission
-            </li>
-            <li>
-              add a new entry with the following info: Your GitHub name, a UTC timestamp, and a link with your
-              proof of contribution.
-            </li>
-            <li>
-              the project maintainer will add the corresponding points to the issue, review the PR and and
-              once it&apos;s merged, you&apos;ll be awarded your points automatically.
-            </li>
-            <li>don&apos;t forget to check your current points at oss.gg/[yourGitHubUsername]</li>
+            <li>open an issue for your contribution in the respective repo</li>
+            <li>in the issue description, provide the requested proof</li>
+            <li>wait for a maintainer to review it and award you points</li>
+            <div className="py-2">
+              <Link
+                className="underline"
+                href="https://formbricks.notion.site/How-to-submit-a-non-code-contributions-via-GitHub-81166e8c948841d18209ac4c60280e60"
+                target="_blank"
+                rel="noopener noreferrer">
+                here is a manual with images
+              </Link>
+            </div>
           </ol>
         </ToggleContent>
       </Toggle>
@@ -210,75 +205,14 @@ export default function IndexPage() {
           <p>play fair to stay in the game</p> <p>cheat or spam to get disqualified</p>
         </ToggleContent>
       </Toggle>
-      <h2 className="pt-4 font-bold">directory</h2>
-      <p>
-        <Link href="/oss-issues" rel="noopener noreferrer" className="hover:underline">
-          browse code issues
-        </Link>
-      </p>
-      <Toggle>
-        <ToggleHead>side quests and challenges</ToggleHead>
-        <ToggleContent>
-          <ul>
-            <li className="hover:underline">
-              <Link href="https://d.to/ossgg-side-quests" target="_blank" rel="noopener noreferrer">
-                dub
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://formbricks.notion.site/Formbricks-Hacktoberfest-Side-Quests-Challenges-798855c705cc4474ba63ceefbe048abf?pvs=4"
-                target="_blank"
-                rel="noopener noreferrer">
-                formbricks
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link href="https://go.hanko.io/ossgg-2024" target="_blank" rel="noopener noreferrer">
-                hanko
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="https://github.com/OpenBB-finance/OpenBB/issues/6705"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline">
-                openbb
-              </Link>{" "}
-              +{" "}
-              <Link
-                href="https://github.com/OpenBB-finance/OpenBB/tree/develop/oss.gg"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline">
-                instructions
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://mfts.notion.site/Papermark-Hacktoberfest-Side-Quests-Challenges-111d3f870f008033935efe9f7702a3dc?pvs=25"
-                target="_blank"
-                rel="noopener noreferrer">
-                papermark
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link
-                href="https://bonapara.notion.site/Twenty-side-quests-10c11d84170380479870e751990f4462?pvs=4"
-                target="_blank"
-                rel="noopener noreferrer">
-                twenty
-              </Link>
-            </li>
-            <li className="hover:underline">
-              <Link href="https://go.unkey.com/ossgg-challenges" target="_blank" rel="noopener noreferrer">
-                unkey
-              </Link>
-            </li>
-          </ul>
-        </ToggleContent>
-      </Toggle>
+      <h2 className="pt-4 font-bold">get started 👇</h2>
+
+      <Link href="/oss-issues" rel="noopener noreferrer" className="block hover:underline">
+        all code issues
+      </Link>
+      <Link href="/side-quests" rel="noopener noreferrer" className="block hover:underline">
+        all side quests
+      </Link>
     </div>
   );
 }
