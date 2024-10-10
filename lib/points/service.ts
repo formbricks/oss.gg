@@ -182,3 +182,46 @@ export const getTotalPointsAndGlobalRank = async (userId: string) => {
     likelihoodOfWinning: winProbability,
   };
 };
+
+export interface LeaderboardEntry {
+  userId: string;
+  login: string;
+  avatarUrl: string | null;
+  totalPoints: number;
+}
+
+
+export const getAllUserPointsList = async (): Promise<LeaderboardEntry[]> => {
+  try {
+    // Fetch users and their points in a single query
+    const leaderboard = await db.user.findMany({
+      select: {
+        id: true,
+        login: true,
+        avatarUrl: true,
+        pointTransactions: {
+          select: {
+            points: true,
+          },
+        },
+      },
+    });
+
+    // Process the results
+    return leaderboard
+      .map((user) => ({
+        userId: user.id,
+        login: user.login,
+        avatarUrl: user.avatarUrl,
+        totalPoints: user.pointTransactions.reduce(
+          (sum, transaction) => sum + (transaction.points || 0),
+          0
+        ),
+      }))
+      .sort((a, b) => b.totalPoints - a.totalPoints);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    throw new Error('Failed to fetch leaderboard');
+  }
+};
+
