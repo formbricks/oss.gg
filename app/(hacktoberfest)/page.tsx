@@ -220,6 +220,13 @@ export default function IndexPage() {
         className="block font-bold hover:underline">
         how to make 1050 points in 5 minutes without touching code
       </Link>
+      <Link
+        target="_blank"
+        href="https://oss.gg/discord"
+        rel="noopener noreferrer"
+        className="block hover:underline">
+        join our Discord
+      </Link>
     </div>
   );
 }
