@@ -32,7 +32,7 @@ export default function IndexPage() {
             </li>
             <li>
               <Link
-                href="https://www.apple.com/iphone"
+                href="https://www.apple.com/iphone-16/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline">
