@@ -55,7 +55,7 @@ function LeaderBoard({ allUserPoints }: ILeaderBoard) {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="max-h-[400px] overflow-y-auto">
+          <div className="overflow-y-auto">
             {filteredUsers.length === 0 ? (
               <div className="py-6 text-center text-gray-500">no users found</div>
             ) : (

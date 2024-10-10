@@ -190,7 +190,6 @@ export interface LeaderboardEntry {
   totalPoints: number;
 }
 
-
 export const getAllUserPointsList = async (): Promise<LeaderboardEntry[]> => {
   try {
     // Fetch users and their points in a single query
@@ -207,21 +206,18 @@ export const getAllUserPointsList = async (): Promise<LeaderboardEntry[]> => {
       },
     });
 
-    // Process the results
+    // Process the results and filter out users with 0 points
     return leaderboard
       .map((user) => ({
         userId: user.id,
         login: user.login,
         avatarUrl: user.avatarUrl,
-        totalPoints: user.pointTransactions.reduce(
-          (sum, transaction) => sum + (transaction.points || 0),
-          0
-        ),
+        totalPoints: user.pointTransactions.reduce((sum, transaction) => sum + (transaction.points || 0), 0),
       }))
+      .filter((user) => user.totalPoints > 0)
       .sort((a, b) => b.totalPoints - a.totalPoints);
   } catch (error) {
-    console.error('Error fetching leaderboard:', error);
-    throw new Error('Failed to fetch leaderboard');
+    console.error("Error fetching leaderboard:", error);
+    throw new Error("Failed to fetch leaderboard");
   }
 };
-
