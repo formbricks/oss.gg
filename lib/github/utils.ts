@@ -94,8 +94,6 @@ export const processAndComment = async ({
   issueNumber: number;
   ossGgRepoId: string;
 }) => {
-  console.log(`Starting processAndComment for PR #${issueNumber} in ${owner}/${repo}`);
-
   try {
     const user = await processUserPoints({
       installationId: context.payload.installation?.id!,
@@ -108,8 +106,6 @@ export const processAndComment = async ({
       comment: "",
     });
 
-    console.log(`User points processed for ${user.login}`);
-
     const comment = `Awarding ${user.login}: ${points} points 🕹️ Well done! Check out your new contribution on [oss.gg/${user.login}](https://oss.gg/${user.login})`;
 
     await postComment({
@@ -119,10 +115,7 @@ export const processAndComment = async ({
       repo,
       owner,
     });
-
-    console.log(`Comment posted successfully for PR #${issueNumber}`);
   } catch (error) {
-    console.error(`Error in processAndComment for PR #${issueNumber}:`, error);
     throw error; // Re-throw the error to be handled by the caller
   }
 };
@@ -170,7 +163,6 @@ export const postComment = async ({
   repo,
   owner,
 }: TPostComment): Promise<void> => {
-  console.log(`Attempting to post comment on ${owner}/${repo}#${issueNumber}`);
   const octokit = getOctokitInstance(installationId!);
   try {
     await octokit.issues.createComment({
@@ -179,9 +171,7 @@ export const postComment = async ({
       repo,
       owner,
     });
-    console.log(`Comment posted successfully on ${owner}/${repo}#${issueNumber}`);
   } catch (error) {
-    console.error(`Error posting comment on ${owner}/${repo}#${issueNumber}:`, error);
     throw error;
   }
 };

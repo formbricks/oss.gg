@@ -17,26 +17,19 @@ const fetchPullRequestsByGithubLogin = async (
   githubLogin: string,
   status?: PullRequestStatus
 ): Promise<TPullRequest[]> => {
-  console.log(`Fetching pull requests for GitHub login: ${githubLogin}`);
-  console.log(`Repositories to check: ${playerRepositoryIds.join(", ")}`);
-  console.log(`Status filter: ${status || "all"}`);
-
   if (!playerRepositoryIds || playerRepositoryIds.length === 0) {
-    console.warn("No repository IDs provided. Returning empty array.");
     return [];
   }
 
   const pullRequests: TPullRequest[] = [];
 
   for (const repoId of playerRepositoryIds) {
-    console.log(`Processing repository: ${repoId}`);
     const [owner, repo] = repoId.split("/");
     let page = 1;
     let hasNextPage = true;
 
     while (hasNextPage && page <= 2) {
       // Fetch up to 2 pages (200 PRs)
-      console.log(`Fetching page ${page} for ${repoId}`);
       try {
         const { data } = await octokit.pulls.list({
           owner,
@@ -48,11 +41,8 @@ const fetchPullRequestsByGithubLogin = async (
           page,
         });
 
-        console.log(`Fetched ${data.length} pull requests for ${repoId} (page ${page})`);
-
         for (const pr of data) {
           if (pr.user?.login !== githubLogin) {
-            console.log(`Skipping PR by ${pr.user?.login}, not matching ${githubLogin}`);
             continue;
           }
 
@@ -66,7 +56,6 @@ const fetchPullRequestsByGithubLogin = async (
           }
 
           if (status && prStatus !== status) {
-            console.log(`Skipping PR with status ${prStatus}, not matching filter ${status}`);
             continue;
           }
 
@@ -83,7 +72,6 @@ const fetchPullRequestsByGithubLogin = async (
               points: pr.labels ? extractPointsFromLabels(pr.labels) : null,
             });
 
-            console.log(`Adding PR: ${pullRequest.title} (${pullRequest.status})`);
             pullRequests.push(pullRequest);
           } catch (error) {
             console.error(`Error parsing pull request: ${pr.title}`, error);
@@ -99,13 +87,9 @@ const fetchPullRequestsByGithubLogin = async (
     }
   }
 
-  console.log(`Total pull requests fetched: ${pullRequests.length}`);
-  console.log(`pullRequests: ${JSON.stringify(pullRequests, null, 2)}`);
   pullRequests.sort((a, b) => new Date(b.dateOpened).getTime() - new Date(a.dateOpened).getTime());
-  console.log("Pull requests sorted by date opened (descending)");
 
   const rateLimit = await octokit.rest.rateLimit.get();
-  console.log("Rate limit info:", rateLimit.data);
 
   return pullRequests;
 };
@@ -124,15 +108,11 @@ const fetchAllOssGgIssuesOfRepos = async (
     Accept: "application/vnd.github.v3+json",
   };
 
-  console.log(`Fetching issues for ${repos.length} repositories`);
-
   const allIssues = await Promise.all(
     repos.map(async (repo) => {
       const issuesUrl = `https://api.github.com/search/issues?q=repo:${repo.fullName}+is:issue+is:open+label:"${OSS_GG_LABEL}"+no:assignee&sort=created&order=desc`;
-      console.log(`Fetching issues from: ${issuesUrl}`);
 
       const issuesResponse = await fetch(issuesUrl, { headers: githubHeaders });
-      console.log(`Issues response status: ${issuesResponse.status}`);
 
       const rateLimit = issuesResponse.headers.get("X-RateLimit-Limit");
       const rateRemaining = issuesResponse.headers.get("X-RateLimit-Remaining");
@@ -142,13 +122,10 @@ const fetchAllOssGgIssuesOfRepos = async (
       );
 
       const issuesData = await issuesResponse.json();
-      console.log(`Fetched ${issuesData.total_count} issues for ${repo.fullName}`);
 
       const validatedData = ZGithubApiResponseSchema.parse(issuesData);
-      console.log(`Validated ${validatedData.items.length} issues`);
 
       return validatedData.items.map((issue) => {
-        console.log(`Processing issue: ${issue.title}`);
         return ZPullRequest.parse({
           title: issue.title,
           href: issue.html_url,
@@ -165,7 +142,6 @@ const fetchAllOssGgIssuesOfRepos = async (
   );
 
   const flattenedIssues = allIssues.flat();
-  console.log(`Total issues fetched and processed: ${flattenedIssues.length}`);
 
   return flattenedIssues;
 };

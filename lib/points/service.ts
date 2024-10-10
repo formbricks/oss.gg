@@ -206,7 +206,7 @@ export const getAllUserPointsList = async (): Promise<LeaderboardEntry[]> => {
       },
     });
 
-    // Process the results and filter out users with 0 points
+    // Process the results
     return leaderboard
       .map((user) => ({
         userId: user.id,
@@ -214,7 +214,6 @@ export const getAllUserPointsList = async (): Promise<LeaderboardEntry[]> => {
         avatarUrl: user.avatarUrl,
         totalPoints: user.pointTransactions.reduce((sum, transaction) => sum + (transaction.points || 0), 0),
       }))
-      .filter((user) => user.totalPoints > 0)
       .sort((a, b) => b.totalPoints - a.totalPoints);
   } catch (error) {
     console.error("Error fetching leaderboard:", error);

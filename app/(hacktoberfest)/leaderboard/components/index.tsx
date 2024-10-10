@@ -10,16 +10,17 @@ import { Suspense, useEffect, useState } from "react";
 
 interface ILeaderBoard {
   allUserPoints: LeaderboardEntry[];
+  totalPlayers: number;
 }
-export default function LeaderBoardPage({ allUserPoints }: ILeaderBoard) {
+export default function LeaderBoardPage({ allUserPoints, totalPlayers }: ILeaderBoard) {
   return (
     <Suspense fallback={<div>hang tight while we&apos;re loading the leader list...</div>}>
-      <LeaderBoard allUserPoints={allUserPoints} />
+      <LeaderBoard allUserPoints={allUserPoints} totalPlayers={totalPlayers} />
     </Suspense>
   );
 }
 
-function LeaderBoard({ allUserPoints }: ILeaderBoard) {
+function LeaderBoard({ allUserPoints, totalPlayers }: ILeaderBoard) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState(allUserPoints);
 
@@ -41,7 +42,9 @@ function LeaderBoard({ allUserPoints }: ILeaderBoard) {
         <CardHeader className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <CardTitle className="flex items-center text-base font-bold ">leaderboard 🕹️</CardTitle>
-            <span className="text-sm">total players: {allUserPoints.length}</span>
+            <span className="text-xs">
+              players: {allUserPoints.length} of {totalPlayers}
+            </span>
           </div>
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 transform" />

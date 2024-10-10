@@ -48,7 +48,6 @@ export async function getEnrichedGithubUserData(githubLogin: string): Promise<En
   // If GitHub user was found, try to get player data
   if (githubUserData) {
     const playerData = await getPlayerByLogin(githubLogin);
-    console.log("playerData:", playerData); // Debug log
 
     if (playerData !== null) {
       // Check if the player has an associated account

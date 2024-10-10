@@ -390,15 +390,6 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
           }
         }
 
-        // Add logging before posting comment
-        console.log("Attempting to post comment:", {
-          installationId: context.payload.installation?.id,
-          body: comment,
-          issueNumber: issueNumber,
-          repo,
-          owner,
-        });
-
         // Wrap postComment in a try-catch block
         try {
           await postComment({
@@ -408,7 +399,6 @@ export const onAwardPoints = async (webhooks: Webhooks) => {
             repo,
             owner,
           });
-          console.log("Comment posted successfully");
         } catch (postCommentError) {
           console.error("Error posting comment:", postCommentError);
           // Optionally, you can rethrow the error if you want it to be caught by the outer catch block
@@ -427,7 +417,6 @@ export const onPullRequestMerged = async (webhooks: Webhooks) => {
     const { pull_request: pullRequest, repository, installation } = context.payload;
 
     if (!pullRequest.merged) {
-      console.log("Pull request was not merged.");
       return;
     }
 
@@ -439,7 +428,6 @@ export const onPullRequestMerged = async (webhooks: Webhooks) => {
 
     const ossGgRepo = await getRepositoryByGithubId(repository.id);
     if (!ossGgRepo) {
-      console.log("Repository is not enrolled in oss.gg.");
       return;
     }
 
@@ -467,14 +455,12 @@ async function processPullRequest(context, octokit, pullRequest, repo, owner, os
     }
   }
 
-  console.log(`Pull request #${pullRequest.number} does not have the 🕹️ oss.gg label.`);
   await processLinkedIssues(context, octokit, pullRequest, repo, owner, ossGgRepoId);
 }
 
 async function processLinkedIssues(context, octokit, pullRequest, repo, owner, ossGgRepoId) {
   const issueNumbers = extractIssueNumbersFromPrBody(pullRequest.body!);
   if (!issueNumbers.length) {
-    console.log("No issues are mentioned in the pull request.");
     return;
   }
 
@@ -488,13 +474,11 @@ async function processIssue(context, octokit, pullRequest, repo, owner, issueNum
   const validLabels = filterValidLabels(issue.labels);
 
   if (!checkOssGgLabel(validLabels)) {
-    console.log(`Issue #${issueNumber} does not have the 🕹️ oss.gg label. Skipping.`);
     return;
   }
 
   const points = extractPointsFromLabels(validLabels);
   if (points) {
-    console.log(`Points for issue #${issueNumber}:`, points);
     await processAndComment({
       context,
       pullRequest,
@@ -505,7 +489,6 @@ async function processIssue(context, octokit, pullRequest, repo, owner, issueNum
       ossGgRepoId,
     });
   } else {
-    console.log(`No points label found for issue #${issueNumber}.`);
   }
 }
 
