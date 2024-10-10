@@ -213,6 +213,13 @@ export default function IndexPage() {
       <Link href="/side-quests" rel="noopener noreferrer" className="block hover:underline">
         all side quests
       </Link>
+      <Link
+        target="_blank"
+        href="https://formbricks.notion.site/How-to-make-1050-points-without-touching-code-in-5-minutes-e71e624b5b9b487bbac28030d142438a?pvs=74"
+        rel="noopener noreferrer"
+        className="block font-bold hover:underline">
+        how to make 1050 points in 5 minutes without touching code
+      </Link>
     </div>
   );
 }
