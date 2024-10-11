@@ -71,6 +71,7 @@ export const onIssueOpened = async (webhooks: Webhooks) => {
 export const onAssignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
+
       const issueCommentBody = context.payload.comment.body;
       const [identifier, points] = issueCommentBody.split(" ");
       const issueNumber = context.payload.issue.number;
@@ -83,6 +84,22 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
 
       if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
         if (!isOssGgLabel) return;
+
+        const isPullRequestComment = !!context.payload.issue.pull_request;
+
+        if (isPullRequestComment) {
+          // Handle pull request comments
+          const pullRequestNumber = context.payload.issue.number;
+
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: pullRequestNumber,
+            body: `😂 Oh no, @${commenter}! You can't assign a pull request! PRs are for solving issues, not assigning them! 🚧 
+                Feel free to head over to the issues section and find a nice juicy issue to work on instead! 🕵️‍♂️🔍 Let's stick to the program and leave the PRs for the finishing touches! 🎨🎉`,
+          });
+          return
+        }
 
         const isAssigned = context.payload.issue.assignees.length > 0;
         if (isAssigned) {
@@ -99,6 +116,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           });
           return;
         }
+
 
         //users who haven't linked the issue to the PR will be able to assign themselves again even if their pr was rejected, because their names won't be added to the "Attempted:user1" comment in the issue.
         const allCommentsInTheIssue = await octokit.issues.listComments({
@@ -143,24 +161,24 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         //checking if the current level of user has the power to solve the issue on which the /assign comment was made.
         const currentRepo = await getRepositoryByGithubId(context.payload.repository.id);
         const user = await getUserByGithubId(context.payload.comment.user.id);
-
+  
        if (currentRepo && user) {
           const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
           const { currentLevelOfUser } = await findCurrentAndNextLevelOfCurrentUser(
             currentRepo.id,
             userTotalPoints
           ); //this just has tags that limit the user to take on task of higher level but  misses out  on tags of lower levels.
-
+  
           const levels = currentRepo?.levels as TLevel[];
           const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
-
+  
           const labels = context.payload.issue.labels;
           const tags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
-
+  
           const isAssignable = labels.some((label) => {
             return tags?.assignableIssues.includes(label.name);
           });
-
+  
           if (!isAssignable) {
             await octokit.issues.createComment({
               owner,
