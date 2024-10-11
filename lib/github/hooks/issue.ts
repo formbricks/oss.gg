@@ -7,6 +7,7 @@ import {
   ON_NEW_ISSUE,
   ON_USER_NOT_REGISTERED,
   OSS_GG_LABEL,
+  PLAYER_SUBMISSION,
   POINT_IS_NOT_A_NUMBER,
   REJECTION_MESSAGE_TEMPLATE,
   REJECT_IDENTIFIER,
@@ -80,12 +81,22 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const installationId = context.payload.installation?.id!;
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
+      const isPlayerSubmission = context.payload.issue.labels.some(
+        (label) => label.name === PLAYER_SUBMISSION
+      );
 
       // Check if this is a pull request
       const isPullRequest = !!context.payload.issue.pull_request;
-
       if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
-        if (!isOssGgLabel) return;
+        if (!isOssGgLabel) {
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: "This issue is not part of oss.gg hackathon. Please pick a different one or start with a [side quest](https://oss.gg/side-quests)",
+          });
+          return;
+        }
 
         // If it's a pull request, don't allow assignment
         if (isPullRequest) {
@@ -94,6 +105,31 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
             repo,
             issue_number: issueNumber,
             body: "The /assign command can only be used on issues, not on pull requests.",
+          });
+          return;
+        }
+
+        //If issue has a label player submission
+        if (isPlayerSubmission) {
+          const comment = ` This is a submission of a different player for a side quest, you cannot get assigned to that.
+
+If you also want to complete it, here is the list of all side quests (link to oss.gg/side-quests)
+
+If you want to make e.g. 1050 points in 5 minutes without touching code, do the [Starry-eyed Supporter quest](https://formbricks.notion.site/How-to-make-1050-points-without-touching-code-in-5-minutes-e71e624b5b9b487bbac28030d142438a?pvs=74)
+
+As a reminder, this is how side quest submissions work:
+1. Complete the quest, gather proof (as described [here](https://formbricks.notion.site/How-to-submit-a-non-code-contributions-via-GitHub-81166e8c948841d18209ac4c60280e60?pvs=74)
+2. Open a oss.gg submission issue in the respective repository
+3. Wait for a maintainer to review, award points and close the issue
+4. In the meanwhile, you can work on all other side quests :rocket:
+
+
+Thanks for playing 🕹️ OPEN SOURCE LETS GOOOO! `;
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: comment,
           });
           return;
         }
@@ -157,24 +193,24 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         //checking if the current level of user has the power to solve the issue on which the /assign comment was made.
         const currentRepo = await getRepositoryByGithubId(context.payload.repository.id);
         const user = await getUserByGithubId(context.payload.comment.user.id);
-
+  
        if (currentRepo && user) {
           const userTotalPoints = await getPointsForPlayerInRepoByRepositoryId(currentRepo.id, user.id);
           const { currentLevelOfUser } = await findCurrentAndNextLevelOfCurrentUser(
             currentRepo.id,
             userTotalPoints
           ); //this just has tags that limit the user to take on task of higher level but  misses out  on tags of lower levels.
-
+  
           const levels = currentRepo?.levels as TLevel[];
           const modifiedTagsArray = calculateAssignabelNonAssignableIssuesForUserInALevel(levels); //gets all assignable tags be it from the current level and from lower levels.
-
+  
           const labels = context.payload.issue.labels;
           const tags = modifiedTagsArray.find((item) => item.levelId === currentLevelOfUser?.id); //finds the curent level in the modifiedTagsArray.
-
+  
           const isAssignable = labels.some((label) => {
             return tags?.assignableIssues.includes(label.name);
           });
-
+  
           if (!isAssignable) {
             await octokit.issues.createComment({
               owner,
