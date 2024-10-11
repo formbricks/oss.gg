@@ -13,6 +13,7 @@ export const ASSIGN_IDENTIFIER = "/assign" as const;
 export const CREATE_IDENTIFIER = "/oss.gg" as const;
 export const UNASSIGN_IDENTIFIER = "/unassign" as const;
 export const REJECT_IDENTIFIER = "/reject" as const;
+export const PLAYER_SUBMISSION = "player submission" as const;
 export enum EVENT_TRIGGERS {
   ISSUE_OPENED = "issues.opened",
   INSTALLATION_CREATED = "installation.created",
