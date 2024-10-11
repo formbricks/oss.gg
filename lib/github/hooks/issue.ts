@@ -82,24 +82,22 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
+      // Check if this is a pull request
+      const isPullRequest = !!context.payload.issue.pull_request;
       if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
         if (!isOssGgLabel) return;
 
-        const isPullRequestComment = !!context.payload.issue.pull_request;
-
-        if (isPullRequestComment) {
-          // Handle pull request comments
-          const pullRequestNumber = context.payload.issue.number;
-
+        // If it's a pull request, don't allow assignment
+        if (isPullRequest) {
           await octokit.issues.createComment({
             owner,
             repo,
-            issue_number: pullRequestNumber,
-            body: `😂 Oh no, @${commenter}! You can't assign a pull request! PRs are for solving issues, not assigning them! 🚧 
-                Feel free to head over to the issues section and find a nice juicy issue to work on instead! 🕵️‍♂️🔍 Let's stick to the program and leave the PRs for the finishing touches! 🎨🎉`,
+            issue_number: issueNumber,
+            body: "The /assign command can only be used on issues, not on pull requests.",
           });
-          return
+          return;
         }
+
 
         const isAssigned = context.payload.issue.assignees.length > 0;
         if (isAssigned) {
