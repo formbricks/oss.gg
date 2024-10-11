@@ -72,7 +72,6 @@ export const onIssueOpened = async (webhooks: Webhooks) => {
 export const onAssignCommented = async (webhooks: Webhooks) => {
   webhooks.on(EVENT_TRIGGERS.ISSUE_COMMENTED, async (context) => {
     try {
-
       const issueCommentBody = context.payload.comment.body;
       const [identifier, points] = issueCommentBody.split(" ");
       const issueNumber = context.payload.issue.number;
@@ -82,7 +81,9 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const installationId = context.payload.installation?.id!;
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
-      const isPlayerSubmission = context.payload.issue.labels.some((label) => label.name === PLAYER_SUBMISSION);
+      const isPlayerSubmission = context.payload.issue.labels.some(
+        (label) => label.name === PLAYER_SUBMISSION
+      );
 
       // Check if this is a pull request
       const isPullRequest = !!context.payload.issue.pull_request;
@@ -92,7 +93,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
             owner,
             repo,
             issue_number: issueNumber,
-            body: "This issue is not part of oss.gg hackathon. Please pick a different one or start with a side quest (https://oss.gg/side-quests)",
+            body: "This issue is not part of oss.gg hackathon. Please pick a different one or start with a [side quest](https://oss.gg/side-quests)",
           });
           return;
         }
@@ -108,22 +109,22 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           return;
         }
 
-        //If issue has a label player submission 
+        //If issue has a label player submission
         if (isPlayerSubmission) {
           const comment = ` This is a submission of a different player for a side quest, you cannot get assigned to that.
 
 If you also want to complete it, here is the list of all side quests (link to oss.gg/side-quests)
 
-If you want to make e.g. 1050 points in 5 minutes without touching code, do the Starry-eyed Supporter quest (link to https://formbricks.notion.site/How-to-make-1050-points-without-touching-code-in-5-minutes-e71e624b5b9b487bbac28030d142438a?pvs=74 )
+If you want to make e.g. 1050 points in 5 minutes without touching code, do the [Starry-eyed Supporter quest](https://formbricks.notion.site/How-to-make-1050-points-without-touching-code-in-5-minutes-e71e624b5b9b487bbac28030d142438a?pvs=74)
 
 As a reminder, this is how side quest submissions work:
-1. Complete the quest, gather proof (as described above)
+1. Complete the quest, gather proof (as described [here](https://formbricks.notion.site/How-to-submit-a-non-code-contributions-via-GitHub-81166e8c948841d18209ac4c60280e60?pvs=74)
 2. Open a oss.gg submission issue in the respective repository
 3. Wait for a maintainer to review, award points and close the issue
 4. In the meanwhile, you can work on all other side quests :rocket:
 
 
-Thanks for playing! OPEN SOURCE LETS GOOOO! `
+Thanks for playing 🕹️ OPEN SOURCE LETS GOOOO! `;
           await octokit.issues.createComment({
             owner,
             repo,
@@ -148,7 +149,6 @@ Thanks for playing! OPEN SOURCE LETS GOOOO! `
           });
           return;
         }
-
 
         //users who haven't linked the issue to the PR will be able to assign themselves again even if their pr was rejected, because their names won't be added to the "Attempted:user1" comment in the issue.
         const allCommentsInTheIssue = await octokit.issues.listComments({
