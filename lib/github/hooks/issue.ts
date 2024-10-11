@@ -81,8 +81,22 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
       const octokit = getOctokitInstance(installationId);
       const isOssGgLabel = context.payload.issue.labels.some((label) => label.name === OSS_GG_LABEL);
 
+      // Check if this is a pull request
+      const isPullRequest = !!context.payload.issue.pull_request;
+
       if (issueCommentBody.trim() === ASSIGN_IDENTIFIER) {
         if (!isOssGgLabel) return;
+
+        // If it's a pull request, don't allow assignment
+        if (isPullRequest) {
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            body: "The /assign command can only be used on issues, not on pull requests.",
+          });
+          return;
+        }
 
         const isAssigned = context.payload.issue.assignees.length > 0;
         if (isAssigned) {
