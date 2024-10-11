@@ -98,7 +98,6 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
           return;
         }
 
-
         const isAssigned = context.payload.issue.assignees.length > 0;
         if (isAssigned) {
           const assignee = context.payload.issue.assignees[0].login;
