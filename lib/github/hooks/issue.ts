@@ -113,7 +113,7 @@ export const onAssignCommented = async (webhooks: Webhooks) => {
         if (isPlayerSubmission) {
           const comment = ` This is a submission of a different player for a side quest, you cannot get assigned to that.
 
-If you also want to complete it, here is the list of all side quests (link to oss.gg/side-quests)
+If you also want to complete it, here is the [list of all side quests](https://oss.gg/side-quests)
 
 If you want to make e.g. 1050 points in 5 minutes without touching code, do the [Starry-eyed Supporter quest](https://formbricks.notion.site/How-to-make-1050-points-without-touching-code-in-5-minutes-e71e624b5b9b487bbac28030d142438a?pvs=74)
 
