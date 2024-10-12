@@ -192,34 +192,31 @@ export interface LeaderboardEntry {
 
 export const getAllUserPointsList = async (): Promise<LeaderboardEntry[]> => {
   try {
-    // Fetch users (id, login, avatarUrl) without point transactions initially
-    const users = await db.user.findMany({
+    // Fetch users and their points in a single query
+    const leaderboard = await db.user.findMany({
       select: {
         id: true,
         login: true,
         avatarUrl: true,
+        pointTransactions: {
+          select: {
+            points: true,
+          },
+        },
       },
     });
 
-    // Fetch total points and rank for each user in parallel using Promise.all
-    const leaderboard = await Promise.all(
-      users.map(async (user) => {
-        const { totalPoints } = await getTotalPointsAndGlobalRank(user.id); // Fetch total points for the user
-        return {
-          userId: user.id,
-          login: user.login,
-          avatarUrl: user.avatarUrl,
-          totalPoints, // Assign fetched total points
-        };
-      })
-    );
-
-    // Sort the leaderboard by totalPoints in descending order
-    return leaderboard.sort((a, b) => b.totalPoints - a.totalPoints);
-
+    // Process the results
+    return leaderboard
+      .map((user) => ({
+        userId: user.id,
+        login: user.login,
+        avatarUrl: user.avatarUrl,
+        totalPoints: user.pointTransactions.reduce((sum, transaction) => sum + (transaction.points || 0), 0),
+      }))
+      .sort((a, b) => b.totalPoints - a.totalPoints);
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     throw new Error("Failed to fetch leaderboard");
   }
 };
-
