@@ -4,7 +4,7 @@ import { DatabaseError } from "@/types/errors";
 import { TPointTransactionWithUser } from "@/types/pointTransaction";
 import { TRepository } from "@/types/repository";
 import { Prisma } from "@prisma/client";
-import { unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 
 import { DEFAULT_CACHE_REVALIDATION_INTERVAL, ITEMS_PER_PAGE } from "../constants";
 import { validateInputs } from "../utils/validate";
@@ -38,6 +38,7 @@ export const assignUserPoints = async (
         repositoryId,
       },
     });
+    await revalidateTag('leaderboard'); // Revalidate the leaderboard cache
     return pointsUpdated;
   } catch (error) {
     throw error;
@@ -190,36 +191,45 @@ export interface LeaderboardEntry {
   totalPoints: number;
 }
 
+
 export const getAllUserPointsList = async (): Promise<LeaderboardEntry[]> => {
-  try {
-    // Fetch users (id, login, avatarUrl) without point transactions initially
-    const users = await db.user.findMany({
-      select: {
-        id: true,
-        login: true,
-        avatarUrl: true,
-      },
-    });
+  return await unstable_cache(
+    async () => {
+      try {
+        // Fetch users (id, login, avatarUrl) without point transactions initially
+        const users = await db.user.findMany({
+          select: {
+            id: true,
+            login: true,
+            avatarUrl: true,
+          },
+        });
 
-    // Fetch total points and rank for each user in parallel using Promise.all
-    const leaderboard = await Promise.all(
-      users.map(async (user) => {
-        const { totalPoints } = await getTotalPointsAndGlobalRank(user.id); // Fetch total points for the user
-        return {
-          userId: user.id,
-          login: user.login,
-          avatarUrl: user.avatarUrl,
-          totalPoints, // Assign fetched total points
-        };
-      })
-    );
+        // Fetch total points and rank for each user in parallel using Promise.all
+        const leaderboard = await Promise.all(
+          users.map(async (user) => {
+            const { totalPoints } = await getTotalPointsAndGlobalRank(user.id); // Fetch total points for the user
+            return {
+              userId: user.id,
+              login: user.login,
+              avatarUrl: user.avatarUrl,
+              totalPoints, // Assign fetched total points
+            };
+          })
+        );
 
-    // Sort the leaderboard by totalPoints in descending order
-    return leaderboard.sort((a, b) => b.totalPoints - a.totalPoints);
+        // Sort the leaderboard by totalPoints in descending order
+        return leaderboard.sort((a, b) => b.totalPoints - a.totalPoints);
 
-  } catch (error) {
-    console.error("Error fetching leaderboard:", error);
-    throw new Error("Failed to fetch leaderboard");
-  }
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+        throw new Error("Failed to fetch leaderboard");
+      }
+    },
+    [`getAllUserPointsList`], // Cache key
+    {
+      tags: ['leaderboard'], // Cache tag for easier invalidation if needed
+      revalidate: DEFAULT_CACHE_REVALIDATION_INTERVAL, // Set cache revalidation interval
+    }
+  )();
 };
-
