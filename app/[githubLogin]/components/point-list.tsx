@@ -17,7 +17,9 @@ const PointsAndRanks: React.FC<PointsAndRanksProps> = ({ pointsAndRanks }) => {
       {pointsAndRanks.map((repo, index) => (
         <div key={repo.id} className="space-y-1">
           {repo.repositoryLogo && (
-            <Image src={repo.repositoryLogo} height={25} width={25} alt={`${repo.repositoryName} logo`} />
+            <a href={`https://github.com/${repo.repositoryName}`}>
+              <Image src={repo.repositoryLogo} height={25} width={25} alt={`${repo.repositoryName} logo`} />
+            </a>
           )}
           <h3 className="font-semibold">{repo.repositoryName}</h3>
           <p>points: {repo.points}</p>
