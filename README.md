@@ -10,6 +10,7 @@ In this manual we'll walk you through the steps you need to take to get oss.gg a
 4. Start the local instance of oss.gg with your GitHub test app and install oss.gg on test repository
 
 ## 1. GitHub Personal Access Token
+
 In the development environemnt we're using Personal Access Tokens to query the GitHub API. This is neccessary because the rate limit of GitHub can be quite strict so we need to decentralize the request amount:
 
 <img width="1145" alt="image" src="https://github.com/formbricks/oss.gg/assets/72809645/56674a44-29b8-4297-9048-4974b50921ce">
@@ -21,6 +22,7 @@ Generate one and fill it in the env variable:
 Let's setup your oss.gg GitHub App 👇
 
 ## 2. oss.gg Github App Setup
+
 You need to create your own GitHub app to test the oss.gg functionality you're developing and to make the GitHub SSO work locally:
 
 Stay in your GitHub Account Settings -> Developer Settings -> GitHub Apps and Create a New App:
@@ -122,8 +124,9 @@ The `NEXTAUTH_SECRET` you can generate with the command written in the command b
 ```
 
 ## 4. Start the local instance of oss.gg with your GitHub test app and install oss.gg on test repository
+
 Please follow this video: https://youtu.be/KkKwqcw-h-k
 
 #Got stuck?
 
-Please join our Discord and let us know so we can update this guide 🤓: oss.gg/discord
+Please join our Discord and let us know so we can update this guide 🤓: https://oss.gg/discord
