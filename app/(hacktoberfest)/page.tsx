@@ -205,27 +205,32 @@ export default function IndexPage() {
           <p>play fair to stay in the game</p> <p>cheat or spam to get disqualified</p>
         </ToggleContent>
       </Toggle>
-      <h2 className="pt-4 font-bold">get started 👇</h2>
-
+      <h2 className="pt-4 font-bold">👇 get started</h2>
+      <Link href="/leaderboard" rel="noopener noreferrer" className="block hover:underline">
+      🕹️ leaderboard
+      </Link>
       <Link href="/oss-issues" rel="noopener noreferrer" className="block hover:underline">
-        all code issues
+      👨‍💻 all code issues
       </Link>
       <Link href="/side-quests" rel="noopener noreferrer" className="block hover:underline">
-        all side quests
+      🏰 all side quests
       </Link>
       <Link
         target="_blank"
         href="https://formbricks.notion.site/How-to-make-1050-points-without-touching-code-in-5-minutes-e71e624b5b9b487bbac28030d142438a?pvs=74"
         rel="noopener noreferrer"
-        className="block font-bold hover:underline">
-        how to make 1050 points in 5 minutes without touching code
+        className="block hover:underline">
+       🔥 how to make 1050 points in 5 minutes without touching code
       </Link>
       <Link
         target="_blank"
         href="https://oss.gg/discord"
         rel="noopener noreferrer"
         className="block hover:underline">
-        join our Discord
+        🤖 join our Discord
+      </Link>
+      <Link href="https://lu.ma/qb3z1x05" rel="noopener noreferrer" className="block hover:underline">
+      🎁 sign up for the price raffle
       </Link>
     </div>
   );
