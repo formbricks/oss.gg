@@ -8,11 +8,9 @@ export default function IndexPage() {
   return (
     <div className="space-y-2 font-mono text-xs underline-offset-2">
       <h1 className="pb-2 font-bold">oss.gg hackathon 2024 🕹️</h1>
-      <Toggle>
-        <ToggleHead>prizes</ToggleHead>
-        <ToggleContent>
-          <ol className="ml-7 list-decimal">
-            <li>
+      <div><span className="font-bold">prizes & winners</span>
+          <ol className="mt-2 list-decimal">
+            <li className="flex items-center gap-2">
               <Link
                 href="https://www.apple.com/macbook-pro/"
                 target="_blank"
@@ -20,8 +18,11 @@ export default function IndexPage() {
                 className="hover:underline">
                 Macbook Pro 2023 M3 14&quot;
               </Link>
+              <Link href="/harshsbhat" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: harshsbhat
+              </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://www.apple.com/macbook-air/"
                 target="_blank"
@@ -29,8 +30,11 @@ export default function IndexPage() {
                 className="hover:underline">
                 Macbook Air 2023 M3 15&quot;
               </Link>
+              <Link href="/sateshcharan" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: sateshcharan
+              </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://www.apple.com/iphone-16/"
                 target="_blank"
@@ -38,8 +42,11 @@ export default function IndexPage() {
                 className="hover:underline">
                 iPhone 16 with 512GB
               </Link>
+              <Link href="/milanp19" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: milanp19
+              </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://www.playstation.com/en-us/ps5/"
                 target="_blank"
@@ -47,26 +54,35 @@ export default function IndexPage() {
                 className="hover:underline">
                 Playstation 5
               </Link>
+              <Link href="/AshishViradiya153" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: AshishViradiya153
+              </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://www.apple.com/airpods-pro/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline">
-                AirPods Pro 3rd Gen
+                AirPods Pro 2nd Gen
+              </Link>
+              <Link href="/unrenamed" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: unrenamed
               </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://www.apple.com/airpods-pro/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline">
-                AirPods Pro 3rd Gen
+                AirPods Pro 2nd Gen
+              </Link>
+              <Link href="/adityadeshlahre" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: adityadeshlahre
               </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://epomaker.com/products/epomaker-ep84"
                 target="_blank"
@@ -74,8 +90,11 @@ export default function IndexPage() {
                 className="hover:underline">
                 EPOMAKER EP84
               </Link>
+              <Link href="/RajuGangitla" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: RajuGangitla
+              </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://epomaker.com/products/epomaker-x-aula-f75"
                 target="_blank"
@@ -83,8 +102,11 @@ export default function IndexPage() {
                 className="hover:underline">
                 EPOMAKER x AULA F75
               </Link>
+              <Link href="/Devansh-Baghel" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: Devansh-Baghel
+              </Link>
             </li>
-            <li>
+            <li className="flex items-center gap-2">
               <Link
                 href="https://epomaker.com/products/epomaker-x-aula-f75"
                 target="_blank"
@@ -92,11 +114,22 @@ export default function IndexPage() {
                 className="hover:underline">
                 EPOMAKER x AULA F75
               </Link>
+              <Link href="/shahil-yadav" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: shahil-yadav
+              </Link>
             </li>
-            <li>a brick 🧱</li>
+            <li className="flex items-center gap-2">
+              <span
+                className="hover:underline">
+                a brick 🧱 (or a $25 gift card)
+              </span>
+              <Link href="/shahil-yadav" target="_blank" className="hover:underline" rel="noopener noreferrer">
+                🏆 winner: utkarshml
+              </Link>
+            </li>
           </ol>
-        </ToggleContent>
-      </Toggle>
+          <p className="mt-2 font-bold">pls reach out to johannes@formbricks.com to collect your prize 🎉</p>
+      </div>
       <Toggle>
         <ToggleHead>how it works</ToggleHead>
         <ToggleContent>
