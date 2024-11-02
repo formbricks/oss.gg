@@ -17,6 +17,7 @@ import { getRepositoryByGithubId } from "@/lib/repository/service";
 import { getUser } from "@/lib/user/service";
 import { issueReminderTask } from "@/src/trigger/issueReminder";
 import { Webhooks } from "@octokit/webhooks";
+import { runs } from "@trigger.dev/sdk/v3";
 
 import { isMemberOfRepository } from "../services/user";
 import {
@@ -67,6 +68,12 @@ export const onIssueOpened = async (webhooks: Webhooks) => {
     //   })
     // )
   });
+};
+
+const issueReminderRuns = new Map<string, string>();
+
+const getIssueKey = (owner: string, repo: string, issueNumber: number) => {
+  return `${owner}/${repo}/${issueNumber}`;
 };
 
 export const onAssignCommented = async (webhooks: Webhooks) => {
@@ -232,13 +239,15 @@ Thanks for playing 🕹️ OPEN SOURCE LETS GOOOO! `;
         //send trigger event to wait for 36hrs then send a reminder if the user has not created a pull request
         try {
           if (context.payload.installation?.id) {
-            await issueReminderTask.trigger({
+            const {id} = await issueReminderTask.trigger({
               issueNumber,
               repo,
               owner,
               commenter,
               installationId: context.payload.installation.id ?? "",
             });
+            const issueKey = getIssueKey(owner, repo, issueNumber);
+            issueReminderRuns.set(issueKey, id);
           }
         } catch (error) {
           console.error("Error sending event:", error.message);
@@ -331,6 +340,19 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
       }
 
       const assignee = context.payload.issue.assignees[0].login;
+      const cancelReminderTask = async () => {
+        try {
+          const issueKey = getIssueKey(owner, repo, issueNumber);
+          const runId = issueReminderRuns.get(issueKey);
+
+          if (runId) {
+            await runs.cancel(runId);
+            issueReminderRuns.delete(issueKey);
+          }
+        } catch (error) {
+          console.error("Error cancelling run:", error);
+        }
+      };
       if (assignee === commenter) {
         await octokit.issues.removeAssignees({
           owner,
@@ -338,6 +360,7 @@ export const onUnassignCommented = async (webhooks: Webhooks) => {
           issue_number: issueNumber,
           assignees: [assignee],
         });
+        await cancelReminderTask();
         await octokit.issues.createComment({
           owner,
           repo,
